@@ -123,4 +123,37 @@ describe('POST /api/user/sync', () => {
     expect(res.status).toBe(500)
     expect(json.error).toContain('Could not fetch user profile')
   })
+
+  it('creates new user with empty email when no email addresses', async () => {
+    mockAuth.mockResolvedValue({ userId: 'user_no_email' } as never)
+    mockCurrentUser.mockResolvedValue({
+      firstName: 'Jane',
+      lastName: null,
+      emailAddresses: [],
+    } as never)
+
+    const newUser = {
+      id: 'user_no_email',
+      usernameSlug: 'jane-xyz',
+      email: '',
+      createdAt: new Date(),
+    }
+
+    let callCount = 0
+    const limit = vi.fn().mockImplementation(() => {
+      callCount++
+      return Promise.resolve(callCount === 1 ? [] : [newUser])
+    })
+    const where = vi.fn().mockReturnValue({ limit })
+    const from = vi.fn().mockReturnValue({ where })
+    mockDb.select = vi.fn().mockReturnValue({ from })
+
+    const onConflictDoNothing = vi.fn().mockResolvedValue(undefined)
+    const values = vi.fn().mockReturnValue({ onConflictDoNothing })
+    mockDb.insert = vi.fn().mockReturnValue({ values })
+
+    const res = await POST()
+    expect(res.status).toBe(200)
+    expect(mockDb.insert).toHaveBeenCalled()
+  })
 })
