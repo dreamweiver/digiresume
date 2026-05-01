@@ -1,0 +1,1 @@
+ALTER TABLE "portfolios" ALTER COLUMN "portfolio_data" SET DATA TYPE text;

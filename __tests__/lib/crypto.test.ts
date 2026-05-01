@@ -1,0 +1,26 @@
+import { describe, it, expect, beforeAll } from 'vitest'
+import { encrypt, decrypt } from '@/lib/crypto'
+
+beforeAll(() => {
+  process.env.PORTFOLIO_ENCRYPTION_KEY = 'a'.repeat(64)
+})
+
+describe('encrypt / decrypt', () => {
+  it('round-trips a string value', () => {
+    const plaintext = JSON.stringify({ name: 'John Doe', skills: ['React'] })
+    const ciphertext = encrypt(plaintext)
+    expect(ciphertext).not.toEqual(plaintext)
+    expect(decrypt(ciphertext)).toEqual(plaintext)
+  })
+
+  it('produces different ciphertext each call (random IV)', () => {
+    const plaintext = 'same input'
+    expect(encrypt(plaintext)).not.toEqual(encrypt(plaintext))
+  })
+
+  it('throws on tampered ciphertext', () => {
+    const ciphertext = encrypt('hello')
+    const tampered = ciphertext.slice(0, -4) + 'xxxx'
+    expect(() => decrypt(tampered)).toThrow()
+  })
+})
