@@ -3,7 +3,7 @@ import Image from 'next/image'
 
 export function HeroLanding() {
   return (
-    <section className="relative flex items-center flex-1 min-h-screen px-6 py-24 bg-[#0a0a0a] overflow-hidden hero-grid-bg">
+    <section className="relative flex items-center flex-1 min-h-screen px-6 py-12 bg-[#0a0a0a] overflow-hidden hero-grid-bg">
       {/* Glowing green orb */}
       <div className="hero-glow top-1/2 left-1/4 -translate-x-1/2 -translate-y-1/2" />
 
