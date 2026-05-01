@@ -3,9 +3,10 @@ interface Props { skills: string[] }
 export function SkillsSection({ skills }: Props) {
   if (!skills.length) return null
   return (
-    <section id="skills" className="py-20 bg-[#0a0a0a] border-t border-[#1f1f1f]">
-      <div className="max-w-4xl mx-auto px-4">
-        <h2 className="text-3xl font-bold mb-12 text-center gradient-text">Skills</h2>
+    <section id="skills" className="py-24 bg-[#0a0a0a] border-t border-[#1f1f1f]">
+      <div className="max-w-5xl mx-auto px-6">
+        <h2 className="text-3xl font-bold gradient-text mb-2">Skills</h2>
+        <p className="text-[#52525b] text-sm uppercase tracking-widest mb-12">Technologies I work with</p>
         <div className="flex flex-wrap justify-center gap-3">
           {skills.map((skill) => (
             <span

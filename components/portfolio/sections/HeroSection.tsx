@@ -7,7 +7,7 @@ interface Props {
 
 export function HeroSection({ hero, socialLinks }: Props) {
   return (
-    <section id="hero" className="min-h-screen flex items-center justify-center bg-[#0a0a0a] text-white relative overflow-hidden hero-grid-bg">
+    <section id="hero" className="min-h-screen flex items-center justify-center bg-[#0a0a0a] text-white relative overflow-hidden hero-grid-bg scroll-mt-14">
       <div className="hero-glow top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
       <div className="text-center px-4 relative z-10">
         <h1 className="text-5xl md:text-7xl font-bold mb-4 gradient-text">{hero.name}</h1>
