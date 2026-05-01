@@ -14,9 +14,15 @@ interface Props { data: PortfolioData; onChange: (data: PortfolioData) => void }
 export function PortfolioEditor({ data, onChange }: Props) {
   return (
     <Tabs defaultValue="hero">
-      <TabsList className="flex flex-wrap h-auto gap-1 mb-6">
+      <TabsList className="flex flex-wrap h-auto gap-1 mb-6 bg-[#111111] border border-[#1f1f1f] p-1 rounded-lg">
         {['hero', 'about', 'skills', 'experience', 'projects', 'education', 'social'].map((tab) => (
-          <TabsTrigger key={tab} value={tab} className="capitalize">{tab}</TabsTrigger>
+          <TabsTrigger
+            key={tab}
+            value={tab}
+            className="capitalize text-[#a1a1aa] data-[state=active]:text-[#00e599] data-[state=active]:bg-[#161616] data-[state=active]:shadow-none rounded-md transition-colors duration-200"
+          >
+            {tab}
+          </TabsTrigger>
         ))}
       </TabsList>
       <TabsContent value="hero"><HeroEditor hero={data.hero} onChange={(hero) => onChange({ ...data, hero })} /></TabsContent>

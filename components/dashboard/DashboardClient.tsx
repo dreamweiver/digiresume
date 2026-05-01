@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import Image from 'next/image'
 import { toast } from 'sonner'
 import { pdf } from '@react-pdf/renderer'
 import type { Portfolio } from '@/lib/db/schema'
@@ -108,16 +109,28 @@ export function DashboardClient({ initialPortfolio, initialData, usernameSlug }:
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50">
+    <div className="min-h-screen flex flex-col bg-[#0a0a0a]">
       <DashboardHeader status={status} publicUrl={publicUrl} />
 
       <main className="flex-1 overflow-auto p-6">
         {!hasPortfolio ? (
           <div className="max-w-xl mx-auto mt-16">
-            <h2 className="text-2xl font-semibold text-slate-800 mb-6">
+            <h2 className="text-2xl font-semibold text-white mb-2">
               Upload your resume to get started
             </h2>
+            <p className="text-[#a1a1aa] mb-6 text-sm">Drop your PDF below and let AI do the rest.</p>
             <ResumeUploader onGenerated={handleGenerated} />
+            {/* Preview of what they'll get */}
+            <div className="mt-10 rounded-xl overflow-hidden border border-[#1f1f1f] shadow-[0_0_40px_rgba(0,229,153,0.06)] opacity-60">
+              <Image
+                src="/digiresume.jpg"
+                alt="Example portfolio preview"
+                width={800}
+                height={480}
+                className="w-full h-auto"
+              />
+            </div>
+            <p className="text-center text-xs text-[#52525b] mt-3">Your portfolio will look like this</p>
           </div>
         ) : mode === 'edit' ? (
           <div className="max-w-3xl mx-auto">

@@ -47,10 +47,10 @@ export default async function PublicPortfolioPage({ params }: Props) {
 
   if (!portfolioResult.length || portfolioResult[0].status !== 'published') {
     return (
-      <div className="min-h-screen bg-slate-900 flex items-center justify-center text-white">
+      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center text-white">
         <div className="text-center">
-          <h1 className="text-3xl font-bold mb-4">Portfolio Not Available</h1>
-          <p className="text-slate-400">This portfolio hasn&apos;t been published yet.</p>
+          <h1 className="text-3xl font-bold mb-4 gradient-text">Portfolio Not Available</h1>
+          <p className="text-[#a1a1aa]">This portfolio hasn&apos;t been published yet.</p>
         </div>
       </div>
     )

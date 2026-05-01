@@ -51,8 +51,11 @@ export function ResumeUploader({ onGenerated }: Props) {
         onDragLeave={() => setIsDragging(false)}
         onDrop={handleDrop}
         onClick={() => inputRef.current?.click()}
-        className={`border-2 border-dashed rounded-xl p-10 text-center cursor-pointer transition-colors
-          ${isDragging ? 'border-slate-500 bg-slate-100' : 'border-slate-300 hover:border-slate-400'}`}
+        className={`border-2 border-dashed rounded-xl p-10 text-center cursor-pointer transition-colors duration-200 bg-[#111111]
+          ${isDragging
+            ? 'border-[#00e599] bg-[#0d1a14]'
+            : 'border-[#1f1f1f] hover:border-[#00e599]'
+          }`}
       >
         <input
           ref={inputRef}
@@ -65,16 +68,28 @@ export function ResumeUploader({ onGenerated }: Props) {
           }}
         />
         {file ? (
-          <p className="text-slate-700 font-medium">{file.name}</p>
+          <div>
+            <p className="text-[#00e599] font-medium">{file.name}</p>
+            <p className="text-[#a1a1aa] text-sm mt-1">Click to change file</p>
+          </div>
         ) : (
           <>
-            <p className="text-slate-500 text-lg">Drag & drop your resume PDF here</p>
-            <p className="text-slate-400 text-sm mt-1">or click to browse</p>
+            <div className="text-[#00e599] mb-3 opacity-60">
+              <svg className="mx-auto w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+              </svg>
+            </div>
+            <p className="text-[#a1a1aa] text-base">Drag & drop your resume PDF here</p>
+            <p className="text-[#52525b] text-sm mt-1">or click to browse</p>
           </>
         )}
       </div>
       {error && <p className="text-red-500 text-sm">{error}</p>}
-      <Button onClick={handleGenerate} disabled={!file || isLoading} className="w-full">
+      <Button
+        onClick={handleGenerate}
+        disabled={!file || isLoading}
+        className="w-full bg-[#00e599] text-black font-semibold hover:bg-[#00cc88] transition-colors duration-200 disabled:opacity-40"
+      >
         {isLoading ? 'Generating Portfolio...' : 'Generate Portfolio'}
       </Button>
     </div>

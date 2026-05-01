@@ -11,7 +11,7 @@ interface Props { data: PortfolioData }
 
 export function PortfolioTemplate({ data }: Props) {
   return (
-    <main className="font-sans">
+    <main className="font-sans bg-[#0a0a0a]">
       <HeroSection hero={data.hero} socialLinks={data.socialLinks} />
       <AboutSection about={data.about} />
       <ExperienceSection experience={data.experience} />

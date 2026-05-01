@@ -51,20 +51,20 @@ export function SkillsEditor({ skills, onChange }: Props) {
               <p className="text-red-500 text-xs mt-1">{errors.skill.message}</p>
             )}
           </div>
-          <Button type="submit" variant="outline">Add</Button>
+          <Button type="submit" variant="outline" className="border-[#1f1f1f] text-[#00e599] hover:border-[#00e599] hover:text-[#00e599] transition-colors duration-200 bg-transparent">Add</Button>
         </div>
       </form>
       <div className="flex flex-wrap gap-2">
         {skills.map((skill) => (
           <span
             key={skill}
-            className="bg-slate-100 text-slate-700 px-3 py-1 rounded-full text-sm flex items-center gap-1"
+            className="bg-[#161616] border border-[#00e599] text-[#00e599] px-3 py-1 rounded-full text-sm flex items-center gap-1"
           >
             {skill}
             <button
               type="button"
               onClick={() => onChange(skills.filter((s) => s !== skill))}
-              className="text-slate-400 hover:text-red-500 ml-1"
+              className="text-[#00e599] opacity-60 hover:opacity-100 hover:text-red-400 ml-1"
             >
               ×
             </button>

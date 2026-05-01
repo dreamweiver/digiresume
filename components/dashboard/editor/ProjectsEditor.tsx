@@ -76,9 +76,9 @@ export function ProjectsEditor({ projects, onChange }: Props) {
       {fields.map((field, i) => {
         const techStack = (values.projects?.[i]?.techStack) ?? []
         return (
-          <div key={field.id} className="border border-slate-200 rounded-lg p-4 space-y-3">
+          <div key={field.id} className="border border-[#1f1f1f] rounded-lg p-4 space-y-3 bg-[#161616]">
             <div className="flex justify-between items-center">
-              <h4 className="font-medium text-slate-700">Project {i + 1}</h4>
+              <h4 className="font-medium text-[#a1a1aa] text-sm">Project {i + 1}</h4>
               <Button
                 variant="ghost"
                 size="sm"
@@ -87,6 +87,7 @@ export function ProjectsEditor({ projects, onChange }: Props) {
                   remove(i)
                   setTechInputs((prev) => prev.filter((_, idx) => idx !== i))
                 }}
+                className="text-[#52525b] hover:text-red-400"
               >
                 Remove
               </Button>
@@ -118,7 +119,7 @@ export function ProjectsEditor({ projects, onChange }: Props) {
                     }
                   }}
                 />
-                <Button type="button" variant="outline" onClick={() => addTech(i)}>
+                <Button type="button" variant="outline" onClick={() => addTech(i)} className="border-[#1f1f1f] text-[#00e599] hover:border-[#00e599] hover:text-[#00e599] transition-colors duration-200 bg-transparent">
                   Add
                 </Button>
               </div>
@@ -126,13 +127,13 @@ export function ProjectsEditor({ projects, onChange }: Props) {
                 {techStack.map((tech) => (
                   <span
                     key={tech}
-                    className="bg-slate-100 text-slate-700 px-2 py-1 rounded text-sm flex items-center gap-1"
+                    className="bg-[#161616] border border-[#00e599] text-[#00e599] px-2 py-1 rounded text-sm flex items-center gap-1"
                   >
                     {tech}
                     <button
                       type="button"
                       onClick={() => removeTech(i, tech)}
-                      className="text-slate-400 hover:text-red-500"
+                      className="text-[#00e599] opacity-60 hover:opacity-100 hover:text-red-400"
                     >
                       ×
                     </button>
@@ -166,6 +167,7 @@ export function ProjectsEditor({ projects, onChange }: Props) {
           append(emptyProject())
           setTechInputs((prev) => [...prev, ''])
         }}
+        className="border-[#1f1f1f] text-[#00e599] hover:border-[#00e599] hover:text-[#00e599] transition-colors duration-200 bg-transparent"
       >
         + Add Project
       </Button>

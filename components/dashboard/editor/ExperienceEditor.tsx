@@ -46,10 +46,10 @@ export function ExperienceEditor({ experience, onChange }: Props) {
   return (
     <div className="space-y-6">
       {fields.map((field, i) => (
-        <div key={field.id} className="border border-slate-200 rounded-lg p-4 space-y-3">
+        <div key={field.id} className="border border-[#1f1f1f] rounded-lg p-4 space-y-3 bg-[#161616]">
           <div className="flex justify-between items-center">
-            <h4 className="font-medium text-slate-700">Experience {i + 1}</h4>
-            <Button variant="ghost" size="sm" type="button" onClick={() => remove(i)}>Remove</Button>
+            <h4 className="font-medium text-[#a1a1aa] text-sm">Experience {i + 1}</h4>
+            <Button variant="ghost" size="sm" type="button" onClick={() => remove(i)} className="text-[#52525b] hover:text-red-400">Remove</Button>
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
@@ -85,6 +85,7 @@ export function ExperienceEditor({ experience, onChange }: Props) {
         type="button"
         variant="outline"
         onClick={() => append(emptyEntry())}
+        className="border-[#1f1f1f] text-[#00e599] hover:border-[#00e599] hover:text-[#00e599] transition-colors duration-200 bg-transparent"
       >
         + Add Experience
       </Button>
