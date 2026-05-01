@@ -1,8 +1,5 @@
-'use client'
-
 import Link from 'next/link'
 import Image from 'next/image'
-import { Button } from '@/components/ui/button'
 
 export function HeroLanding() {
   return (
@@ -26,30 +23,27 @@ export function HeroLanding() {
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Button
-            size="lg"
-            render={<Link href="/sign-up" />}
-            className="px-8 text-base h-12 bg-[#00e599] text-black font-semibold hover:bg-[#00cc88] transition-colors duration-200 rounded-md"
+          <Link
+            href="/sign-up"
+            className="inline-flex items-center justify-center px-8 text-base h-12 bg-[#00e599] text-black font-semibold hover:bg-[#00cc88] transition-colors duration-200 rounded-md"
           >
             Get Started Free
-          </Button>
-          <Button
-            size="lg"
-            variant="outline"
-            render={<Link href="/sign-in" />}
-            className="px-8 text-base h-12 border-[#1f1f1f] text-white hover:border-[#00e599] hover:text-[#00e599] transition-colors duration-200 rounded-md bg-transparent"
+          </Link>
+          <Link
+            href="/sign-in"
+            className="inline-flex items-center justify-center px-8 text-base h-12 border border-[#1f1f1f] text-white hover:border-[#00e599] hover:text-[#00e599] transition-colors duration-200 rounded-md bg-transparent"
           >
             Sign In
-          </Button>
+          </Link>
         </div>
 
         {/* App preview image */}
-        <div className="mt-16 relative mx-auto max-w-4xl rounded-xl overflow-hidden border border-[#1f1f1f] shadow-[0_0_60px_rgba(0,229,153,0.08)]">
+        <div className="mt-16 relative mx-auto max-w-sm rounded-xl overflow-hidden border border-[#1f1f1f] shadow-[0_0_60px_rgba(0,229,153,0.08)]">
           <Image
             src="/digiresume.jpg"
             alt="DigiResume app preview"
-            width={1200}
-            height={700}
+            width={300}
+            height={300}
             className="w-full h-auto"
             priority
           />
