@@ -1,9 +1,8 @@
 // app/api/parse/route.ts
 import { auth } from '@clerk/nextjs/server'
 import { NextRequest, NextResponse } from 'next/server'
-import { createGoogleGenerativeAI } from '@ai-sdk/google'
-import { generateText } from 'ai'
-import { PDFParse } from 'pdf-parse'
+import { GoogleGenerativeAI } from '@google/generative-ai'
+import pdf from 'pdf-parse'
 import { buildResumeParsePrompt } from '@/lib/gemini-prompt'
 import { encrypt } from '@/lib/crypto'
 import { db } from '@/lib/db'
@@ -11,9 +10,7 @@ import { portfolios } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
 import type { PortfolioData } from '@/lib/portfolio-types'
 
-const google = createGoogleGenerativeAI({
-  apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY!,
-})
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENERATIVE_AI_API_KEY!)
 
 export async function POST(req: NextRequest) {
   const { userId } = await auth()
@@ -31,8 +28,7 @@ export async function POST(req: NextRequest) {
   let resumeText: string
   try {
     const buffer = Buffer.from(await file.arrayBuffer())
-    const parser = new PDFParse({ data: buffer })
-    const pdfData = await parser.getText()
+    const pdfData = await pdf(buffer)
     resumeText = pdfData.text.trim()
   } catch {
     return NextResponse.json({ error: 'Failed to read PDF file' }, { status: 422 })
@@ -43,10 +39,15 @@ export async function POST(req: NextRequest) {
 
   // Parse with Gemini Flash
   const prompt = buildResumeParsePrompt(resumeText)
-  const { text } = await generateText({
-    model: google('gemini-1.5-flash'),
-    prompt,
-  })
+  const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' })
+  let text: string
+  try {
+    const result = await model.generateContent(prompt)
+    text = result.response.text()
+  } catch (e) {
+    const message = e instanceof Error ? e.message : 'AI generation failed'
+    return NextResponse.json({ error: message }, { status: 502 })
+  }
 
   let portfolioData: PortfolioData
   try {

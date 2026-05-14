@@ -13,13 +13,12 @@
     "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
-    "@ai-sdk/google": "^3.0.65",
     "@base-ui/react": "^1.4.1",
     "@clerk/nextjs": "^7.2.8",
+    "@google/generative-ai": "^0.24.1",
     "@hookform/resolvers": "^5.2.2",
     "@neondatabase/serverless": "^1.1.0",
     "@react-pdf/renderer": "^4.5.1",
-    "ai": "^6.0.170",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "drizzle-orm": "^0.45.2",
@@ -28,7 +27,7 @@
     "nanoid": "^5.1.9",
     "next": "16.2.4",
     "next-themes": "^0.4.6",
-    "pdf-parse": "^2.4.5",
+    "pdf-parse": "^1.1.4",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "react-hook-form": "^7.74.0",
