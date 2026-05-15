@@ -6,7 +6,7 @@
 
 **Upload once. Share forever. Stand out.**
 
-A modern developer portfolio generator built with Next.js 16 that turns your PDF resume into a beautiful, shareable portfolio page — powered by AI.
+A modern developer portfolio generator built with Next.js 16 that turns your PDF resume into a beautiful, shareable portfolio page — powered by Google Gemini AI.
 
 [![Live Demo](https://img.shields.io/badge/Live_Demo-DigiResume-00e599?style=for-the-badge&logo=vercel)](https://digiresume-eight.vercel.app/)
 [![Next.js](https://img.shields.io/badge/Next.js-16-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
