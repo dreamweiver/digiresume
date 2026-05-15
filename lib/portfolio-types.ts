@@ -4,14 +4,18 @@ export interface HeroData {
   title: string
   bio: string
   profilePhoto: string | null
+  gender: 'male' | 'female' | 'unknown'
 }
 
 export interface ExperienceEntry {
   company: string
   role: string
+  location?: string
   startDate: string
   endDate: string
   description: string
+  highlights?: string[]
+  technologies?: string[]
 }
 
 export interface ProjectEntry {
@@ -27,6 +31,7 @@ export interface EducationEntry {
   degree: string
   startDate: string
   endDate: string
+  grade?: string
 }
 
 export interface SocialLinks {
@@ -47,7 +52,7 @@ export interface PortfolioData {
 }
 
 export const EMPTY_PORTFOLIO: PortfolioData = {
-  hero: { name: '', title: '', bio: '', profilePhoto: null },
+  hero: { name: '', title: '', bio: '', profilePhoto: null, gender: 'unknown' },
   about: '',
   skills: [],
   experience: [],

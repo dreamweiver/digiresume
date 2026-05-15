@@ -1,6 +1,6 @@
-@import "tailwindcss";
-@import "tw-animate-css";
-@import "shadcn/tailwind.css";
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@import 'shadcn/tailwind.css';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -60,24 +60,24 @@
 
 /* ── Neon dark theme: override ALL shadcn CSS variables ─────────────────── */
 :root {
-  --background: oklch(0.06 0 0);         /* #0a0a0a */
-  --foreground: oklch(1 0 0);            /* #ffffff */
-  --card: oklch(0.09 0 0);               /* #161616 */
+  --background: oklch(0.06 0 0); /* #0a0a0a */
+  --foreground: oklch(1 0 0); /* #ffffff */
+  --card: oklch(0.09 0 0); /* #161616 */
   --card-foreground: oklch(1 0 0);
-  --popover: oklch(0.07 0 0);            /* #111111 */
+  --popover: oklch(0.07 0 0); /* #111111 */
   --popover-foreground: oklch(1 0 0);
-  --primary: oklch(0.84 0.18 163);       /* #00e599 neon green */
-  --primary-foreground: oklch(0 0 0);    /* black text on green buttons */
-  --secondary: oklch(0.07 0 0);          /* #111111 */
+  --primary: oklch(0.84 0.18 163); /* #00e599 neon green */
+  --primary-foreground: oklch(0 0 0); /* black text on green buttons */
+  --secondary: oklch(0.07 0 0); /* #111111 */
   --secondary-foreground: oklch(1 0 0);
-  --muted: oklch(0.07 0 0);              /* #111111 */
-  --muted-foreground: oklch(0.63 0 0);   /* #a1a1aa */
-  --accent: oklch(0.09 0 0);             /* #161616 */
+  --muted: oklch(0.07 0 0); /* #111111 */
+  --muted-foreground: oklch(0.63 0 0); /* #a1a1aa */
+  --accent: oklch(0.09 0 0); /* #161616 */
   --accent-foreground: oklch(1 0 0);
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.12 0 0);             /* #1f1f1f */
-  --input: oklch(0.07 0 0);              /* #111111 */
-  --ring: oklch(0.84 0.18 163);          /* neon green focus ring */
+  --border: oklch(0.12 0 0); /* #1f1f1f */
+  --input: oklch(0.07 0 0); /* #111111 */
+  --ring: oklch(0.84 0.18 163); /* neon green focus ring */
   --chart-1: oklch(0.84 0.18 163);
   --chart-2: oklch(0.63 0 0);
   --chart-3: oklch(0.44 0 0);
@@ -120,8 +120,7 @@
   }
 
   .hero-grid-bg {
-    background-image:
-      radial-gradient(circle, #1f1f1f 1px, transparent 1px);
+    background-image: radial-gradient(circle, #1f1f1f 1px, transparent 1px);
     background-size: 32px 32px;
   }
 
@@ -132,5 +131,27 @@
     border-radius: 50%;
     background: radial-gradient(circle, rgba(0, 229, 153, 0.08) 0%, transparent 70%);
     pointer-events: none;
+  }
+
+  .pulse-ring {
+    position: absolute;
+    border-radius: 50%;
+    border: 2px solid #00e599;
+    animation: pulse-expand 1.8s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+  }
+
+  .pulse-ring-delay {
+    animation-delay: 0.6s;
+  }
+}
+
+@keyframes pulse-expand {
+  0% {
+    transform: scale(0.15);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0;
   }
 }

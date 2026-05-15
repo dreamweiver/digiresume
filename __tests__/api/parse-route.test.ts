@@ -7,25 +7,46 @@ import { resolve } from 'path'
 
 vi.mock('@clerk/nextjs/server', () => ({
   auth: vi.fn().mockResolvedValue({ userId: 'user_test123' }),
+  currentUser: vi.fn().mockResolvedValue({
+    firstName: 'Test',
+    lastName: 'User',
+    emailAddresses: [{ emailAddress: 'test@example.com' }],
+  }),
 }))
 
+let dbLimitCallCount = 0
 vi.mock('@/lib/db', () => ({
   db: {
     select: vi.fn().mockReturnThis(),
     from: vi.fn().mockReturnThis(),
     where: vi.fn().mockReturnThis(),
-    limit: vi.fn().mockResolvedValue([]),
+    limit: vi.fn().mockImplementation(() => {
+      dbLimitCallCount++
+      // 1st call: check users table (return existing user)
+      if (dbLimitCallCount === 1)
+        return Promise.resolve([{ id: 'user_test123', usernameSlug: 'test-user-abc123' }])
+      // 2nd call: check portfolios table (no existing portfolio)
+      return Promise.resolve([])
+    }),
     insert: vi.fn().mockReturnThis(),
     values: vi.fn().mockResolvedValue(undefined),
+    update: vi.fn().mockReturnThis(),
+    set: vi.fn().mockReturnThis(),
+    onConflictDoNothing: vi.fn().mockResolvedValue(undefined),
   },
 }))
 
 vi.mock('@/lib/db/schema', () => ({
+  users: { id: 'id' },
   portfolios: { userId: 'userId' },
 }))
 
 vi.mock('@/lib/crypto', () => ({
   encrypt: vi.fn((data: string) => `encrypted:${data}`),
+}))
+
+vi.mock('@/lib/slug', () => ({
+  generateSlug: vi.fn(() => 'test-user-abc123'),
 }))
 
 const mockGenerateContent = vi.fn()
@@ -41,17 +62,33 @@ describe('POST /api/parse', () => {
   const samplePdf = readFileSync(resolve(__dirname, '../mock/sample-resume.pdf'))
 
   const mockPortfolioData = {
-    hero: { name: 'Manoj Kumar', title: 'Software Engineer', bio: 'A developer', profilePhoto: null },
+    hero: {
+      name: 'Manoj Kumar',
+      title: 'Software Engineer',
+      bio: 'A developer',
+      profilePhoto: null,
+    },
     about: 'About text',
     skills: ['React', 'TypeScript'],
-    experience: [{ company: 'Acme', role: 'Dev', startDate: '2020', endDate: 'present', description: 'Built things' }],
-    projects: [{ name: 'App', description: 'An app', techStack: ['React'], liveUrl: '', githubUrl: '' }],
+    experience: [
+      {
+        company: 'Acme',
+        role: 'Dev',
+        startDate: '2020',
+        endDate: 'present',
+        description: 'Built things',
+      },
+    ],
+    projects: [
+      { name: 'App', description: 'An app', techStack: ['React'], liveUrl: '', githubUrl: '' },
+    ],
     education: [{ institution: 'University', degree: 'CS', startDate: '2016', endDate: '2020' }],
     socialLinks: { github: '', linkedin: '', twitter: '', website: '' },
   }
 
   beforeEach(() => {
     vi.clearAllMocks()
+    dbLimitCallCount = 0
     mockGenerateContent.mockResolvedValue({
       response: { text: () => JSON.stringify(mockPortfolioData) },
     })
@@ -107,6 +144,7 @@ describe('POST /api/parse', () => {
     expect(res.status).toBe(200)
     const json = await res.json()
     expect(json.portfolioData).toEqual(mockPortfolioData)
+    expect(json.usernameSlug).toBe('test-user-abc123')
   })
 
   it('handles AI response wrapped in markdown code fences', async () => {
@@ -118,5 +156,6 @@ describe('POST /api/parse', () => {
     expect(res.status).toBe(200)
     const json = await res.json()
     expect(json.portfolioData).toEqual(mockPortfolioData)
+    expect(json.usernameSlug).toBe('test-user-abc123')
   })
 })

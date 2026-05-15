@@ -61,14 +61,14 @@ const mockPortfolio: Portfolio = {
 function renderClient(
   initialPortfolio: Portfolio | null,
   initialData: PortfolioData | null,
-  usernameSlug = 'jane-doe-ab1234'
+  usernameSlug = 'jane-doe-ab1234',
 ) {
   return render(
     <DashboardClient
       initialPortfolio={initialPortfolio}
       initialData={initialData}
       usernameSlug={usernameSlug}
-    />
+    />,
   )
 }
 
@@ -140,9 +140,11 @@ describe('DashboardClient', () => {
     expect(screen.getByText(/Upload your resume to get started/i)).toBeInTheDocument()
 
     // Simulate file upload and portfolio generation via ResumeUploader
-    const fetchMock = vi.fn().mockResolvedValue(
-      new Response(JSON.stringify({ portfolioData: mockPortfolioData }), { status: 200 })
-    )
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValue(
+        new Response(JSON.stringify({ portfolioData: mockPortfolioData }), { status: 200 }),
+      )
     vi.stubGlobal('fetch', fetchMock)
 
     const input = document.querySelector('input[type="file"]') as HTMLInputElement
@@ -187,7 +189,7 @@ describe('DashboardClient', () => {
     await waitFor(() => {
       expect(fetchMock).toHaveBeenCalledWith(
         '/api/portfolio',
-        expect.objectContaining({ method: 'POST' })
+        expect.objectContaining({ method: 'POST' }),
       )
     })
 
@@ -227,9 +229,9 @@ describe('DashboardClient', () => {
 
   it('shows toast.error when handleSave API returns 400', async () => {
     const { toast } = await import('sonner')
-    const fetchMock = vi.fn().mockResolvedValue(
-      new Response('{"error":"Validation failed"}', { status: 400 })
-    )
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValue(new Response('{"error":"Validation failed"}', { status: 400 }))
     vi.stubGlobal('fetch', fetchMock)
 
     renderClient(mockPortfolio, mockPortfolioData)
@@ -245,9 +247,9 @@ describe('DashboardClient', () => {
   it('shows toast.error when handlePublish save step returns 400', async () => {
     const { toast } = await import('sonner')
     // First fetch (auto-save) fails
-    const fetchMock = vi.fn().mockResolvedValue(
-      new Response('{"error":"Save failed"}', { status: 400 })
-    )
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValue(new Response('{"error":"Save failed"}', { status: 400 }))
     vi.stubGlobal('fetch', fetchMock)
 
     renderClient(mockPortfolio, mockPortfolioData)
@@ -263,7 +265,8 @@ describe('DashboardClient', () => {
   it('shows toast.error when handlePublish publish step returns 400', async () => {
     const { toast } = await import('sonner')
     // First fetch (auto-save) succeeds, second (publish) fails
-    const fetchMock = vi.fn()
+    const fetchMock = vi
+      .fn()
       .mockResolvedValueOnce(new Response('{"ok":true}', { status: 200 }))
       .mockResolvedValueOnce(new Response('{"error":"Publish failed"}', { status: 400 }))
     vi.stubGlobal('fetch', fetchMock)
@@ -334,9 +337,7 @@ describe('DashboardClient', () => {
   it('shows toast.error when handleSave fails with no error property in JSON', async () => {
     const { toast } = await import('sonner')
     // Return 400 with no error field in JSON
-    const fetchMock = vi.fn().mockResolvedValue(
-      new Response('{}', { status: 400 })
-    )
+    const fetchMock = vi.fn().mockResolvedValue(new Response('{}', { status: 400 }))
     vi.stubGlobal('fetch', fetchMock)
 
     renderClient(mockPortfolio, mockPortfolioData)

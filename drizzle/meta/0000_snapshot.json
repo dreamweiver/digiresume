@@ -61,12 +61,8 @@
           "name": "portfolios_user_id_users_id_fk",
           "tableFrom": "portfolios",
           "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -114,9 +110,7 @@
         "users_username_slug_unique": {
           "name": "users_username_slug_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "username_slug"
-          ]
+          "columns": ["username_slug"]
         }
       },
       "policies": {},

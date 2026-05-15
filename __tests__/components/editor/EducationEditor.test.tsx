@@ -70,7 +70,12 @@ describe('EducationEditor', () => {
   })
 
   it('shows institution validation error when institution field is blurred empty', async () => {
-    render(<EducationEditor education={[{ institution: '', degree: '', startDate: '', endDate: '' }]} onChange={vi.fn()} />)
+    render(
+      <EducationEditor
+        education={[{ institution: '', degree: '', startDate: '', endDate: '' }]}
+        onChange={vi.fn()}
+      />,
+    )
     const inputs = screen.getAllByRole('textbox')
     fireEvent.blur(inputs[0])
     await waitFor(() => {
@@ -79,7 +84,12 @@ describe('EducationEditor', () => {
   })
 
   it('shows degree validation error when degree field is blurred empty', async () => {
-    render(<EducationEditor education={[{ institution: '', degree: '', startDate: '', endDate: '' }]} onChange={vi.fn()} />)
+    render(
+      <EducationEditor
+        education={[{ institution: '', degree: '', startDate: '', endDate: '' }]}
+        onChange={vi.fn()}
+      />,
+    )
     const inputs = screen.getAllByRole('textbox')
     fireEvent.blur(inputs[1])
     await waitFor(() => {

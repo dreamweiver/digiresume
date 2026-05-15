@@ -1,4 +1,4 @@
-import { auth } from '@clerk/nextjs/server'
+import { auth, currentUser } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 import { db } from '@/lib/db'
 import { portfolios, users } from '@/lib/db/schema'
@@ -8,8 +8,11 @@ import type { PortfolioData } from '@/lib/portfolio-types'
 import { DashboardClient } from '@/components/dashboard/DashboardClient'
 
 export default async function DashboardPage() {
-  const { userId } = await auth()
+  const [{ userId }, clerkUser] = await Promise.all([auth(), currentUser()])
   if (!userId) redirect('/sign-in')
+
+  const userName =
+    clerkUser?.firstName ?? clerkUser?.emailAddresses?.[0]?.emailAddress?.split('@')[0] ?? 'User'
 
   const [portfolioRows, userRows] = await Promise.all([
     db.select().from(portfolios).where(eq(portfolios.userId, userId)).limit(1),
@@ -33,6 +36,7 @@ export default async function DashboardPage() {
       initialPortfolio={portfolio}
       initialData={initialData}
       usernameSlug={usernameSlug}
+      userName={userName}
     />
   )
 }

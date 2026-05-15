@@ -20,34 +20,38 @@ A modern developer portfolio generator built with Next.js 16 that turns your PDF
 
 ## Features
 
-- **AI-Powered Parsing** — Upload a PDF resume and Gemini Flash automatically extracts your experience, skills, projects, and education
+- **AI-Powered Parsing** — Upload a PDF resume and Gemini 2.5 Flash automatically extracts your experience, skills, projects, education, and social links
 - **Instant Portfolio Page** — Get a shareable portfolio at `/u/your-name` with zero design effort
 - **Live Editor** — Edit every section (hero, about, skills, experience, projects, education, social links) with real-time preview
 - **Publish & Draft** — Keep a draft while you polish, then publish when ready. Your URL never changes
 - **PDF Download** — Export your portfolio back as a clean, formatted PDF resume
+- **Smart Profile Photo** — Uses your GitHub avatar automatically, falls back to gendered placeholder
+- **Rich Data Extraction** — Location, CGPA/GPA, bullet-point descriptions, and human-readable date formats
 - **Encrypted Storage** — All portfolio data is encrypted at rest with AES-256-GCM
 - **Form Validation** — All editor fields validated with React Hook Form + Zod
-- **157 tests** — Vitest + React Testing Library across 17 test files, 85%+ coverage
+- **Prettier + ESLint** — Consistent code style enforced across the entire codebase
+- **170+ tests** — Vitest + React Testing Library across 20+ test files, 85%+ coverage
 
 ---
 
 ## Tech Stack
 
-| Category | Technology |
-|----------|------------|
-| **Framework** | Next.js 16 (App Router) |
-| **Language** | TypeScript |
-| **Styling** | Tailwind CSS v4 |
-| **UI Components** | shadcn/ui |
-| **Database** | Neon PostgreSQL (Serverless) |
-| **ORM/Migrations** | Drizzle ORM + drizzle-kit |
-| **Authentication** | Clerk v7 |
-| **AI** | Vercel AI SDK v6 + Google Gemini Flash |
-| **PDF Parsing** | pdf-parse v2 |
-| **PDF Generation** | @react-pdf/renderer v4 |
-| **Forms** | React Hook Form + Zod |
-| **Testing** | Vitest + React Testing Library |
-| **Deployment** | Vercel |
+| Category           | Technology                                  |
+| ------------------ | ------------------------------------------- |
+| **Framework**      | Next.js 16 (App Router)                     |
+| **Language**       | TypeScript                                  |
+| **Styling**        | Tailwind CSS v4                             |
+| **UI Components**  | shadcn/ui                                   |
+| **Database**       | Neon PostgreSQL (Serverless)                |
+| **ORM/Migrations** | Drizzle ORM + drizzle-kit                   |
+| **Authentication** | Clerk v7                                    |
+| **AI**             | Google Generative AI SDK + Gemini 2.5 Flash |
+| **PDF Parsing**    | pdf-parse v2                                |
+| **PDF Generation** | @react-pdf/renderer v4                      |
+| **Forms**          | React Hook Form + Zod                       |
+| **Testing**        | Vitest + React Testing Library              |
+| **Linting**        | ESLint 9 + Prettier                         |
+| **Deployment**     | Vercel                                      |
 
 ---
 
@@ -126,13 +130,13 @@ PORTFOLIO_ENCRYPTION_KEY=your_64_char_hex_key
 GOOGLE_GENERATIVE_AI_API_KEY=AIza...
 ```
 
-| Variable | Where to find it |
-|----------|-----------------|
-| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | Clerk dashboard > API Keys |
-| `CLERK_SECRET_KEY` | Clerk dashboard > API Keys |
-| `DATABASE_URL` | Neon dashboard > Connection Details |
-| `PORTFOLIO_ENCRYPTION_KEY` | Run `openssl rand -hex 32` in terminal |
-| `GOOGLE_GENERATIVE_AI_API_KEY` | [aistudio.google.com](https://aistudio.google.com) > Get API key |
+| Variable                            | Where to find it                                                 |
+| ----------------------------------- | ---------------------------------------------------------------- |
+| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | Clerk dashboard > API Keys                                       |
+| `CLERK_SECRET_KEY`                  | Clerk dashboard > API Keys                                       |
+| `DATABASE_URL`                      | Neon dashboard > Connection Details                              |
+| `PORTFOLIO_ENCRYPTION_KEY`          | Run `openssl rand -hex 32` in terminal                           |
+| `GOOGLE_GENERATIVE_AI_API_KEY`      | [aistudio.google.com](https://aistudio.google.com) > Get API key |
 
 ### Run
 
@@ -146,20 +150,21 @@ npm run dev               # Start dev server at http://localhost:3000
 ## Testing
 
 ```bash
-npm test                  # Watch mode
-npm run test:run          # Single run
+npm test                  # Single run
+npm run test:watch        # Watch mode
 npm run test:coverage     # With coverage report
 ```
 
-17 test files, 157 tests covering API routes, lib utilities, zod schemas, and all UI components.
+20+ test files, 170+ tests covering API routes, lib utilities, zod schemas, and all UI components.
 
 ---
 
 ## Roadmap
 
 ### Done
+
 - [x] PDF resume upload with drag-and-drop
-- [x] AI-powered resume parsing (Gemini Flash)
+- [x] AI-powered resume parsing (Gemini 2.5 Flash)
 - [x] Auto-generated username slug
 - [x] Public portfolio page at `/u/[slug]`
 - [x] Live editor for all 7 portfolio sections
@@ -168,6 +173,11 @@ npm run test:coverage     # With coverage report
 - [x] AES-256-GCM encryption for all stored data
 - [x] Form validation with React Hook Form + Zod
 - [x] Neon-inspired dark UI with green accents
+- [x] Devportfolio-style two-column layout with IBM Plex Mono font
+- [x] Smart profile photo (GitHub avatar fallback)
+- [x] Rich extraction: location, CGPA/GPA, bullet points, date format
+- [x] Side Projects section with Demo button links
+- [x] Prettier + ESLint code formatting
 - [x] Deployed to Vercel
 
 ---
@@ -193,6 +203,6 @@ MIT
 
 <div align="center">
 
-*Upload once. Share forever. Stand out.*
+_Upload once. Share forever. Stand out._
 
 </div>

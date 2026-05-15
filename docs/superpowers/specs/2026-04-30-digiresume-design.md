@@ -1,6 +1,7 @@
 # DigiResume — Design Spec
+
 **Date:** 2026-04-30  
-**Status:** Approved  
+**Status:** Approved
 
 ---
 
@@ -17,17 +18,17 @@ DigiResume is a web app that converts a traditional PDF/DOCX resume into a share
 
 ## 2. Tech Stack
 
-| Layer | Choice |
-|---|---|
-| Framework | Next.js 14 App Router |
-| Styling | Tailwind CSS + shadcn/ui |
-| Auth | Clerk (free tier, 10k MAU) |
-| Database | Neon (serverless Postgres, free tier) |
-| ORM | Drizzle ORM |
-| AI Parsing | Vercel AI SDK + Google Gemini Flash |
-| PDF Text Extraction | `pdf-parse` |
-| PDF Generation | `react-pdf` |
-| Deployment | Vercel |
+| Layer               | Choice                                |
+| ------------------- | ------------------------------------- |
+| Framework           | Next.js 14 App Router                 |
+| Styling             | Tailwind CSS + shadcn/ui              |
+| Auth                | Clerk (free tier, 10k MAU)            |
+| Database            | Neon (serverless Postgres, free tier) |
+| ORM                 | Drizzle ORM                           |
+| AI Parsing          | Vercel AI SDK + Google Gemini Flash   |
+| PDF Text Extraction | `pdf-parse`                           |
+| PDF Generation      | `react-pdf`                           |
+| Deployment          | Vercel                                |
 
 ---
 
@@ -50,25 +51,28 @@ Next.js App (App Router)
 ## 4. Database Schema
 
 ### `users`
-| Column | Type | Notes |
-|---|---|---|
-| id | text (PK) | Clerk user ID |
+
+| Column        | Type          | Notes                                           |
+| ------------- | ------------- | ----------------------------------------------- |
+| id            | text (PK)     | Clerk user ID                                   |
 | username_slug | text (unique) | e.g. `john-doe-k7m2` — auto-generated at signup |
-| email | text | from Clerk |
-| created_at | timestamp | |
+| email         | text          | from Clerk                                      |
+| created_at    | timestamp     |                                                 |
 
 ### `portfolios`
-| Column | Type | Notes |
-|---|---|---|
-| id | uuid (PK) | |
-| user_id | text (FK) | references users.id |
-| status | text | `"draft"` or `"published"` |
-| portfolio_data | jsonb | encrypted at app layer (AES-256) |
-| published_at | timestamp | when last published |
-| created_at | timestamp | |
-| updated_at | timestamp | |
+
+| Column         | Type      | Notes                            |
+| -------------- | --------- | -------------------------------- |
+| id             | uuid (PK) |                                  |
+| user_id        | text (FK) | references users.id              |
+| status         | text      | `"draft"` or `"published"`       |
+| portfolio_data | jsonb     | encrypted at app layer (AES-256) |
+| published_at   | timestamp | when last published              |
+| created_at     | timestamp |                                  |
+| updated_at     | timestamp |                                  |
 
 **Key decisions:**
+
 - Raw resume file is never persisted — parsed in memory, discarded after Gemini extracts JSON
 - `portfolio_data` JSONB encrypted using Node.js `crypto` (AES-256-GCM), key stored as Vercel env var
 - No upload limit — rate limiting can be added via Vercel middleware if abuse becomes an issue
@@ -128,12 +132,14 @@ Next.js App (App Router)
 ## 6. Application Flow
 
 ### Auth Flow
+
 1. User visits landing page → clicks Sign Up
 2. Clerk handles registration (email or Google/GitHub OAuth)
 3. On first login → slug auto-generated (`firstname-lastname-xxxx`) → user record created in DB → redirected to dashboard
 4. Onboarding tooltip shown on first dashboard visit
 
 ### Dashboard Flow
+
 1. User uploads PDF/DOCX resume via drag-and-drop
 2. File sent to API Route → `pdf-parse` extracts raw text → Gemini Flash structures into JSON → portfolio record created/updated in DB (encrypted)
 3. Generated portfolio preview shown in devportfolio template style
@@ -144,6 +150,7 @@ Next.js App (App Router)
 8. "Download Resume PDF" generates PDF from portfolio data
 
 ### Public Portfolio Flow
+
 1. Anyone visits `digiresume.vercel.app/u/john-doe-k7m2`
 2. Next.js fetches portfolio, decrypts, renders devportfolio template
 3. If not published → clean "This portfolio is not available yet" message
@@ -162,6 +169,7 @@ Next.js App (App Router)
 ```
 
 ### Dashboard Layout
+
 ```
 Header
 ├── Logo
@@ -196,6 +204,7 @@ Download Section
 ## 8. Public Portfolio Template
 
 Based on [Ryan Fitzgerald's devportfolio](https://ryanfitzgerald.github.io/devportfolio/):
+
 - Dark themed, single-page, smooth scroll
 - Sections: Hero → About → Experience → Projects → Skills → Education → Contact
 - Responsive, mobile-friendly

@@ -1,13 +1,14 @@
 // app/api/parse/route.ts
-import { auth } from '@clerk/nextjs/server'
+import { auth, currentUser } from '@clerk/nextjs/server'
 import { NextRequest, NextResponse } from 'next/server'
 import { GoogleGenerativeAI } from '@google/generative-ai'
 import pdf from 'pdf-parse'
 import { buildResumeParsePrompt } from '@/lib/gemini-prompt'
 import { encrypt } from '@/lib/crypto'
 import { db } from '@/lib/db'
-import { portfolios } from '@/lib/db/schema'
+import { users, portfolios } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
+import { generateSlug } from '@/lib/slug'
 import type { PortfolioData } from '@/lib/portfolio-types'
 
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENERATIVE_AI_API_KEY!)
@@ -52,7 +53,10 @@ export async function POST(req: NextRequest) {
   let portfolioData: PortfolioData
   try {
     // Strip markdown code fences if Gemini wraps JSON in them
-    const cleaned = text.trim().replace(/^```(?:json)?\r?\n?/, '').replace(/\r?\n?```$/, '')
+    const cleaned = text
+      .trim()
+      .replace(/^```(?:json)?\r?\n?/, '')
+      .replace(/\r?\n?```$/, '')
     portfolioData = JSON.parse(cleaned)
   } catch {
     return NextResponse.json({ error: 'Failed to parse AI response' }, { status: 500 })
@@ -62,6 +66,23 @@ export async function POST(req: NextRequest) {
   const encryptedData = encrypt(JSON.stringify(portfolioData))
 
   try {
+    // Ensure user row exists (FK constraint on portfolios.userId)
+    const existingUser = await db.select().from(users).where(eq(users.id, userId)).limit(1)
+    if (existingUser.length === 0) {
+      const clerkUser = await currentUser()
+      const fullName = [clerkUser?.firstName, clerkUser?.lastName].filter(Boolean).join(' ')
+      const email = clerkUser?.emailAddresses[0]?.emailAddress ?? ''
+      await db
+        .insert(users)
+        .values({ id: userId, usernameSlug: generateSlug(fullName), email })
+        .onConflictDoNothing()
+    }
+
+    const userRow =
+      existingUser.length > 0
+        ? existingUser[0]
+        : (await db.select().from(users).where(eq(users.id, userId)).limit(1))[0]
+
     const existing = await db
       .select()
       .from(portfolios)
@@ -80,9 +101,9 @@ export async function POST(req: NextRequest) {
         status: 'draft',
       })
     }
+
+    return NextResponse.json({ portfolioData, usernameSlug: userRow.usernameSlug })
   } catch {
     return NextResponse.json({ error: 'Failed to save portfolio' }, { status: 500 })
   }
-
-  return NextResponse.json({ portfolioData })
 }

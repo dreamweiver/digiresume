@@ -7,7 +7,8 @@ export function buildResumeParsePrompt(resumeText: string): string {
     "name": "string — full name",
     "title": "string — job title or professional headline",
     "bio": "string — 2-3 sentence professional summary",
-    "profilePhoto": null
+    "profilePhoto": null,
+    "gender": "string — infer gender from the person's name: 'male', 'female', or 'unknown' if ambiguous"
   },
   "about": "string — 1-2 paragraph about section",
   "skills": ["array of skill strings"],
@@ -15,9 +16,12 @@ export function buildResumeParsePrompt(resumeText: string): string {
     {
       "company": "string",
       "role": "string",
-      "startDate": "YYYY-MM format or year",
-      "endDate": "YYYY-MM format, year, or present",
-      "description": "string — key responsibilities and achievements"
+      "location": "string or empty — city/state/country if mentioned",
+      "startDate": "string — full month name and year, e.g. January 2020, or 'Present' for current",
+      "endDate": "string — full month name and year, e.g. March 2023, or 'Present' for current",
+      "description": "string — a brief summary paragraph of the role. Use \\n to separate multiple paragraphs if the resume has distinct paragraphs.",
+      "highlights": ["array of strings — individual bullet points from the resume for this role, preserving original wording. Each array item is one bullet point."],
+      "technologies": ["array of strings — specific tools, frameworks, languages, or technologies used in this role"]
     }
   ],
   "projects": [
@@ -34,7 +38,8 @@ export function buildResumeParsePrompt(resumeText: string): string {
       "institution": "string",
       "degree": "string",
       "startDate": "year",
-      "endDate": "year"
+      "endDate": "year",
+      "grade": "string or empty — GPA, CGPA, or percentage if mentioned, e.g. '3.8 GPA', '8.5 CGPA', '85%'"
     }
   ],
   "socialLinks": {

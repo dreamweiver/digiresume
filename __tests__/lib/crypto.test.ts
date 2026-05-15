@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll, afterEach } from 'vitest'
+import { describe, it, expect, beforeAll } from 'vitest'
 import { encrypt, decrypt } from '@/lib/crypto'
 
 beforeAll(() => {
@@ -27,14 +27,18 @@ describe('encrypt / decrypt', () => {
   it('throws when PORTFOLIO_ENCRYPTION_KEY is missing', () => {
     const orig = process.env.PORTFOLIO_ENCRYPTION_KEY
     delete process.env.PORTFOLIO_ENCRYPTION_KEY
-    expect(() => encrypt('test')).toThrow('PORTFOLIO_ENCRYPTION_KEY must be a 64-char hex string (32 bytes)')
+    expect(() => encrypt('test')).toThrow(
+      'PORTFOLIO_ENCRYPTION_KEY must be a 64-char hex string (32 bytes)',
+    )
     process.env.PORTFOLIO_ENCRYPTION_KEY = orig
   })
 
   it('throws when PORTFOLIO_ENCRYPTION_KEY is wrong length', () => {
     const orig = process.env.PORTFOLIO_ENCRYPTION_KEY
     process.env.PORTFOLIO_ENCRYPTION_KEY = 'tooshort'
-    expect(() => encrypt('test')).toThrow('PORTFOLIO_ENCRYPTION_KEY must be a 64-char hex string (32 bytes)')
+    expect(() => encrypt('test')).toThrow(
+      'PORTFOLIO_ENCRYPTION_KEY must be a 64-char hex string (32 bytes)',
+    )
     process.env.PORTFOLIO_ENCRYPTION_KEY = orig
   })
 

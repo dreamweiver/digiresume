@@ -5,7 +5,12 @@ import { HeroEditor } from '@/components/dashboard/editor/HeroEditor'
 import type { HeroData } from '@/lib/portfolio-types'
 
 const emptyHero: HeroData = { name: '', title: '', bio: '', profilePhoto: null }
-const filledHero: HeroData = { name: 'Jane Doe', title: 'Engineer', bio: 'My bio', profilePhoto: null }
+const filledHero: HeroData = {
+  name: 'Jane Doe',
+  title: 'Engineer',
+  bio: 'My bio',
+  profilePhoto: null,
+}
 
 describe('HeroEditor', () => {
   it('renders with initial values', () => {

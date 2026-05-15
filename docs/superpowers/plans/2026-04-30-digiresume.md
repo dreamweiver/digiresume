@@ -9,6 +9,7 @@
 **Tech Stack:** Next.js 14, Tailwind CSS, shadcn/ui, Clerk, Neon, Drizzle ORM, Vercel AI SDK, Google Gemini Flash, pdf-parse, react-pdf, TypeScript
 
 > **Ground rules (enforced throughout):**
+>
 > - **No commits or pushes** — stop at every "Commit" step and wait for explicit user approval before running any `git commit` or `git push` command
 > - **ESLint flat config** — use `eslint.config.mjs` (ESLint v9+ flat config format), not `.eslintrc.*`
 > - **85%+ test coverage** — vitest coverage must pass the 85% threshold on lines/branches/functions before any task is considered done. Run `npx vitest run --coverage` to check.
@@ -87,6 +88,7 @@ digiresume/
 ## Task 1: Project Scaffold
 
 **Files:**
+
 - Create: `package.json`, `tsconfig.json`, `tailwind.config.ts`, `next.config.ts`, `.env.local`, `.gitignore`
 
 - [ ] **Step 1: Scaffold Next.js app with TypeScript and Tailwind**
@@ -142,6 +144,7 @@ npx shadcn@latest init
 ```
 
 When prompted:
+
 - Style: **Default**
 - Base color: **Slate**
 - CSS variables: **Yes**
@@ -215,7 +218,7 @@ export default tseslint.config(
   },
   {
     ignores: ['.next/', 'node_modules/', 'drizzle/'],
-  }
+  },
 )
 ```
 
@@ -230,6 +233,7 @@ Expected: No errors on the freshly scaffolded project.
 - [ ] **Step 9: Add scripts to `package.json`**
 
 Edit the `scripts` section:
+
 ```json
 "lint": "eslint . --max-warnings=0",
 "lint:fix": "eslint . --fix",
@@ -252,6 +256,7 @@ Stop here. Show the user the staged files with `git status` and ask for approval
 ## Task 2: TypeScript Types & Crypto Utilities
 
 **Files:**
+
 - Create: `lib/portfolio-types.ts`
 - Create: `lib/crypto.ts`
 - Create: `__tests__/lib/crypto.test.ts`
@@ -326,8 +331,7 @@ import { describe, it, expect, beforeAll } from 'vitest'
 import { encrypt, decrypt } from '@/lib/crypto'
 
 beforeAll(() => {
-  process.env.PORTFOLIO_ENCRYPTION_KEY =
-    'a'.repeat(64) // 32-byte hex key for tests
+  process.env.PORTFOLIO_ENCRYPTION_KEY = 'a'.repeat(64) // 32-byte hex key for tests
 })
 
 describe('encrypt / decrypt', () => {
@@ -384,11 +388,7 @@ export function encrypt(plaintext: string): string {
   const encrypted = Buffer.concat([cipher.update(plaintext, 'utf8'), cipher.final()])
   const authTag = cipher.getAuthTag()
   // Format: iv:authTag:encrypted — all base64
-  return [
-    iv.toString('base64'),
-    authTag.toString('base64'),
-    encrypted.toString('base64'),
-  ].join(':')
+  return [iv.toString('base64'), authTag.toString('base64'), encrypted.toString('base64')].join(':')
 }
 
 export function decrypt(ciphertext: string): string {
@@ -426,6 +426,7 @@ Stop here — wait for user approval before committing.
 ## Task 3: Slug Generator
 
 **Files:**
+
 - Create: `lib/slug.ts`
 - Create: `__tests__/lib/slug.test.ts`
 
@@ -480,7 +481,9 @@ export function generateSlug(fullName: string): string {
     .replace(/[^a-z0-9\s]/g, '')
     .trim()
     .replace(/\s+/g, '-')
-  const suffix = nanoid(4).toLowerCase().replace(/[^a-z0-9]/g, 'x')
+  const suffix = nanoid(4)
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, 'x')
   return `${base}-${suffix}`
 }
 ```
@@ -507,6 +510,7 @@ Stop here — wait for user approval before committing.
 ## Task 4: Database Schema & Drizzle Config
 
 **Files:**
+
 - Create: `lib/db/schema.ts`
 - Create: `lib/db/index.ts`
 - Create: `drizzle.config.ts`
@@ -594,6 +598,7 @@ Stop here — wait for user approval before committing.
 ## Task 5: Clerk Auth Setup
 
 **Files:**
+
 - Create: `middleware.ts`
 - Create: `app/layout.tsx`
 - Create: `app/(auth)/sign-in/[[...sign-in]]/page.tsx`
@@ -689,6 +694,7 @@ git status
 ```
 
 Stop here — wait for user approval before committing with:
+
 ```bash
 git commit -m "feat: add Clerk auth with sign-in/sign-up pages and middleware"
 ```
@@ -698,6 +704,7 @@ git commit -m "feat: add Clerk auth with sign-in/sign-up pages and middleware"
 ## Task 6: User Sync (First Login → DB Record)
 
 **Files:**
+
 - Create: `app/api/user/sync/route.ts`
 - Modify: `app/(protected)/dashboard/page.tsx` (created in Task 9 — add sync call)
 
@@ -742,12 +749,15 @@ Expected: FAIL
 import { nanoid } from 'nanoid'
 
 export function generateSlug(fullName: string): string {
-  const base = fullName
+  const base =
+    fullName
+      .toLowerCase()
+      .replace(/[^a-z0-9\s]/g, '')
+      .trim()
+      .replace(/\s+/g, '-') || 'user'
+  const suffix = nanoid(4)
     .toLowerCase()
-    .replace(/[^a-z0-9\s]/g, '')
-    .trim()
-    .replace(/\s+/g, '-') || 'user'
-  const suffix = nanoid(4).toLowerCase().replace(/[^a-z0-9]/g, 'x')
+    .replace(/[^a-z0-9]/g, 'x')
   return `${base}-${suffix}`
 }
 ```
@@ -779,10 +789,7 @@ export async function POST() {
   const email = clerkUser?.emailAddresses[0]?.emailAddress ?? ''
   const usernameSlug = generateSlug(fullName)
 
-  const [newUser] = await db
-    .insert(users)
-    .values({ id: userId, usernameSlug, email })
-    .returning()
+  const [newUser] = await db.insert(users).values({ id: userId, usernameSlug, email }).returning()
 
   return NextResponse.json({ user: newUser })
 }
@@ -804,6 +811,7 @@ git status
 ```
 
 Stop here — wait for user approval before committing with:
+
 ```bash
 git commit -m "feat: add user sync API route for first-login DB record creation"
 ```
@@ -813,6 +821,7 @@ git commit -m "feat: add user sync API route for first-login DB record creation"
 ## Task 7: Gemini Prompt & Resume Parse API
 
 **Files:**
+
 - Create: `lib/gemini-prompt.ts`
 - Create: `app/api/parse/route.ts`
 - Create: `__tests__/api/parse.test.ts`
@@ -979,11 +988,7 @@ export async function POST(req: NextRequest) {
   // Encrypt and upsert portfolio
   const encryptedData = encrypt(JSON.stringify(portfolioData))
 
-  const existing = await db
-    .select()
-    .from(portfolios)
-    .where(eq(portfolios.userId, userId))
-    .limit(1)
+  const existing = await db.select().from(portfolios).where(eq(portfolios.userId, userId)).limit(1)
 
   if (existing.length > 0) {
     await db
@@ -1010,6 +1015,7 @@ git status
 ```
 
 Stop here — wait for user approval before committing with:
+
 ```bash
 git commit -m "feat: add resume parse API route with Gemini Flash and PDF text extraction"
 ```
@@ -1019,6 +1025,7 @@ git commit -m "feat: add resume parse API route with Gemini Flash and PDF text e
 ## Task 8: Portfolio CRUD API Routes
 
 **Files:**
+
 - Create: `app/api/portfolio/route.ts`
 - Create: `app/api/portfolio/publish/route.ts`
 - Create: `__tests__/api/portfolio.test.ts`
@@ -1088,11 +1095,7 @@ export async function GET() {
   const { userId } = auth()
   if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const result = await db
-    .select()
-    .from(portfolios)
-    .where(eq(portfolios.userId, userId))
-    .limit(1)
+  const result = await db.select().from(portfolios).where(eq(portfolios.userId, userId)).limit(1)
 
   if (result.length === 0) return NextResponse.json({ portfolio: null })
 
@@ -1122,11 +1125,7 @@ export async function POST(req: NextRequest) {
   const { portfolioData }: { portfolioData: PortfolioData } = await req.json()
   const encryptedData = encrypt(JSON.stringify(portfolioData))
 
-  const existing = await db
-    .select()
-    .from(portfolios)
-    .where(eq(portfolios.userId, userId))
-    .limit(1)
+  const existing = await db.select().from(portfolios).where(eq(portfolios.userId, userId)).limit(1)
 
   if (existing.length > 0) {
     await db
@@ -1155,11 +1154,7 @@ export async function POST() {
   const { userId } = auth()
   if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const result = await db
-    .select()
-    .from(portfolios)
-    .where(eq(portfolios.userId, userId))
-    .limit(1)
+  const result = await db.select().from(portfolios).where(eq(portfolios.userId, userId)).limit(1)
 
   if (result.length === 0) {
     return NextResponse.json({ error: 'No portfolio found' }, { status: 404 })
@@ -1182,6 +1177,7 @@ git status
 ```
 
 Stop here — wait for user approval before committing with:
+
 ```bash
 git commit -m "feat: add portfolio GET/POST and publish API routes"
 ```
@@ -1191,6 +1187,7 @@ git commit -m "feat: add portfolio GET/POST and publish API routes"
 ## Task 9: Portfolio Template Component
 
 **Files:**
+
 - Create: `components/portfolio/sections/HeroSection.tsx`
 - Create: `components/portfolio/sections/AboutSection.tsx`
 - Create: `components/portfolio/sections/ExperienceSection.tsx`
@@ -1223,20 +1220,32 @@ export function HeroSection({ hero, socialLinks }: Props) {
         <p className="max-w-2xl mx-auto text-slate-400 text-lg mb-8">{hero.bio}</p>
         <div className="flex gap-4 justify-center">
           {socialLinks.github && (
-            <a href={socialLinks.github} target="_blank" rel="noopener noreferrer"
-              className="text-slate-300 hover:text-white transition-colors underline">
+            <a
+              href={socialLinks.github}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-slate-300 hover:text-white transition-colors underline"
+            >
               GitHub
             </a>
           )}
           {socialLinks.linkedin && (
-            <a href={socialLinks.linkedin} target="_blank" rel="noopener noreferrer"
-              className="text-slate-300 hover:text-white transition-colors underline">
+            <a
+              href={socialLinks.linkedin}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-slate-300 hover:text-white transition-colors underline"
+            >
               LinkedIn
             </a>
           )}
           {socialLinks.website && (
-            <a href={socialLinks.website} target="_blank" rel="noopener noreferrer"
-              className="text-slate-300 hover:text-white transition-colors underline">
+            <a
+              href={socialLinks.website}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-slate-300 hover:text-white transition-colors underline"
+            >
               Website
             </a>
           )}
@@ -1251,7 +1260,9 @@ export function HeroSection({ hero, socialLinks }: Props) {
 
 ```tsx
 // components/portfolio/sections/AboutSection.tsx
-interface Props { about: string }
+interface Props {
+  about: string
+}
 
 export function AboutSection({ about }: Props) {
   return (
@@ -1271,7 +1282,9 @@ export function AboutSection({ about }: Props) {
 // components/portfolio/sections/ExperienceSection.tsx
 import type { ExperienceEntry } from '@/lib/portfolio-types'
 
-interface Props { experience: ExperienceEntry[] }
+interface Props {
+  experience: ExperienceEntry[]
+}
 
 export function ExperienceSection({ experience }: Props) {
   if (!experience.length) return null
@@ -1284,7 +1297,9 @@ export function ExperienceSection({ experience }: Props) {
             <div key={i} className="border-l-4 border-slate-800 pl-6">
               <h3 className="text-xl font-semibold text-slate-900">{entry.role}</h3>
               <p className="text-slate-600 font-medium">{entry.company}</p>
-              <p className="text-slate-400 text-sm mb-3">{entry.startDate} – {entry.endDate}</p>
+              <p className="text-slate-400 text-sm mb-3">
+                {entry.startDate} – {entry.endDate}
+              </p>
               <p className="text-slate-600">{entry.description}</p>
             </div>
           ))}
@@ -1301,7 +1316,9 @@ export function ExperienceSection({ experience }: Props) {
 // components/portfolio/sections/ProjectsSection.tsx
 import type { ProjectEntry } from '@/lib/portfolio-types'
 
-interface Props { projects: ProjectEntry[] }
+interface Props {
+  projects: ProjectEntry[]
+}
 
 export function ProjectsSection({ projects }: Props) {
   if (!projects.length) return null
@@ -1311,26 +1328,40 @@ export function ProjectsSection({ projects }: Props) {
         <h2 className="text-3xl font-bold text-slate-900 mb-12 text-center">Projects</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {projects.map((project, i) => (
-            <div key={i} className="border border-slate-200 rounded-lg p-6 hover:shadow-md transition-shadow">
+            <div
+              key={i}
+              className="border border-slate-200 rounded-lg p-6 hover:shadow-md transition-shadow"
+            >
               <h3 className="text-xl font-semibold text-slate-900 mb-2">{project.name}</h3>
               <p className="text-slate-600 mb-4">{project.description}</p>
               <div className="flex flex-wrap gap-2 mb-4">
                 {project.techStack.map((tech) => (
-                  <span key={tech} className="bg-slate-100 text-slate-700 px-2 py-1 rounded text-sm">
+                  <span
+                    key={tech}
+                    className="bg-slate-100 text-slate-700 px-2 py-1 rounded text-sm"
+                  >
                     {tech}
                   </span>
                 ))}
               </div>
               <div className="flex gap-3">
                 {project.liveUrl && (
-                  <a href={project.liveUrl} target="_blank" rel="noopener noreferrer"
-                    className="text-slate-700 hover:text-slate-900 underline text-sm">
+                  <a
+                    href={project.liveUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-slate-700 hover:text-slate-900 underline text-sm"
+                  >
                     Live Demo
                   </a>
                 )}
                 {project.githubUrl && (
-                  <a href={project.githubUrl} target="_blank" rel="noopener noreferrer"
-                    className="text-slate-700 hover:text-slate-900 underline text-sm">
+                  <a
+                    href={project.githubUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-slate-700 hover:text-slate-900 underline text-sm"
+                  >
                     GitHub
                   </a>
                 )}
@@ -1348,7 +1379,9 @@ export function ProjectsSection({ projects }: Props) {
 
 ```tsx
 // components/portfolio/sections/SkillsSection.tsx
-interface Props { skills: string[] }
+interface Props {
+  skills: string[]
+}
 
 export function SkillsSection({ skills }: Props) {
   if (!skills.length) return null
@@ -1358,8 +1391,10 @@ export function SkillsSection({ skills }: Props) {
         <h2 className="text-3xl font-bold text-slate-900 mb-12 text-center">Skills</h2>
         <div className="flex flex-wrap justify-center gap-3">
           {skills.map((skill) => (
-            <span key={skill}
-              className="bg-slate-800 text-white px-4 py-2 rounded-full text-sm font-medium">
+            <span
+              key={skill}
+              className="bg-slate-800 text-white px-4 py-2 rounded-full text-sm font-medium"
+            >
               {skill}
             </span>
           ))}
@@ -1376,7 +1411,9 @@ export function SkillsSection({ skills }: Props) {
 // components/portfolio/sections/EducationSection.tsx
 import type { EducationEntry } from '@/lib/portfolio-types'
 
-interface Props { education: EducationEntry[] }
+interface Props {
+  education: EducationEntry[]
+}
 
 export function EducationSection({ education }: Props) {
   if (!education.length) return null
@@ -1389,7 +1426,9 @@ export function EducationSection({ education }: Props) {
             <div key={i} className="border-l-4 border-slate-800 pl-6">
               <h3 className="text-xl font-semibold text-slate-900">{entry.degree}</h3>
               <p className="text-slate-600">{entry.institution}</p>
-              <p className="text-slate-400 text-sm">{entry.startDate} – {entry.endDate}</p>
+              <p className="text-slate-400 text-sm">
+                {entry.startDate} – {entry.endDate}
+              </p>
             </div>
           ))}
         </div>
@@ -1405,7 +1444,10 @@ export function EducationSection({ education }: Props) {
 // components/portfolio/sections/ContactSection.tsx
 import type { SocialLinks } from '@/lib/portfolio-types'
 
-interface Props { socialLinks: SocialLinks; name: string }
+interface Props {
+  socialLinks: SocialLinks
+  name: string
+}
 
 export function ContactSection({ socialLinks, name }: Props) {
   return (
@@ -1417,26 +1459,42 @@ export function ContactSection({ socialLinks, name }: Props) {
         </p>
         <div className="flex flex-wrap justify-center gap-4">
           {socialLinks.github && (
-            <a href={socialLinks.github} target="_blank" rel="noopener noreferrer"
-              className="bg-white text-slate-900 px-6 py-3 rounded-lg font-medium hover:bg-slate-100 transition-colors">
+            <a
+              href={socialLinks.github}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-white text-slate-900 px-6 py-3 rounded-lg font-medium hover:bg-slate-100 transition-colors"
+            >
               GitHub
             </a>
           )}
           {socialLinks.linkedin && (
-            <a href={socialLinks.linkedin} target="_blank" rel="noopener noreferrer"
-              className="bg-white text-slate-900 px-6 py-3 rounded-lg font-medium hover:bg-slate-100 transition-colors">
+            <a
+              href={socialLinks.linkedin}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-white text-slate-900 px-6 py-3 rounded-lg font-medium hover:bg-slate-100 transition-colors"
+            >
               LinkedIn
             </a>
           )}
           {socialLinks.twitter && (
-            <a href={socialLinks.twitter} target="_blank" rel="noopener noreferrer"
-              className="bg-white text-slate-900 px-6 py-3 rounded-lg font-medium hover:bg-slate-100 transition-colors">
+            <a
+              href={socialLinks.twitter}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-white text-slate-900 px-6 py-3 rounded-lg font-medium hover:bg-slate-100 transition-colors"
+            >
               Twitter
             </a>
           )}
           {socialLinks.website && (
-            <a href={socialLinks.website} target="_blank" rel="noopener noreferrer"
-              className="bg-white text-slate-900 px-6 py-3 rounded-lg font-medium hover:bg-slate-100 transition-colors">
+            <a
+              href={socialLinks.website}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-white text-slate-900 px-6 py-3 rounded-lg font-medium hover:bg-slate-100 transition-colors"
+            >
               Website
             </a>
           )}
@@ -1487,6 +1545,7 @@ git status
 ```
 
 Stop here — wait for user approval before committing with:
+
 ```bash
 git commit -m "feat: add devportfolio-style template with all sections"
 ```
@@ -1496,6 +1555,7 @@ git commit -m "feat: add devportfolio-style template with all sections"
 ## Task 10: Public Portfolio Page
 
 **Files:**
+
 - Create: `app/u/[slug]/page.tsx`
 
 - [ ] **Step 1: Create `app/u/[slug]/page.tsx`**
@@ -1577,9 +1637,7 @@ export default async function PublicPortfolioPage({ params }: Props) {
     )
   }
 
-  const data = JSON.parse(
-    decrypt(portfolioResult[0].portfolioData as string)
-  ) as PortfolioData
+  const data = JSON.parse(decrypt(portfolioResult[0].portfolioData as string)) as PortfolioData
 
   return <PortfolioTemplate data={data} />
 }
@@ -1601,6 +1659,7 @@ git status
 ```
 
 Stop here — wait for user approval before committing with:
+
 ```bash
 git commit -m "feat: add public portfolio page with SEO meta and unpublished state handling"
 ```
@@ -1610,6 +1669,7 @@ git commit -m "feat: add public portfolio page with SEO meta and unpublished sta
 ## Task 11: Dashboard — Resume Uploader Component
 
 **Files:**
+
 - Create: `components/dashboard/ResumeUploader.tsx`
 
 - [ ] **Step 1: Create `components/dashboard/ResumeUploader.tsx`**
@@ -1665,7 +1725,10 @@ export function ResumeUploader({ onGenerated }: Props) {
   return (
     <div className="space-y-4">
       <div
-        onDragOver={(e) => { e.preventDefault(); setIsDragging(true) }}
+        onDragOver={(e) => {
+          e.preventDefault()
+          setIsDragging(true)
+        }}
         onDragLeave={() => setIsDragging(false)}
         onDrop={handleDrop}
         onClick={() => inputRef.current?.click()}
@@ -1679,7 +1742,10 @@ export function ResumeUploader({ onGenerated }: Props) {
           className="hidden"
           onChange={(e) => {
             const f = e.target.files?.[0]
-            if (f) { setFile(f); setError(null) }
+            if (f) {
+              setFile(f)
+              setError(null)
+            }
           }}
         />
         {file ? (
@@ -1692,11 +1758,7 @@ export function ResumeUploader({ onGenerated }: Props) {
         )}
       </div>
       {error && <p className="text-red-500 text-sm">{error}</p>}
-      <Button
-        onClick={handleGenerate}
-        disabled={!file || isLoading}
-        className="w-full"
-      >
+      <Button onClick={handleGenerate} disabled={!file || isLoading} className="w-full">
         {isLoading ? 'Generating Portfolio...' : 'Generate Portfolio'}
       </Button>
     </div>
@@ -1712,6 +1774,7 @@ git status
 ```
 
 Stop here — wait for user approval before committing with:
+
 ```bash
 git commit -m "feat: add drag-and-drop resume uploader component"
 ```
@@ -1721,6 +1784,7 @@ git commit -m "feat: add drag-and-drop resume uploader component"
 ## Task 12: Dashboard — Portfolio Editor Components
 
 **Files:**
+
 - Create: `components/dashboard/editor/HeroEditor.tsx`
 - Create: `components/dashboard/editor/AboutEditor.tsx`
 - Create: `components/dashboard/editor/SkillsEditor.tsx`
@@ -1758,7 +1822,11 @@ export function HeroEditor({ hero, onChange }: Props) {
       </div>
       <div>
         <Label>Bio</Label>
-        <Textarea rows={3} value={hero.bio} onChange={(e) => onChange({ ...hero, bio: e.target.value })} />
+        <Textarea
+          rows={3}
+          value={hero.bio}
+          onChange={(e) => onChange({ ...hero, bio: e.target.value })}
+        />
       </div>
     </div>
   )
@@ -1824,16 +1892,23 @@ export function SkillsEditor({ skills, onChange }: Props) {
           onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addSkill())}
           placeholder="Type a skill and press Enter"
         />
-        <Button type="button" variant="outline" onClick={addSkill}>Add</Button>
+        <Button type="button" variant="outline" onClick={addSkill}>
+          Add
+        </Button>
       </div>
       <div className="flex flex-wrap gap-2">
         {skills.map((skill) => (
-          <span key={skill}
-            className="bg-slate-100 text-slate-700 px-3 py-1 rounded-full text-sm flex items-center gap-1">
+          <span
+            key={skill}
+            className="bg-slate-100 text-slate-700 px-3 py-1 rounded-full text-sm flex items-center gap-1"
+          >
             {skill}
             <button
               onClick={() => onChange(skills.filter((s) => s !== skill))}
-              className="text-slate-400 hover:text-red-500 ml-1">×</button>
+              className="text-slate-400 hover:text-red-500 ml-1"
+            >
+              ×
+            </button>
           </span>
         ))}
       </div>
@@ -1859,12 +1934,16 @@ interface Props {
 }
 
 const emptyEntry = (): ExperienceEntry => ({
-  company: '', role: '', startDate: '', endDate: '', description: '',
+  company: '',
+  role: '',
+  startDate: '',
+  endDate: '',
+  description: '',
 })
 
 export function ExperienceEditor({ experience, onChange }: Props) {
   function update(index: number, field: keyof ExperienceEntry, value: string) {
-    const updated = experience.map((e, i) => i === index ? { ...e, [field]: value } : e)
+    const updated = experience.map((e, i) => (i === index ? { ...e, [field]: value } : e))
     onChange(updated)
   }
 
@@ -1874,17 +1953,48 @@ export function ExperienceEditor({ experience, onChange }: Props) {
         <div key={i} className="border border-slate-200 rounded-lg p-4 space-y-3">
           <div className="flex justify-between items-center">
             <h4 className="font-medium text-slate-700">Experience {i + 1}</h4>
-            <Button variant="ghost" size="sm" onClick={() => onChange(experience.filter((_, idx) => idx !== i))}>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onChange(experience.filter((_, idx) => idx !== i))}
+            >
               Remove
             </Button>
           </div>
           <div className="grid grid-cols-2 gap-3">
-            <div><Label>Company</Label><Input value={entry.company} onChange={(e) => update(i, 'company', e.target.value)} /></div>
-            <div><Label>Role</Label><Input value={entry.role} onChange={(e) => update(i, 'role', e.target.value)} /></div>
-            <div><Label>Start Date</Label><Input placeholder="2022-01" value={entry.startDate} onChange={(e) => update(i, 'startDate', e.target.value)} /></div>
-            <div><Label>End Date</Label><Input placeholder="present" value={entry.endDate} onChange={(e) => update(i, 'endDate', e.target.value)} /></div>
+            <div>
+              <Label>Company</Label>
+              <Input value={entry.company} onChange={(e) => update(i, 'company', e.target.value)} />
+            </div>
+            <div>
+              <Label>Role</Label>
+              <Input value={entry.role} onChange={(e) => update(i, 'role', e.target.value)} />
+            </div>
+            <div>
+              <Label>Start Date</Label>
+              <Input
+                placeholder="2022-01"
+                value={entry.startDate}
+                onChange={(e) => update(i, 'startDate', e.target.value)}
+              />
+            </div>
+            <div>
+              <Label>End Date</Label>
+              <Input
+                placeholder="present"
+                value={entry.endDate}
+                onChange={(e) => update(i, 'endDate', e.target.value)}
+              />
+            </div>
           </div>
-          <div><Label>Description</Label><Textarea rows={3} value={entry.description} onChange={(e) => update(i, 'description', e.target.value)} /></div>
+          <div>
+            <Label>Description</Label>
+            <Textarea
+              rows={3}
+              value={entry.description}
+              onChange={(e) => update(i, 'description', e.target.value)}
+            />
+          </div>
         </div>
       ))}
       <Button variant="outline" onClick={() => onChange([...experience, emptyEntry()])}>
@@ -1913,21 +2023,25 @@ interface Props {
 }
 
 const emptyProject = (): ProjectEntry => ({
-  name: '', description: '', techStack: [], liveUrl: '', githubUrl: '',
+  name: '',
+  description: '',
+  techStack: [],
+  liveUrl: '',
+  githubUrl: '',
 })
 
 export function ProjectsEditor({ projects, onChange }: Props) {
   const [techInputs, setTechInputs] = useState<string[]>(projects.map(() => ''))
 
   function update(index: number, field: keyof ProjectEntry, value: string | string[]) {
-    onChange(projects.map((p, i) => i === index ? { ...p, [field]: value } : p))
+    onChange(projects.map((p, i) => (i === index ? { ...p, [field]: value } : p)))
   }
 
   function addTech(index: number) {
     const tech = techInputs[index]?.trim()
     if (tech && !projects[index].techStack.includes(tech)) {
       update(index, 'techStack', [...projects[index].techStack, tech])
-      setTechInputs(techInputs.map((t, i) => i === index ? '' : t))
+      setTechInputs(techInputs.map((t, i) => (i === index ? '' : t)))
     }
   }
 
@@ -1937,44 +2051,94 @@ export function ProjectsEditor({ projects, onChange }: Props) {
         <div key={i} className="border border-slate-200 rounded-lg p-4 space-y-3">
           <div className="flex justify-between items-center">
             <h4 className="font-medium text-slate-700">Project {i + 1}</h4>
-            <Button variant="ghost" size="sm" onClick={() => {
-              onChange(projects.filter((_, idx) => idx !== i))
-              setTechInputs(techInputs.filter((_, idx) => idx !== i))
-            }}>Remove</Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                onChange(projects.filter((_, idx) => idx !== i))
+                setTechInputs(techInputs.filter((_, idx) => idx !== i))
+              }}
+            >
+              Remove
+            </Button>
           </div>
-          <div><Label>Name</Label><Input value={project.name} onChange={(e) => update(i, 'name', e.target.value)} /></div>
-          <div><Label>Description</Label><Textarea rows={2} value={project.description} onChange={(e) => update(i, 'description', e.target.value)} /></div>
+          <div>
+            <Label>Name</Label>
+            <Input value={project.name} onChange={(e) => update(i, 'name', e.target.value)} />
+          </div>
+          <div>
+            <Label>Description</Label>
+            <Textarea
+              rows={2}
+              value={project.description}
+              onChange={(e) => update(i, 'description', e.target.value)}
+            />
+          </div>
           <div>
             <Label>Tech Stack</Label>
             <div className="flex gap-2 mt-1">
               <Input
                 value={techInputs[i] ?? ''}
-                onChange={(e) => setTechInputs(techInputs.map((t, idx) => idx === i ? e.target.value : t))}
+                onChange={(e) =>
+                  setTechInputs(techInputs.map((t, idx) => (idx === i ? e.target.value : t)))
+                }
                 onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addTech(i))}
                 placeholder="Add technology"
               />
-              <Button type="button" variant="outline" onClick={() => addTech(i)}>Add</Button>
+              <Button type="button" variant="outline" onClick={() => addTech(i)}>
+                Add
+              </Button>
             </div>
             <div className="flex flex-wrap gap-2 mt-2">
               {project.techStack.map((tech) => (
-                <span key={tech} className="bg-slate-100 text-slate-700 px-2 py-1 rounded text-sm flex items-center gap-1">
+                <span
+                  key={tech}
+                  className="bg-slate-100 text-slate-700 px-2 py-1 rounded text-sm flex items-center gap-1"
+                >
                   {tech}
-                  <button onClick={() => update(i, 'techStack', project.techStack.filter((t) => t !== tech))}
-                    className="text-slate-400 hover:text-red-500">×</button>
+                  <button
+                    onClick={() =>
+                      update(
+                        i,
+                        'techStack',
+                        project.techStack.filter((t) => t !== tech),
+                      )
+                    }
+                    className="text-slate-400 hover:text-red-500"
+                  >
+                    ×
+                  </button>
                 </span>
               ))}
             </div>
           </div>
           <div className="grid grid-cols-2 gap-3">
-            <div><Label>Live URL</Label><Input value={project.liveUrl} onChange={(e) => update(i, 'liveUrl', e.target.value)} /></div>
-            <div><Label>GitHub URL</Label><Input value={project.githubUrl} onChange={(e) => update(i, 'githubUrl', e.target.value)} /></div>
+            <div>
+              <Label>Live URL</Label>
+              <Input
+                value={project.liveUrl}
+                onChange={(e) => update(i, 'liveUrl', e.target.value)}
+              />
+            </div>
+            <div>
+              <Label>GitHub URL</Label>
+              <Input
+                value={project.githubUrl}
+                onChange={(e) => update(i, 'githubUrl', e.target.value)}
+              />
+            </div>
           </div>
         </div>
       ))}
-      <Button variant="outline" onClick={() => {
-        onChange([...projects, emptyProject()])
-        setTechInputs([...techInputs, ''])
-      }}>+ Add Project</Button>
+      <Button
+        variant="outline"
+        onClick={() => {
+          onChange([...projects, emptyProject()])
+          setTechInputs([...techInputs, ''])
+        }}
+      >
+        + Add Project
+      </Button>
     </div>
   )
 }
@@ -1996,12 +2160,15 @@ interface Props {
 }
 
 const emptyEntry = (): EducationEntry => ({
-  institution: '', degree: '', startDate: '', endDate: '',
+  institution: '',
+  degree: '',
+  startDate: '',
+  endDate: '',
 })
 
 export function EducationEditor({ education, onChange }: Props) {
   function update(index: number, field: keyof EducationEntry, value: string) {
-    onChange(education.map((e, i) => i === index ? { ...e, [field]: value } : e))
+    onChange(education.map((e, i) => (i === index ? { ...e, [field]: value } : e)))
   }
 
   return (
@@ -2010,15 +2177,42 @@ export function EducationEditor({ education, onChange }: Props) {
         <div key={i} className="border border-slate-200 rounded-lg p-4 space-y-3">
           <div className="flex justify-between items-center">
             <h4 className="font-medium text-slate-700">Education {i + 1}</h4>
-            <Button variant="ghost" size="sm" onClick={() => onChange(education.filter((_, idx) => idx !== i))}>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onChange(education.filter((_, idx) => idx !== i))}
+            >
               Remove
             </Button>
           </div>
-          <div><Label>Institution</Label><Input value={entry.institution} onChange={(e) => update(i, 'institution', e.target.value)} /></div>
-          <div><Label>Degree</Label><Input value={entry.degree} onChange={(e) => update(i, 'degree', e.target.value)} /></div>
+          <div>
+            <Label>Institution</Label>
+            <Input
+              value={entry.institution}
+              onChange={(e) => update(i, 'institution', e.target.value)}
+            />
+          </div>
+          <div>
+            <Label>Degree</Label>
+            <Input value={entry.degree} onChange={(e) => update(i, 'degree', e.target.value)} />
+          </div>
           <div className="grid grid-cols-2 gap-3">
-            <div><Label>Start Year</Label><Input placeholder="2016" value={entry.startDate} onChange={(e) => update(i, 'startDate', e.target.value)} /></div>
-            <div><Label>End Year</Label><Input placeholder="2020" value={entry.endDate} onChange={(e) => update(i, 'endDate', e.target.value)} /></div>
+            <div>
+              <Label>Start Year</Label>
+              <Input
+                placeholder="2016"
+                value={entry.startDate}
+                onChange={(e) => update(i, 'startDate', e.target.value)}
+              />
+            </div>
+            <div>
+              <Label>End Year</Label>
+              <Input
+                placeholder="2020"
+                value={entry.endDate}
+                onChange={(e) => update(i, 'endDate', e.target.value)}
+              />
+            </div>
           </div>
         </div>
       ))}
@@ -2087,7 +2281,9 @@ export function PortfolioEditor({ data, onChange }: Props) {
     <Tabs defaultValue="hero">
       <TabsList className="flex flex-wrap h-auto gap-1 mb-6">
         {['hero', 'about', 'skills', 'experience', 'projects', 'education', 'social'].map((tab) => (
-          <TabsTrigger key={tab} value={tab} className="capitalize">{tab}</TabsTrigger>
+          <TabsTrigger key={tab} value={tab} className="capitalize">
+            {tab}
+          </TabsTrigger>
         ))}
       </TabsList>
 
@@ -2101,16 +2297,28 @@ export function PortfolioEditor({ data, onChange }: Props) {
         <SkillsEditor skills={data.skills} onChange={(skills) => onChange({ ...data, skills })} />
       </TabsContent>
       <TabsContent value="experience">
-        <ExperienceEditor experience={data.experience} onChange={(experience) => onChange({ ...data, experience })} />
+        <ExperienceEditor
+          experience={data.experience}
+          onChange={(experience) => onChange({ ...data, experience })}
+        />
       </TabsContent>
       <TabsContent value="projects">
-        <ProjectsEditor projects={data.projects} onChange={(projects) => onChange({ ...data, projects })} />
+        <ProjectsEditor
+          projects={data.projects}
+          onChange={(projects) => onChange({ ...data, projects })}
+        />
       </TabsContent>
       <TabsContent value="education">
-        <EducationEditor education={data.education} onChange={(education) => onChange({ ...data, education })} />
+        <EducationEditor
+          education={data.education}
+          onChange={(education) => onChange({ ...data, education })}
+        />
       </TabsContent>
       <TabsContent value="social">
-        <SocialEditor socialLinks={data.socialLinks} onChange={(socialLinks) => onChange({ ...data, socialLinks })} />
+        <SocialEditor
+          socialLinks={data.socialLinks}
+          onChange={(socialLinks) => onChange({ ...data, socialLinks })}
+        />
       </TabsContent>
     </Tabs>
   )
@@ -2125,6 +2333,7 @@ git status
 ```
 
 Stop here — wait for user approval before committing with:
+
 ```bash
 git commit -m "feat: add portfolio editor with tabbed section editors"
 ```
@@ -2134,6 +2343,7 @@ git commit -m "feat: add portfolio editor with tabbed section editors"
 ## Task 13: Dashboard — Header & Action Bar
 
 **Files:**
+
 - Create: `components/dashboard/DashboardHeader.tsx`
 - Create: `components/dashboard/ActionBar.tsx`
 
@@ -2172,7 +2382,9 @@ export function DashboardHeader({ status, publicUrl }: Props) {
         )}
         {publicUrl && (
           <a href={publicUrl} target="_blank" rel="noopener noreferrer">
-            <Button variant="outline" size="sm">View Live</Button>
+            <Button variant="outline" size="sm">
+              View Live
+            </Button>
           </a>
         )}
         <UserButton afterSignOutUrl="/" />
@@ -2200,7 +2412,13 @@ interface Props {
 }
 
 export function ActionBar({
-  mode, onToggleMode, onSaveDraft, onPublish, onDownloadPDF, isSaving, isPublishing,
+  mode,
+  onToggleMode,
+  onSaveDraft,
+  onPublish,
+  onDownloadPDF,
+  isSaving,
+  isPublishing,
 }: Props) {
   return (
     <div className="border-t border-slate-200 bg-white px-6 py-4 flex items-center justify-between">
@@ -2231,6 +2449,7 @@ git status
 ```
 
 Stop here — wait for user approval before committing with:
+
 ```bash
 git commit -m "feat: add dashboard header and action bar components"
 ```
@@ -2240,15 +2459,14 @@ git commit -m "feat: add dashboard header and action bar components"
 ## Task 14: PDF Download Component
 
 **Files:**
+
 - Create: `components/portfolio/PortfolioPDF.tsx`
 
 - [ ] **Step 1: Create `components/portfolio/PortfolioPDF.tsx`**
 
 ```tsx
 // components/portfolio/PortfolioPDF.tsx
-import {
-  Document, Page, Text, View, StyleSheet, Link,
-} from '@react-pdf/renderer'
+import { Document, Page, Text, View, StyleSheet, Link } from '@react-pdf/renderer'
 import type { PortfolioData } from '@/lib/portfolio-types'
 
 const styles = StyleSheet.create({
@@ -2256,7 +2474,15 @@ const styles = StyleSheet.create({
   name: { fontSize: 22, fontWeight: 'bold', marginBottom: 4 },
   title: { fontSize: 13, color: '#475569', marginBottom: 4 },
   bio: { fontSize: 10, color: '#64748b', marginBottom: 16 },
-  sectionTitle: { fontSize: 13, fontWeight: 'bold', borderBottomWidth: 1, borderBottomColor: '#e2e8f0', paddingBottom: 4, marginBottom: 8, marginTop: 16 },
+  sectionTitle: {
+    fontSize: 13,
+    fontWeight: 'bold',
+    borderBottomWidth: 1,
+    borderBottomColor: '#e2e8f0',
+    paddingBottom: 4,
+    marginBottom: 8,
+    marginTop: 16,
+  },
   entryTitle: { fontSize: 11, fontWeight: 'bold' },
   entrySubtitle: { fontSize: 10, color: '#475569' },
   entryDate: { fontSize: 9, color: '#94a3b8', marginBottom: 3 },
@@ -2266,7 +2492,9 @@ const styles = StyleSheet.create({
   socialRow: { flexDirection: 'row', gap: 12, marginTop: 4 },
 })
 
-interface Props { data: PortfolioData }
+interface Props {
+  data: PortfolioData
+}
 
 export function PortfolioPDF({ data }: Props) {
   return (
@@ -2279,9 +2507,21 @@ export function PortfolioPDF({ data }: Props) {
 
         {/* Social */}
         <View style={styles.socialRow}>
-          {data.socialLinks.github ? <Link src={data.socialLinks.github}><Text style={{ fontSize: 9, color: '#3b82f6' }}>GitHub</Text></Link> : null}
-          {data.socialLinks.linkedin ? <Link src={data.socialLinks.linkedin}><Text style={{ fontSize: 9, color: '#3b82f6' }}>LinkedIn</Text></Link> : null}
-          {data.socialLinks.website ? <Link src={data.socialLinks.website}><Text style={{ fontSize: 9, color: '#3b82f6' }}>Website</Text></Link> : null}
+          {data.socialLinks.github ? (
+            <Link src={data.socialLinks.github}>
+              <Text style={{ fontSize: 9, color: '#3b82f6' }}>GitHub</Text>
+            </Link>
+          ) : null}
+          {data.socialLinks.linkedin ? (
+            <Link src={data.socialLinks.linkedin}>
+              <Text style={{ fontSize: 9, color: '#3b82f6' }}>LinkedIn</Text>
+            </Link>
+          ) : null}
+          {data.socialLinks.website ? (
+            <Link src={data.socialLinks.website}>
+              <Text style={{ fontSize: 9, color: '#3b82f6' }}>Website</Text>
+            </Link>
+          ) : null}
         </View>
 
         {/* About */}
@@ -2297,7 +2537,11 @@ export function PortfolioPDF({ data }: Props) {
           <>
             <Text style={styles.sectionTitle}>Skills</Text>
             <View style={styles.skillsRow}>
-              {data.skills.map((s) => <Text key={s} style={styles.skill}>{s}</Text>)}
+              {data.skills.map((s) => (
+                <Text key={s} style={styles.skill}>
+                  {s}
+                </Text>
+              ))}
             </View>
           </>
         ) : null}
@@ -2310,7 +2554,9 @@ export function PortfolioPDF({ data }: Props) {
               <View key={i} style={{ marginBottom: 8 }}>
                 <Text style={styles.entryTitle}>{e.role}</Text>
                 <Text style={styles.entrySubtitle}>{e.company}</Text>
-                <Text style={styles.entryDate}>{e.startDate} – {e.endDate}</Text>
+                <Text style={styles.entryDate}>
+                  {e.startDate} – {e.endDate}
+                </Text>
                 <Text style={styles.entryDescription}>{e.description}</Text>
               </View>
             ))}
@@ -2339,7 +2585,9 @@ export function PortfolioPDF({ data }: Props) {
               <View key={i} style={{ marginBottom: 6 }}>
                 <Text style={styles.entryTitle}>{e.degree}</Text>
                 <Text style={styles.entrySubtitle}>{e.institution}</Text>
-                <Text style={styles.entryDate}>{e.startDate} – {e.endDate}</Text>
+                <Text style={styles.entryDate}>
+                  {e.startDate} – {e.endDate}
+                </Text>
               </View>
             ))}
           </>
@@ -2358,6 +2606,7 @@ git status
 ```
 
 Stop here — wait for user approval before committing with:
+
 ```bash
 git commit -m "feat: add react-pdf portfolio PDF document component"
 ```
@@ -2367,6 +2616,7 @@ git commit -m "feat: add react-pdf portfolio PDF document component"
 ## Task 15: Dashboard Page (Main Assembly)
 
 **Files:**
+
 - Create: `app/(protected)/dashboard/page.tsx`
 
 - [ ] **Step 1: Create `app/(protected)/dashboard/page.tsx`**
@@ -2450,16 +2700,13 @@ export default function DashboardPage() {
     URL.revokeObjectURL(url)
   }
 
-  const publicUrl = usernameSlug
-    ? `${window.location.origin}/u/${usernameSlug}`
-    : null
+  const publicUrl = usernameSlug ? `${window.location.origin}/u/${usernameSlug}` : null
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
       <DashboardHeader status={status} publicUrl={publicUrl} />
 
       <main className="flex-1 max-w-5xl mx-auto w-full px-4 py-8 space-y-8">
-
         {/* Onboarding tooltip */}
         {showOnboarding && (
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-blue-800 text-sm">
@@ -2537,6 +2784,7 @@ git status
 ```
 
 Stop here — wait for user approval before committing with:
+
 ```bash
 git commit -m "feat: assemble full dashboard page with upload, edit, preview, publish, and PDF download"
 ```
@@ -2546,6 +2794,7 @@ git commit -m "feat: assemble full dashboard page with upload, edit, preview, pu
 ## Task 16: Landing Page
 
 **Files:**
+
 - Create: `components/landing/HeroLanding.tsx`
 - Create: `components/landing/FeaturesSection.tsx`
 - Create: `app/page.tsx`
@@ -2566,15 +2815,21 @@ export function HeroLanding() {
           <span className="text-slate-400">shareable portfolio</span>
         </h1>
         <p className="text-xl text-slate-400 mb-10">
-          Upload your PDF resume. Get a professional developer portfolio page instantly.
-          Share it on LinkedIn, Twitter, and beyond.
+          Upload your PDF resume. Get a professional developer portfolio page instantly. Share it on
+          LinkedIn, Twitter, and beyond.
         </p>
         <div className="flex gap-4 justify-center">
           <Link href="/sign-up">
-            <Button size="lg" className="text-lg px-8 py-6">Get Started — Free</Button>
+            <Button size="lg" className="text-lg px-8 py-6">
+              Get Started — Free
+            </Button>
           </Link>
           <Link href="/sign-in">
-            <Button size="lg" variant="outline" className="text-lg px-8 py-6 border-slate-600 text-slate-300 hover:text-white">
+            <Button
+              size="lg"
+              variant="outline"
+              className="text-lg px-8 py-6 border-slate-600 text-slate-300 hover:text-white"
+            >
               Sign In
             </Button>
           </Link>
@@ -2591,11 +2846,23 @@ export function HeroLanding() {
 // components/landing/FeaturesSection.tsx
 const features = [
   { title: 'Upload your resume', desc: 'Drag and drop your PDF resume. We handle the rest.' },
-  { title: 'AI-powered parsing', desc: 'Gemini Flash extracts your experience, skills, and projects automatically.' },
-  { title: 'Instant portfolio', desc: 'Get a beautiful developer portfolio at your own unique URL instantly.' },
-  { title: 'Edit & publish', desc: 'Tweak any section, save drafts, and publish when you\'re ready.' },
+  {
+    title: 'AI-powered parsing',
+    desc: 'Gemini Flash extracts your experience, skills, and projects automatically.',
+  },
+  {
+    title: 'Instant portfolio',
+    desc: 'Get a beautiful developer portfolio at your own unique URL instantly.',
+  },
+  {
+    title: 'Edit & publish',
+    desc: "Tweak any section, save drafts, and publish when you're ready.",
+  },
   { title: 'Download as PDF', desc: 'Generate a clean, formatted resume PDF from your portfolio.' },
-  { title: 'Share everywhere', desc: 'One link works on LinkedIn, Twitter, email signatures, and more.' },
+  {
+    title: 'Share everywhere',
+    desc: 'One link works on LinkedIn, Twitter, email signatures, and more.',
+  },
 ]
 
 export function FeaturesSection() {
@@ -2644,6 +2911,7 @@ git status
 ```
 
 Stop here — wait for user approval before committing with:
+
 ```bash
 git commit -m "feat: add landing page with hero and features sections"
 ```
@@ -2653,6 +2921,7 @@ git commit -m "feat: add landing page with hero and features sections"
 ## Task 17: Vitest Config, Coverage & Full Test Run
 
 **Files:**
+
 - Create: `vitest.config.ts`
 
 - [ ] **Step 1: Create `vitest.config.ts` with 85% coverage thresholds**
@@ -2677,7 +2946,7 @@ export default defineConfig({
         '.next/**',
         'drizzle/**',
         '**/*.config.*',
-        '**/ui/**',        // shadcn auto-generated, excluded from coverage
+        '**/ui/**', // shadcn auto-generated, excluded from coverage
         'app/layout.tsx',
         'app/page.tsx',
         'components/landing/**',
@@ -2705,12 +2974,14 @@ npx vitest run --coverage
 ```
 
 Expected output includes:
+
 ```
  % Lines   | % Branches | % Functions | % Statements
  ≥85       | ≥85        | ≥85         | ≥85
 ```
 
 All tests pass:
+
 - `__tests__/lib/crypto.test.ts` — 3 tests pass
 - `__tests__/lib/slug.test.ts` — 4 tests pass
 - `__tests__/api/parse.test.ts` — 3 tests pass
@@ -2755,6 +3026,7 @@ Go to [vercel.com](https://vercel.com), create new project, import from Git.
 - [ ] **Step 2: Add environment variables in Vercel dashboard**
 
 Add these in Project Settings → Environment Variables:
+
 ```
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
 CLERK_SECRET_KEY
@@ -2774,6 +3046,7 @@ In Clerk dashboard → Domains, add your Vercel deployment URL (e.g. `digiresume
 - [ ] **Step 4: Deploy — wait for user approval before pushing**
 
 Confirm with user before running:
+
 ```bash
 git push origin main
 ```
@@ -2791,16 +3064,19 @@ Vercel auto-deploys on push.
 - [ ] **Step 6: Final commit — wait for user approval**
 
 Stage and show status, then wait:
+
 ```bash
 git add .
 git status
 ```
 
 Only run after user approves:
+
 ```bash
 git commit -m "chore: production ready — all features verified on Vercel"
 git push origin main
 ```
+
 ```
 
 ---
@@ -2829,3 +3105,4 @@ git push origin main
 | Landing page | Task 16 |
 | Tests (crypto, slug, parse, portfolio) | Tasks 2, 3, 7, 8, 17 |
 | Vercel deployment | Task 18 |
+```

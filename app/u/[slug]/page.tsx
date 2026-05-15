@@ -16,7 +16,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const userResult = await db.select().from(users).where(eq(users.usernameSlug, slug)).limit(1)
   if (!userResult.length) return { title: 'Portfolio Not Found' }
 
-  const portfolioResult = await db.select().from(portfolios).where(eq(portfolios.userId, userResult[0].id)).limit(1)
+  const portfolioResult = await db
+    .select()
+    .from(portfolios)
+    .where(eq(portfolios.userId, userResult[0].id))
+    .limit(1)
   if (!portfolioResult.length || portfolioResult[0].status !== 'published') {
     return { title: 'Portfolio Not Available' }
   }
@@ -43,7 +47,11 @@ export default async function PublicPortfolioPage({ params }: Props) {
   const userResult = await db.select().from(users).where(eq(users.usernameSlug, slug)).limit(1)
   if (!userResult.length) notFound()
 
-  const portfolioResult = await db.select().from(portfolios).where(eq(portfolios.userId, userResult[0].id)).limit(1)
+  const portfolioResult = await db
+    .select()
+    .from(portfolios)
+    .where(eq(portfolios.userId, userResult[0].id))
+    .limit(1)
 
   if (!portfolioResult.length || portfolioResult[0].status !== 'published') {
     return (

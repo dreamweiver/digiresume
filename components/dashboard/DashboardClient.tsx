@@ -1,14 +1,17 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
+import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { toast } from 'sonner'
 import { pdf } from '@react-pdf/renderer'
 import type { Portfolio } from '@/lib/db/schema'
 import type { PortfolioData } from '@/lib/portfolio-types'
 import { EMPTY_PORTFOLIO } from '@/lib/portfolio-types'
+import { PARSING_MESSAGES } from '@/lib/parsing-messages'
 import { DashboardHeader } from '@/components/dashboard/DashboardHeader'
 import { ActionBar } from '@/components/dashboard/ActionBar'
 import { ResumeUploader } from '@/components/dashboard/ResumeUploader'
+import { Spinner } from '@/components/ui/spinner'
 import { PortfolioEditor } from '@/components/dashboard/PortfolioEditor'
 import { PortfolioTemplate } from '@/components/portfolio/PortfolioTemplate'
 import { PortfolioPDF } from '@/components/portfolio/PortfolioPDF'
@@ -17,30 +20,45 @@ interface Props {
   initialPortfolio: Portfolio | null
   initialData: PortfolioData | null
   usernameSlug: string
+  userName: string
 }
 
-export function DashboardClient({ initialPortfolio, initialData, usernameSlug }: Props) {
-  const [portfolioData, setPortfolioData] = useState<PortfolioData>(
-    initialData ?? EMPTY_PORTFOLIO
-  )
+export function DashboardClient({ initialPortfolio, initialData, usernameSlug, userName }: Props) {
+  const router = useRouter()
+  const [portfolioData, setPortfolioData] = useState<PortfolioData>(initialData ?? EMPTY_PORTFOLIO)
   const [hasPortfolio, setHasPortfolio] = useState<boolean>(initialPortfolio !== null)
   const rawStatus = initialPortfolio?.status
   const [status, setStatus] = useState<'draft' | 'published'>(
-    rawStatus === 'published' ? 'published' : 'draft'
+    rawStatus === 'published' ? 'published' : 'draft',
   )
   const [mode, setMode] = useState<'edit' | 'preview'>('edit')
+  const [isParsing, setIsParsing] = useState(false)
+  const [parsingMessage, setParsingMessage] = useState(
+    () => PARSING_MESSAGES[Math.floor(Math.random() * PARSING_MESSAGES.length)],
+  )
+  const [slug, setSlug] = useState(usernameSlug)
   const [isSaving, setIsSaving] = useState(false)
   const [isPublishing, setIsPublishing] = useState(false)
   const [isDownloading, setIsDownloading] = useState(false)
 
-  const publicUrl = status === 'published' && usernameSlug
-    ? `/u/${usernameSlug}`
-    : null
+  useEffect(() => {
+    if (!isParsing) return
+    const shuffled = [...PARSING_MESSAGES].sort(() => Math.random() - 0.5)
+    let i = 0
+    const interval = setInterval(() => {
+      i = (i + 1) % shuffled.length
+      setParsingMessage(shuffled[i])
+    }, 3000)
+    return () => clearInterval(interval)
+  }, [isParsing])
 
-  function handleGenerated(data: PortfolioData) {
+  const publicUrl = status === 'published' && slug ? `/u/${slug}` : null
+
+  const handleGenerated = useCallback((data: PortfolioData, newSlug?: string) => {
     setPortfolioData(data)
     setHasPortfolio(true)
-  }
+    if (newSlug) setSlug(newSlug)
+  }, [])
 
   async function handleSave() {
     setIsSaving(true)
@@ -78,6 +96,11 @@ export function DashboardClient({ initialPortfolio, initialData, usernameSlug }:
       if (!res.ok) throw new Error('Failed to publish')
       setStatus('published')
       toast.success('Portfolio published!')
+      if (slug) {
+        router.push(`/u/${slug}`)
+      } else {
+        toast.error('Could not determine your profile URL. Please refresh.')
+      }
     } catch {
       toast.error('Failed to publish portfolio')
     } finally {
@@ -110,34 +133,37 @@ export function DashboardClient({ initialPortfolio, initialData, usernameSlug }:
 
   return (
     <div className="min-h-screen flex flex-col bg-[#0a0a0a]">
-      <DashboardHeader status={status} publicUrl={publicUrl} />
+      <DashboardHeader status={status} publicUrl={publicUrl} userName={userName} />
 
-      <main className="flex-1 overflow-auto p-6">
+      <main className="relative flex-1 flex items-center justify-center overflow-hidden p-[clamp(16px,5vw,16px)]">
+        <Image src="/fuji-bg.jpg" alt="" fill className="object-cover" priority />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a]/80 via-transparent to-transparent" />
+
+        {isParsing && (
+          <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-[#0a0a0a]/80 backdrop-blur-sm">
+            <Spinner size="lg" />
+            <p className="mt-4 text-sm text-[#a1a1aa] text-center max-w-md px-4 transition-opacity duration-500">
+              {parsingMessage}
+            </p>
+          </div>
+        )}
+
         {!hasPortfolio ? (
-          <div className="max-w-xl mx-auto mt-16">
-            <h2 className="text-2xl font-semibold text-white mb-2">
+          <div className="relative z-10 w-full max-w-xl mx-auto p-4 rounded-2xl bg-white/20 backdrop-blur-[12px] border border-white/20 shadow-2xl flex flex-col gap-3">
+            <h2 className="text-2xl font-semibold text-gray-800 mb-1">
               Upload your resume to get started
             </h2>
-            <p className="text-[#a1a1aa] mb-6 text-sm">Drop your PDF below and let AI do the rest.</p>
-            <ResumeUploader onGenerated={handleGenerated} />
-            {/* Preview of what they'll get */}
-            <div className="mt-10 rounded-xl overflow-hidden border border-[#1f1f1f] shadow-[0_0_40px_rgba(0,229,153,0.06)] opacity-60">
-              <Image
-                src="/digiresume.jpg"
-                alt="Example portfolio preview"
-                width={800}
-                height={480}
-                className="w-full h-auto"
-              />
-            </div>
-            <p className="text-center text-xs text-[#52525b] mt-3">Your portfolio will look like this</p>
+            <p className="text-gray-600 mb-2 text-sm">
+              Drop your PDF below and let AI do the rest.
+            </p>
+            <ResumeUploader onGenerated={handleGenerated} onParsingChange={setIsParsing} />
           </div>
         ) : mode === 'edit' ? (
-          <div className="max-w-3xl mx-auto">
+          <div className="relative z-10 w-full max-w-3xl mx-auto p-4 rounded-2xl bg-white/20 backdrop-blur-[12px] border border-white/20 shadow-2xl flex flex-col gap-3 overflow-y-auto max-h-[calc(100vh-12rem)]">
             <PortfolioEditor data={portfolioData} onChange={setPortfolioData} />
           </div>
         ) : (
-          <div className="max-w-4xl mx-auto">
+          <div className="relative z-10 w-full max-w-4xl mx-auto p-4 rounded-2xl bg-white/20 backdrop-blur-[12px] border border-white/20 shadow-2xl flex flex-col gap-3 overflow-y-auto max-h-[calc(100vh-12rem)]">
             <PortfolioTemplate data={portfolioData} />
           </div>
         )}
