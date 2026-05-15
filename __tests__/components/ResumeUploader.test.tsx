@@ -6,8 +6,8 @@ import { ResumeUploader } from '@/components/dashboard/ResumeUploader'
 describe('ResumeUploader', () => {
   it('renders drag-and-drop area with initial text', () => {
     render(<ResumeUploader onGenerated={vi.fn()} />)
-    expect(screen.getByText('Drag & drop your resume PDF here')).toBeInTheDocument()
-    expect(screen.getByText('or click to browse')).toBeInTheDocument()
+    expect(screen.getByText('Drop your resume here')).toBeInTheDocument()
+    expect(screen.getByText('click to browse')).toBeInTheDocument()
   })
 
   it('renders Generate Portfolio button (disabled with no file)', () => {
@@ -40,8 +40,10 @@ describe('ResumeUploader', () => {
 
   it('shows error when non-PDF file is dropped', async () => {
     render(<ResumeUploader onGenerated={vi.fn()} />)
-    const dropZone = screen.getByText('Drag & drop your resume PDF here').closest('div')!
-    const file = new File(['content'], 'resume.docx', { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' })
+    const dropZone = screen.getByText('Drop your resume here').closest('div')!
+    const file = new File(['content'], 'resume.docx', {
+      type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    })
     fireEvent.drop(dropZone, {
       dataTransfer: { files: [file] },
     })
@@ -52,7 +54,7 @@ describe('ResumeUploader', () => {
 
   it('accepts PDF file via drop', async () => {
     render(<ResumeUploader onGenerated={vi.fn()} />)
-    const dropZone = screen.getByText('Drag & drop your resume PDF here').closest('div')!
+    const dropZone = screen.getByText('Drop your resume here').closest('div')!
     const file = new File(['pdf'], 'cv.pdf', { type: 'application/pdf' })
     fireEvent.drop(dropZone, {
       dataTransfer: { files: [file] },
@@ -86,10 +88,18 @@ describe('ResumeUploader', () => {
   })
 
   it('calls onGenerated with portfolio data after successful upload', async () => {
-    const portfolioData = { hero: { name: 'Jane', title: 'Dev', bio: '', profilePhoto: null }, about: '', skills: [], experience: [], projects: [], education: [], socialLinks: { github: '', linkedin: '', twitter: '', website: '' } }
-    const fetchMock = vi.fn().mockResolvedValue(
-      new Response(JSON.stringify({ portfolioData }), { status: 200 })
-    )
+    const portfolioData = {
+      hero: { name: 'Jane', title: 'Dev', bio: '', profilePhoto: null },
+      about: '',
+      skills: [],
+      experience: [],
+      projects: [],
+      education: [],
+      socialLinks: { github: '', linkedin: '', twitter: '', website: '' },
+    }
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValue(new Response(JSON.stringify({ portfolioData }), { status: 200 }))
     vi.stubGlobal('fetch', fetchMock)
 
     const onGenerated = vi.fn()
@@ -105,16 +115,16 @@ describe('ResumeUploader', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Generate Portfolio' }))
 
     await waitFor(() => {
-      expect(onGenerated).toHaveBeenCalledWith(portfolioData)
+      expect(onGenerated).toHaveBeenCalledWith(portfolioData, undefined)
     })
 
     vi.unstubAllGlobals()
   })
 
   it('shows error when API returns error', async () => {
-    const fetchMock = vi.fn().mockResolvedValue(
-      new Response(JSON.stringify({ error: 'Parse failed' }), { status: 500 })
-    )
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValue(new Response(JSON.stringify({ error: 'Parse failed' }), { status: 500 }))
     vi.stubGlobal('fetch', fetchMock)
 
     render(<ResumeUploader onGenerated={vi.fn()} />)
@@ -137,7 +147,7 @@ describe('ResumeUploader', () => {
 
   it('changes isDragging style on dragOver and dragLeave', () => {
     render(<ResumeUploader onGenerated={vi.fn()} />)
-    const dropZone = screen.getByText('Drag & drop your resume PDF here').closest('div')!
+    const dropZone = screen.getByText('Drop your resume here').closest('div')!
     fireEvent.dragOver(dropZone)
     fireEvent.dragLeave(dropZone)
     // just verifying no errors thrown
@@ -146,7 +156,7 @@ describe('ResumeUploader', () => {
 
   it('clicking the drop zone area triggers file input', () => {
     render(<ResumeUploader onGenerated={vi.fn()} />)
-    const dropZone = screen.getByText('Drag & drop your resume PDF here').closest('div')!
+    const dropZone = screen.getByText('Drop your resume here').closest('div')!
     const input = document.querySelector('input[type="file"]') as HTMLInputElement
     // Spy on the click method of the input
     const clickSpy = vi.spyOn(input, 'click').mockImplementation(() => {})
@@ -161,12 +171,12 @@ describe('ResumeUploader', () => {
     // Fire change with empty files list
     fireEvent.change(input, { target: { files: [] } })
     // Should still show the drop zone (no filename shown)
-    expect(screen.getByText('Drag & drop your resume PDF here')).toBeInTheDocument()
+    expect(screen.getByText('Drop your resume here')).toBeInTheDocument()
   })
 
   it('shows error when drop event has no files (undefined file)', () => {
     render(<ResumeUploader onGenerated={vi.fn()} />)
-    const dropZone = screen.getByText('Drag & drop your resume PDF here').closest('div')!
+    const dropZone = screen.getByText('Drop your resume here').closest('div')!
     // Drop with no files - undefined file triggers the error branch
     fireEvent.drop(dropZone, {
       dataTransfer: { files: [] },

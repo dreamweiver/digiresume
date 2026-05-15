@@ -7,7 +7,10 @@ import { Label } from '@/components/ui/label'
 import { socialLinksSchema, type SocialLinksFormData } from '@/lib/portfolio-schemas'
 import type { SocialLinks } from '@/lib/portfolio-types'
 
-interface Props { socialLinks: SocialLinks; onChange: (links: SocialLinks) => void }
+interface Props {
+  socialLinks: SocialLinks
+  onChange: (links: SocialLinks) => void
+}
 
 export function SocialEditor({ socialLinks, onChange }: Props) {
   const {
@@ -47,9 +50,7 @@ export function SocialEditor({ socialLinks, onChange }: Props) {
             {...register(key)}
             placeholder={`https://${key === 'website' ? 'yourwebsite.com' : `${key}.com/username`}`}
           />
-          {errors[key] && (
-            <p className="text-red-500 text-xs mt-1">{errors[key]?.message}</p>
-          )}
+          {errors[key] && <p className="text-red-500 text-xs mt-1">{errors[key]?.message}</p>}
         </div>
       ))}
     </div>

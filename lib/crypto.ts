@@ -19,11 +19,7 @@ export function encrypt(plaintext: string): string {
   const cipher = createCipheriv(ALGORITHM, key, iv, { authTagLength: AUTH_TAG_LENGTH })
   const encrypted = Buffer.concat([cipher.update(plaintext, 'utf8'), cipher.final()])
   const authTag = cipher.getAuthTag()
-  return [
-    iv.toString('base64'),
-    authTag.toString('base64'),
-    encrypted.toString('base64'),
-  ].join(':')
+  return [iv.toString('base64'), authTag.toString('base64'), encrypted.toString('base64')].join(':')
 }
 
 export function decrypt(ciphertext: string): string {

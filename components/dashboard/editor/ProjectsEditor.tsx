@@ -13,9 +13,18 @@ import type { ProjectEntry } from '@/lib/portfolio-types'
 const formSchema = z.object({ projects: z.array(projectEntrySchema) })
 type FormData = z.infer<typeof formSchema>
 
-interface Props { projects: ProjectEntry[]; onChange: (projects: ProjectEntry[]) => void }
+interface Props {
+  projects: ProjectEntry[]
+  onChange: (projects: ProjectEntry[]) => void
+}
 
-const emptyProject = (): ProjectEntry => ({ name: '', description: '', techStack: [], liveUrl: '', githubUrl: '' })
+const emptyProject = (): ProjectEntry => ({
+  name: '',
+  description: '',
+  techStack: [],
+  liveUrl: '',
+  githubUrl: '',
+})
 
 export function ProjectsEditor({ projects, onChange }: Props) {
   const [techInputs, setTechInputs] = useState<string[]>(projects.map(() => ''))
@@ -51,7 +60,7 @@ export function ProjectsEditor({ projects, onChange }: Props) {
         techStack: p.techStack ?? [],
         liveUrl: p.liveUrl ?? '',
         githubUrl: p.githubUrl ?? '',
-      }))
+      })),
     )
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [JSON.stringify(values)])
@@ -68,15 +77,22 @@ export function ProjectsEditor({ projects, onChange }: Props) {
 
   function removeTech(projectIndex: number, tech: string) {
     const current = getValues(`projects.${projectIndex}.techStack`) ?? []
-    setValue(`projects.${projectIndex}.techStack`, current.filter((t) => t !== tech), { shouldDirty: true })
+    setValue(
+      `projects.${projectIndex}.techStack`,
+      current.filter((t) => t !== tech),
+      { shouldDirty: true },
+    )
   }
 
   return (
     <div className="space-y-6">
       {fields.map((field, i) => {
-        const techStack = (values.projects?.[i]?.techStack) ?? []
+        const techStack = values.projects?.[i]?.techStack ?? []
         return (
-          <div key={field.id} className="border border-[#1f1f1f] rounded-lg p-4 space-y-3 bg-[#161616]">
+          <div
+            key={field.id}
+            className="border border-[#1f1f1f] rounded-lg p-4 space-y-3 bg-[#161616]"
+          >
             <div className="flex justify-between items-center">
               <h4 className="font-medium text-[#a1a1aa] text-sm">Project {i + 1}</h4>
               <Button
@@ -119,7 +135,12 @@ export function ProjectsEditor({ projects, onChange }: Props) {
                     }
                   }}
                 />
-                <Button type="button" variant="outline" onClick={() => addTech(i)} className="border-[#1f1f1f] text-[#00e599] hover:border-[#00e599] hover:text-[#00e599] transition-colors duration-200 bg-transparent">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => addTech(i)}
+                  className="border-[#1f1f1f] text-[#00e599] hover:border-[#00e599] hover:text-[#00e599] transition-colors duration-200 bg-transparent"
+                >
                   Add
                 </Button>
               </div>
@@ -153,7 +174,9 @@ export function ProjectsEditor({ projects, onChange }: Props) {
                 <Label>GitHub URL</Label>
                 <Input {...register(`projects.${i}.githubUrl`)} />
                 {errors.projects?.[i]?.githubUrl && (
-                  <p className="text-red-500 text-xs mt-1">{errors.projects[i].githubUrl?.message}</p>
+                  <p className="text-red-500 text-xs mt-1">
+                    {errors.projects[i].githubUrl?.message}
+                  </p>
                 )}
               </div>
             </div>

@@ -13,7 +13,10 @@ import type { HeroData } from '@/lib/portfolio-types'
 const heroFormSchema = heroSchema.pick({ name: true, title: true, bio: true })
 type HeroFormData = z.infer<typeof heroFormSchema>
 
-interface Props { hero: HeroData; onChange: (hero: HeroData) => void }
+interface Props {
+  hero: HeroData
+  onChange: (hero: HeroData) => void
+}
 
 export function HeroEditor({ hero, onChange }: Props) {
   const {
@@ -50,6 +53,7 @@ export function HeroEditor({ hero, onChange }: Props) {
       title: values.title ?? '',
       bio: values.bio ?? '',
       profilePhoto: hero.profilePhoto,
+      gender: hero.gender ?? 'unknown',
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [JSON.stringify({ name: values.name, title: values.title, bio: values.bio })])

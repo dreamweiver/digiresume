@@ -5,7 +5,13 @@ import { ExperienceEditor } from '@/components/dashboard/editor/ExperienceEditor
 import type { ExperienceEntry } from '@/lib/portfolio-types'
 
 const sampleExperience: ExperienceEntry[] = [
-  { company: 'Acme Corp', role: 'Engineer', startDate: '2020-01', endDate: '2022-01', description: 'Built things' },
+  {
+    company: 'Acme Corp',
+    role: 'Engineer',
+    startDate: '2020-01',
+    endDate: '2022-01',
+    description: 'Built things',
+  },
 ]
 
 describe('ExperienceEditor', () => {
@@ -64,7 +70,12 @@ describe('ExperienceEditor', () => {
   })
 
   it('shows company validation error when company field is blurred empty', async () => {
-    render(<ExperienceEditor experience={[{ company: '', role: '', startDate: '', endDate: '', description: '' }]} onChange={vi.fn()} />)
+    render(
+      <ExperienceEditor
+        experience={[{ company: '', role: '', startDate: '', endDate: '', description: '' }]}
+        onChange={vi.fn()}
+      />,
+    )
     const companyInputs = screen.getAllByRole('textbox')
     // company is first input
     fireEvent.blur(companyInputs[0])
@@ -74,7 +85,12 @@ describe('ExperienceEditor', () => {
   })
 
   it('shows role validation error when role field is blurred empty', async () => {
-    render(<ExperienceEditor experience={[{ company: '', role: '', startDate: '', endDate: '', description: '' }]} onChange={vi.fn()} />)
+    render(
+      <ExperienceEditor
+        experience={[{ company: '', role: '', startDate: '', endDate: '', description: '' }]}
+        onChange={vi.fn()}
+      />,
+    )
     const companyInputs = screen.getAllByRole('textbox')
     // role is second input
     fireEvent.blur(companyInputs[1])

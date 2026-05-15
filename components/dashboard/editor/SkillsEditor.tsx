@@ -9,7 +9,10 @@ import { Label } from '@/components/ui/label'
 const skillInputSchema = z.object({ skill: z.string().min(1, 'Skill cannot be empty') })
 type SkillInputData = z.infer<typeof skillInputSchema>
 
-interface Props { skills: string[]; onChange: (skills: string[]) => void }
+interface Props {
+  skills: string[]
+  onChange: (skills: string[]) => void
+}
 
 export function SkillsEditor({ skills, onChange }: Props) {
   const {
@@ -47,11 +50,15 @@ export function SkillsEditor({ skills, onChange }: Props) {
               }}
               placeholder="Type a skill and press Enter"
             />
-            {errors.skill && (
-              <p className="text-red-500 text-xs mt-1">{errors.skill.message}</p>
-            )}
+            {errors.skill && <p className="text-red-500 text-xs mt-1">{errors.skill.message}</p>}
           </div>
-          <Button type="submit" variant="outline" className="border-[#1f1f1f] text-[#00e599] hover:border-[#00e599] hover:text-[#00e599] transition-colors duration-200 bg-transparent">Add</Button>
+          <Button
+            type="submit"
+            variant="outline"
+            className="border-[#1f1f1f] text-[#00e599] hover:border-[#00e599] hover:text-[#00e599] transition-colors duration-200 bg-transparent"
+          >
+            Add
+          </Button>
         </div>
       </form>
       <div className="flex flex-wrap gap-2">

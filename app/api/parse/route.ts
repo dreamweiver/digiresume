@@ -1,19 +1,17 @@
 // app/api/parse/route.ts
-import { auth } from '@clerk/nextjs/server'
+import { auth, currentUser } from '@clerk/nextjs/server'
 import { NextRequest, NextResponse } from 'next/server'
-import { createGoogleGenerativeAI } from '@ai-sdk/google'
-import { generateText } from 'ai'
-import { PDFParse } from 'pdf-parse'
+import { GoogleGenerativeAI } from '@google/generative-ai'
+import pdf from 'pdf-parse'
 import { buildResumeParsePrompt } from '@/lib/gemini-prompt'
 import { encrypt } from '@/lib/crypto'
 import { db } from '@/lib/db'
-import { portfolios } from '@/lib/db/schema'
+import { users, portfolios } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
+import { generateSlug } from '@/lib/slug'
 import type { PortfolioData } from '@/lib/portfolio-types'
 
-const google = createGoogleGenerativeAI({
-  apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY!,
-})
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENERATIVE_AI_API_KEY!)
 
 export async function POST(req: NextRequest) {
   const { userId } = await auth()
@@ -31,8 +29,7 @@ export async function POST(req: NextRequest) {
   let resumeText: string
   try {
     const buffer = Buffer.from(await file.arrayBuffer())
-    const parser = new PDFParse({ data: buffer })
-    const pdfData = await parser.getText()
+    const pdfData = await pdf(buffer)
     resumeText = pdfData.text.trim()
   } catch {
     return NextResponse.json({ error: 'Failed to read PDF file' }, { status: 422 })
@@ -43,15 +40,23 @@ export async function POST(req: NextRequest) {
 
   // Parse with Gemini Flash
   const prompt = buildResumeParsePrompt(resumeText)
-  const { text } = await generateText({
-    model: google('gemini-1.5-flash'),
-    prompt,
-  })
+  const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' })
+  let text: string
+  try {
+    const result = await model.generateContent(prompt)
+    text = result.response.text()
+  } catch (e) {
+    const message = e instanceof Error ? e.message : 'AI generation failed'
+    return NextResponse.json({ error: message }, { status: 502 })
+  }
 
   let portfolioData: PortfolioData
   try {
     // Strip markdown code fences if Gemini wraps JSON in them
-    const cleaned = text.trim().replace(/^```(?:json)?\r?\n?/, '').replace(/\r?\n?```$/, '')
+    const cleaned = text
+      .trim()
+      .replace(/^```(?:json)?\r?\n?/, '')
+      .replace(/\r?\n?```$/, '')
     portfolioData = JSON.parse(cleaned)
   } catch {
     return NextResponse.json({ error: 'Failed to parse AI response' }, { status: 500 })
@@ -61,6 +66,23 @@ export async function POST(req: NextRequest) {
   const encryptedData = encrypt(JSON.stringify(portfolioData))
 
   try {
+    // Ensure user row exists (FK constraint on portfolios.userId)
+    const existingUser = await db.select().from(users).where(eq(users.id, userId)).limit(1)
+    if (existingUser.length === 0) {
+      const clerkUser = await currentUser()
+      const fullName = [clerkUser?.firstName, clerkUser?.lastName].filter(Boolean).join(' ')
+      const email = clerkUser?.emailAddresses[0]?.emailAddress ?? ''
+      await db
+        .insert(users)
+        .values({ id: userId, usernameSlug: generateSlug(fullName), email })
+        .onConflictDoNothing()
+    }
+
+    const userRow =
+      existingUser.length > 0
+        ? existingUser[0]
+        : (await db.select().from(users).where(eq(users.id, userId)).limit(1))[0]
+
     const existing = await db
       .select()
       .from(portfolios)
@@ -79,9 +101,9 @@ export async function POST(req: NextRequest) {
         status: 'draft',
       })
     }
+
+    return NextResponse.json({ portfolioData, usernameSlug: userRow.usernameSlug })
   } catch {
     return NextResponse.json({ error: 'Failed to save portfolio' }, { status: 500 })
   }
-
-  return NextResponse.json({ portfolioData })
 }

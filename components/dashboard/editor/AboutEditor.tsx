@@ -6,10 +6,15 @@ import { z } from 'zod'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 
-const aboutSchema = z.object({ about: z.string().max(2000, 'About section cannot exceed 2000 characters') })
+const aboutSchema = z.object({
+  about: z.string().max(2000, 'About section cannot exceed 2000 characters'),
+})
 type AboutFormData = z.infer<typeof aboutSchema>
 
-interface Props { about: string; onChange: (about: string) => void }
+interface Props {
+  about: string
+  onChange: (about: string) => void
+}
 
 export function AboutEditor({ about, onChange }: Props) {
   const {

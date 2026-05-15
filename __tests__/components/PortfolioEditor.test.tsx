@@ -87,4 +87,21 @@ describe('PortfolioEditor', () => {
       expect(onChange).toHaveBeenCalled()
     })
   })
+
+  it('renders Re-upload Resume button when onReupload is passed', () => {
+    render(<PortfolioEditor data={testData} onChange={vi.fn()} onReupload={vi.fn()} />)
+    expect(screen.getByText('Re-upload Resume')).toBeInTheDocument()
+  })
+
+  it('does not render Re-upload Resume button when onReupload is not passed', () => {
+    render(<PortfolioEditor data={testData} onChange={vi.fn()} />)
+    expect(screen.queryByText('Re-upload Resume')).not.toBeInTheDocument()
+  })
+
+  it('calls onReupload when Re-upload Resume button is clicked', () => {
+    const onReupload = vi.fn()
+    render(<PortfolioEditor data={testData} onChange={vi.fn()} onReupload={onReupload} />)
+    fireEvent.click(screen.getByText('Re-upload Resume'))
+    expect(onReupload).toHaveBeenCalledTimes(1)
+  })
 })

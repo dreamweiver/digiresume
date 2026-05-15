@@ -10,11 +10,7 @@ export async function POST() {
   if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   try {
-    const result = await db
-      .select()
-      .from(portfolios)
-      .where(eq(portfolios.userId, userId))
-      .limit(1)
+    const result = await db.select().from(portfolios).where(eq(portfolios.userId, userId)).limit(1)
 
     if (result.length === 0) {
       return NextResponse.json({ error: 'No portfolio found' }, { status: 404 })

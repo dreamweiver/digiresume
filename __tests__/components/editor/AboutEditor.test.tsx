@@ -38,7 +38,9 @@ describe('AboutEditor', () => {
     const textarea = screen.getByRole('textbox')
     fireEvent.blur(textarea)
     await waitFor(() => {
-      expect(screen.queryByText('About section cannot exceed 2000 characters')).not.toBeInTheDocument()
+      expect(
+        screen.queryByText('About section cannot exceed 2000 characters'),
+      ).not.toBeInTheDocument()
     })
   })
 

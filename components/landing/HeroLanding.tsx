@@ -16,12 +16,14 @@ export function HeroLanding() {
           </div>
 
           <h1 className="text-5xl sm:text-6xl font-bold tracking-tight leading-tight gradient-text mb-6">
-            Turn Your Resume<br />Into a Portfolio
+            Turn Your Resume
+            <br />
+            Into a Portfolio
           </h1>
 
           <p className="text-lg text-[#a1a1aa] max-w-lg mb-10 leading-relaxed">
-            Upload your PDF resume and get a beautiful, shareable developer portfolio page in seconds.
-            Powered by AI.
+            Upload your PDF resume and get a beautiful, shareable developer portfolio page in
+            seconds. Powered by Google Gemini AI.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4">

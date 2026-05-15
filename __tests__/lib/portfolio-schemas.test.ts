@@ -9,25 +9,23 @@ import {
 
 describe('heroSchema', () => {
   it('rejects empty name', () => {
-    expect(() =>
-      heroSchema.parse({ name: '', title: 'Dev', bio: 'Hello' })
-    ).toThrow()
+    expect(() => heroSchema.parse({ name: '', title: 'Dev', bio: 'Hello' })).toThrow()
   })
 
   it('rejects empty title', () => {
-    expect(() =>
-      heroSchema.parse({ name: 'Jane', title: '', bio: 'Hello' })
-    ).toThrow()
+    expect(() => heroSchema.parse({ name: 'Jane', title: '', bio: 'Hello' })).toThrow()
   })
 
   it('rejects empty bio', () => {
-    expect(() =>
-      heroSchema.parse({ name: 'Jane', title: 'Dev', bio: '' })
-    ).toThrow()
+    expect(() => heroSchema.parse({ name: 'Jane', title: 'Dev', bio: '' })).toThrow()
   })
 
   it('accepts valid hero object', () => {
-    const result = heroSchema.parse({ name: 'Jane Doe', title: 'Engineer', bio: 'Building things.' })
+    const result = heroSchema.parse({
+      name: 'Jane Doe',
+      title: 'Engineer',
+      bio: 'Building things.',
+    })
     expect(result.name).toBe('Jane Doe')
     expect(result.title).toBe('Engineer')
     expect(result.bio).toBe('Building things.')
@@ -78,7 +76,7 @@ describe('socialLinksSchema', () => {
         linkedin: '',
         twitter: '',
         website: '',
-      })
+      }),
     ).toThrow()
   })
 
@@ -89,7 +87,7 @@ describe('socialLinksSchema', () => {
         linkedin: '',
         twitter: '',
         website: 'not-a-url',
-      })
+      }),
     ).toThrow()
   })
 
@@ -100,7 +98,7 @@ describe('socialLinksSchema', () => {
         linkedin: 'linkedin.com/in/user',
         twitter: '',
         website: '',
-      })
+      }),
     ).toThrow()
   })
 })
@@ -114,7 +112,7 @@ describe('experienceEntrySchema', () => {
         startDate: '2020-01',
         endDate: 'present',
         description: 'Worked on stuff',
-      })
+      }),
     ).toThrow()
   })
 
@@ -126,7 +124,7 @@ describe('experienceEntrySchema', () => {
         startDate: '2020-01',
         endDate: 'present',
         description: '',
-      })
+      }),
     ).toThrow()
   })
 
@@ -174,7 +172,7 @@ describe('projectEntrySchema', () => {
         techStack: [],
         liveUrl: 'not-a-url',
         githubUrl: '',
-      })
+      }),
     ).toThrow()
   })
 
@@ -186,7 +184,7 @@ describe('projectEntrySchema', () => {
         techStack: [],
         liveUrl: '',
         githubUrl: 'github.com/user/repo',
-      })
+      }),
     ).toThrow()
   })
 
@@ -198,7 +196,7 @@ describe('projectEntrySchema', () => {
         techStack: [],
         liveUrl: '',
         githubUrl: '',
-      })
+      }),
     ).toThrow()
   })
 })
@@ -211,7 +209,7 @@ describe('educationEntrySchema', () => {
         degree: 'B.Sc. Computer Science',
         startDate: '2016',
         endDate: '2020',
-      })
+      }),
     ).toThrow()
   })
 

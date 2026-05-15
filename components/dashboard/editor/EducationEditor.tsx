@@ -12,9 +12,17 @@ import type { EducationEntry } from '@/lib/portfolio-types'
 const formSchema = z.object({ education: z.array(educationEntrySchema) })
 type FormData = z.infer<typeof formSchema>
 
-interface Props { education: EducationEntry[]; onChange: (education: EducationEntry[]) => void }
+interface Props {
+  education: EducationEntry[]
+  onChange: (education: EducationEntry[]) => void
+}
 
-const emptyEntry = (): EducationEntry => ({ institution: '', degree: '', startDate: '', endDate: '' })
+const emptyEntry = (): EducationEntry => ({
+  institution: '',
+  degree: '',
+  startDate: '',
+  endDate: '',
+})
 
 export function EducationEditor({ education, onChange }: Props) {
   const {
@@ -45,16 +53,29 @@ export function EducationEditor({ education, onChange }: Props) {
   return (
     <div className="space-y-6">
       {fields.map((field, i) => (
-        <div key={field.id} className="border border-[#1f1f1f] rounded-lg p-4 space-y-3 bg-[#161616]">
+        <div
+          key={field.id}
+          className="border border-[#1f1f1f] rounded-lg p-4 space-y-3 bg-[#161616]"
+        >
           <div className="flex justify-between items-center">
             <h4 className="font-medium text-[#a1a1aa] text-sm">Education {i + 1}</h4>
-            <Button variant="ghost" size="sm" type="button" onClick={() => remove(i)} className="text-[#52525b] hover:text-red-400">Remove</Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              type="button"
+              onClick={() => remove(i)}
+              className="text-[#52525b] hover:text-red-400"
+            >
+              Remove
+            </Button>
           </div>
           <div>
             <Label>Institution</Label>
             <Input {...register(`education.${i}.institution`)} />
             {errors.education?.[i]?.institution && (
-              <p className="text-red-500 text-xs mt-1">{errors.education[i].institution?.message}</p>
+              <p className="text-red-500 text-xs mt-1">
+                {errors.education[i].institution?.message}
+              </p>
             )}
           </div>
           <div>

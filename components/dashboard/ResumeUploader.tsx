@@ -4,10 +4,11 @@ import { Button } from '@/components/ui/button'
 import type { PortfolioData } from '@/lib/portfolio-types'
 
 interface Props {
-  onGenerated: (data: PortfolioData) => void
+  onGenerated: (data: PortfolioData, usernameSlug?: string) => void
+  onParsingChange?: (isParsing: boolean) => void
 }
 
-export function ResumeUploader({ onGenerated }: Props) {
+export function ResumeUploader({ onGenerated, onParsingChange }: Props) {
   const [isDragging, setIsDragging] = useState(false)
   const [file, setFile] = useState<File | null>(null)
   const [isLoading, setIsLoading] = useState(false)
@@ -30,31 +31,37 @@ export function ResumeUploader({ onGenerated }: Props) {
     if (!file) return
     setIsLoading(true)
     setError(null)
+    onParsingChange?.(true)
     try {
       const formData = new FormData()
       formData.append('resume', file)
       const res = await fetch('/api/parse', { method: 'POST', body: formData })
       const json = await res.json()
       if (!res.ok) throw new Error(json.error || 'Parse failed')
-      onGenerated(json.portfolioData)
+      onGenerated(json.portfolioData, json.usernameSlug)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong')
     } finally {
       setIsLoading(false)
+      onParsingChange?.(false)
     }
   }
 
   return (
     <div className="space-y-4">
       <div
-        onDragOver={(e) => { e.preventDefault(); setIsDragging(true) }}
+        onDragOver={(e) => {
+          e.preventDefault()
+          setIsDragging(true)
+        }}
         onDragLeave={() => setIsDragging(false)}
         onDrop={handleDrop}
         onClick={() => inputRef.current?.click()}
-        className={`border-2 border-dashed rounded-xl p-10 text-center cursor-pointer transition-colors duration-200 bg-[#111111]
-          ${isDragging
-            ? 'border-[#00e599] bg-[#0d1a14]'
-            : 'border-[#1f1f1f] hover:border-[#00e599]'
+        className={`border-2 border-dashed rounded-2xl p-12 text-center cursor-pointer transition-all duration-200
+          ${
+            isDragging
+              ? 'border-[#00e599] bg-white/10'
+              : 'border-white/20 bg-white/5 hover:border-[#00e599] hover:bg-white/10'
           }`}
       >
         <input
@@ -64,33 +71,99 @@ export function ResumeUploader({ onGenerated }: Props) {
           className="hidden"
           onChange={(e) => {
             const f = e.target.files?.[0]
-            if (f) { setFile(f); setError(null) }
+            if (f) {
+              setFile(f)
+              setError(null)
+            }
           }}
         />
-        {file ? (
-          <div>
-            <p className="text-[#00e599] font-medium">{file.name}</p>
-            <p className="text-[#a1a1aa] text-sm mt-1">Click to change file</p>
-          </div>
-        ) : (
-          <>
-            <div className="text-[#00e599] mb-3 opacity-60">
-              <svg className="mx-auto w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
-              </svg>
+
+        <div className="relative z-10">
+          {file ? (
+            <div className="space-y-2">
+              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-[#00e599]/10 border border-[#00e599]/30 mx-auto mb-3">
+                <svg
+                  className="w-6 h-6 text-[#00e599]"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.5}
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+              </div>
+              <p className="text-[#00e599] font-semibold text-base">{file.name}</p>
+              <p className="text-[#52525b] text-sm">Click to change file</p>
             </div>
-            <p className="text-[#a1a1aa] text-base">Drag & drop your resume PDF here</p>
-            <p className="text-[#52525b] text-sm mt-1">or click to browse</p>
-          </>
-        )}
+          ) : (
+            <div className="space-y-3">
+              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-[#1f1f1f] border border-[#2a2a2a] mx-auto">
+                <svg
+                  className="w-6 h-6 text-[#a1a1aa]"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.5}
+                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"
+                  />
+                </svg>
+              </div>
+              <div>
+                <p className="text-white font-medium text-base">Drop your resume here</p>
+                <p className="text-[#52525b] text-sm mt-1">
+                  or <span className="text-[#00e599]">click to browse</span> · PDF only
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
-      {error && <p className="text-red-500 text-sm">{error}</p>}
+
+      {error && (
+        <p className="text-red-400 text-sm flex items-center gap-1.5">
+          <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+          {error}
+        </p>
+      )}
+
       <Button
         onClick={handleGenerate}
         disabled={!file || isLoading}
-        className="w-full bg-[#00e599] text-black font-semibold hover:bg-[#00cc88] transition-colors duration-200 disabled:opacity-40"
+        className="w-full h-11 bg-[#00e599] text-black font-semibold hover:bg-[#00cc88] transition-colors duration-200 disabled:opacity-40 rounded-xl text-sm"
       >
-        {isLoading ? 'Generating Portfolio...' : 'Generate Portfolio'}
+        {isLoading ? (
+          <span className="flex items-center gap-2">
+            <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+              />
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+            </svg>
+            Generating Portfolio...
+          </span>
+        ) : (
+          'Generate Portfolio'
+        )}
       </Button>
     </div>
   )

@@ -13,9 +13,18 @@ import type { ExperienceEntry } from '@/lib/portfolio-types'
 const formSchema = z.object({ experience: z.array(experienceEntrySchema) })
 type FormData = z.infer<typeof formSchema>
 
-interface Props { experience: ExperienceEntry[]; onChange: (experience: ExperienceEntry[]) => void }
+interface Props {
+  experience: ExperienceEntry[]
+  onChange: (experience: ExperienceEntry[]) => void
+}
 
-const emptyEntry = (): ExperienceEntry => ({ company: '', role: '', startDate: '', endDate: '', description: '' })
+const emptyEntry = (): ExperienceEntry => ({
+  company: '',
+  role: '',
+  startDate: '',
+  endDate: '',
+  description: '',
+})
 
 export function ExperienceEditor({ experience, onChange }: Props) {
   const {
@@ -46,10 +55,21 @@ export function ExperienceEditor({ experience, onChange }: Props) {
   return (
     <div className="space-y-6">
       {fields.map((field, i) => (
-        <div key={field.id} className="border border-[#1f1f1f] rounded-lg p-4 space-y-3 bg-[#161616]">
+        <div
+          key={field.id}
+          className="border border-[#1f1f1f] rounded-lg p-4 space-y-3 bg-[#161616]"
+        >
           <div className="flex justify-between items-center">
             <h4 className="font-medium text-[#a1a1aa] text-sm">Experience {i + 1}</h4>
-            <Button variant="ghost" size="sm" type="button" onClick={() => remove(i)} className="text-[#52525b] hover:text-red-400">Remove</Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              type="button"
+              onClick={() => remove(i)}
+              className="text-[#52525b] hover:text-red-400"
+            >
+              Remove
+            </Button>
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
