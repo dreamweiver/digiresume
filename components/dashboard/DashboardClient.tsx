@@ -1,6 +1,5 @@
 'use client'
 import { useState, useEffect, useCallback } from 'react'
-import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { toast } from 'sonner'
 import { pdf } from '@react-pdf/renderer'
@@ -24,7 +23,6 @@ interface Props {
 }
 
 export function DashboardClient({ initialPortfolio, initialData, usernameSlug, userName }: Props) {
-  const router = useRouter()
   const [portfolioData, setPortfolioData] = useState<PortfolioData>(initialData ?? EMPTY_PORTFOLIO)
   const [hasPortfolio, setHasPortfolio] = useState<boolean>(initialPortfolio !== null)
   const rawStatus = initialPortfolio?.status
@@ -40,6 +38,7 @@ export function DashboardClient({ initialPortfolio, initialData, usernameSlug, u
   const [isSaving, setIsSaving] = useState(false)
   const [isPublishing, setIsPublishing] = useState(false)
   const [isDownloading, setIsDownloading] = useState(false)
+  const [isReuploading, setIsReuploading] = useState(false)
 
   useEffect(() => {
     if (!isParsing) return
@@ -57,6 +56,7 @@ export function DashboardClient({ initialPortfolio, initialData, usernameSlug, u
   const handleGenerated = useCallback((data: PortfolioData, newSlug?: string) => {
     setPortfolioData(data)
     setHasPortfolio(true)
+    setIsReuploading(false)
     if (newSlug) setSlug(newSlug)
   }, [])
 
@@ -97,7 +97,7 @@ export function DashboardClient({ initialPortfolio, initialData, usernameSlug, u
       setStatus('published')
       toast.success('Portfolio published!')
       if (slug) {
-        router.push(`/u/${slug}`)
+        window.open(`/u/${slug}`, '_blank')
       } else {
         toast.error('Could not determine your profile URL. Please refresh.')
       }
@@ -142,16 +142,37 @@ export function DashboardClient({ initialPortfolio, initialData, usernameSlug, u
         {isParsing && (
           <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-[#0a0a0a]/80 backdrop-blur-sm">
             <Spinner size="lg" />
-            <p className="mt-4 text-sm text-[#a1a1aa] text-center max-w-md px-4 transition-opacity duration-500">
+            <p className="mt-4 text-sm text-[#00e599] text-center max-w-md px-4 transition-opacity duration-500">
               {parsingMessage}
             </p>
           </div>
         )}
 
-        {!hasPortfolio ? (
+        {!hasPortfolio || isReuploading ? (
           <div className="relative z-10 w-full max-w-xl mx-auto p-4 rounded-2xl bg-white/20 backdrop-blur-[12px] border border-white/20 shadow-2xl flex flex-col gap-3">
+            {isReuploading && (
+              <button
+                onClick={() => setIsReuploading(false)}
+                className="absolute top-3 right-3 p-1 rounded-md text-gray-500 hover:text-gray-800 transition-colors"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M18 6 6 18" />
+                  <path d="m6 6 12 12" />
+                </svg>
+              </button>
+            )}
             <h2 className="text-2xl font-semibold text-gray-800 mb-1">
-              Upload your resume to get started
+              {isReuploading ? 'Upload a new resume' : 'Upload your resume to get started'}
             </h2>
             <p className="text-gray-600 mb-2 text-sm">
               Drop your PDF below and let AI do the rest.
@@ -159,12 +180,38 @@ export function DashboardClient({ initialPortfolio, initialData, usernameSlug, u
             <ResumeUploader onGenerated={handleGenerated} onParsingChange={setIsParsing} />
           </div>
         ) : mode === 'edit' ? (
-          <div className="relative z-10 w-full max-w-3xl mx-auto p-4 rounded-2xl bg-white/20 backdrop-blur-[12px] border border-white/20 shadow-2xl flex flex-col gap-3 overflow-y-auto max-h-[calc(100vh-12rem)]">
-            <PortfolioEditor data={portfolioData} onChange={setPortfolioData} />
+          <div className="relative z-10 w-[75vw] mx-auto p-4 rounded-2xl bg-white/20 backdrop-blur-[12px] border border-white/20 shadow-2xl flex flex-col gap-3 overflow-y-auto max-h-[calc(100vh-12rem)]">
+            <PortfolioEditor
+              data={portfolioData}
+              onChange={setPortfolioData}
+              onReupload={() => setIsReuploading(true)}
+            />
           </div>
         ) : (
-          <div className="relative z-10 w-full max-w-4xl mx-auto p-4 rounded-2xl bg-white/20 backdrop-blur-[12px] border border-white/20 shadow-2xl flex flex-col gap-3 overflow-y-auto max-h-[calc(100vh-12rem)]">
-            <PortfolioTemplate data={portfolioData} />
+          <div className="relative z-10 flex items-center gap-4 w-full max-w-6xl mx-auto">
+            <div className="flex-1 p-4 rounded-2xl bg-white/20 backdrop-blur-[12px] border border-white/20 shadow-2xl flex flex-col gap-3 overflow-y-auto max-h-[calc(100vh-12rem)]">
+              <PortfolioTemplate data={portfolioData} />
+            </div>
+            <button
+              onClick={() => setMode('edit')}
+              className="shrink-0 p-3 rounded-full cursor-pointer text-[#52525b] border border-[#1f1f1f] bg-[#0a0a0a]/80 hover:text-[#00e599] hover:border-[#00e599] hover:bg-[#00e599]/10 hover:scale-110 transition-all duration-200"
+              title="Close preview"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="28"
+                height="28"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M18 6 6 18" />
+                <path d="m6 6 12 12" />
+              </svg>
+            </button>
           </div>
         )}
       </main>

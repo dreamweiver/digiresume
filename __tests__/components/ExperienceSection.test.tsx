@@ -36,8 +36,7 @@ describe('ExperienceSection', () => {
             role: 'Dev',
             startDate: 'January 2020',
             endDate: 'Present',
-            description:
-              'Led frontend team. Built React components. Improved performance by 40%.',
+            description: 'Led frontend team. Built React components. Improved performance by 40%.',
           },
         ]}
       />,

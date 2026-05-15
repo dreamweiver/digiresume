@@ -14,11 +14,14 @@ function ExperienceDescription({ entry }: { entry: ExperienceEntry }) {
       <div className="space-y-3">
         {entry.description && (
           <div className="space-y-2">
-            {entry.description.split('\n').filter(Boolean).map((para, i) => (
-              <p key={i} className="text-sm sm:text-base text-[#a1a1aa] leading-relaxed">
-                {para}
-              </p>
-            ))}
+            {entry.description
+              .split('\n')
+              .filter(Boolean)
+              .map((para, i) => (
+                <p key={i} className="text-sm sm:text-base text-[#a1a1aa] leading-relaxed">
+                  {para}
+                </p>
+              ))}
           </div>
         )}
 
