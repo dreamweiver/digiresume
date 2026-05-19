@@ -7,7 +7,8 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { heroSchema } from '@/lib/portfolio-schemas'
-import type { HeroData } from '@/lib/portfolio-types'
+import type { HeroData, SocialLinks } from '@/lib/portfolio-types'
+import { ProfilePhotoPicker } from './ProfilePhotoPicker'
 
 // Form only controls the three editable fields; profilePhoto is pass-through
 const heroFormSchema = heroSchema.pick({ name: true, title: true, bio: true })
@@ -15,10 +16,11 @@ type HeroFormData = z.infer<typeof heroFormSchema>
 
 interface Props {
   hero: HeroData
+  socialLinks: SocialLinks
   onChange: (hero: HeroData) => void
 }
 
-export function HeroEditor({ hero, onChange }: Props) {
+export function HeroEditor({ hero, socialLinks, onChange }: Props) {
   const {
     register,
     watch,
@@ -59,7 +61,7 @@ export function HeroEditor({ hero, onChange }: Props) {
   }, [JSON.stringify({ name: values.name, title: values.title, bio: values.bio })])
 
   return (
-    <div className="space-y-4">
+    <div className="border border-white/20 rounded-lg p-4 space-y-4 bg-white/10">
       <div>
         <Label>Full Name</Label>
         <Input {...register('name')} />
@@ -75,6 +77,19 @@ export function HeroEditor({ hero, onChange }: Props) {
         <Textarea rows={3} {...register('bio')} />
         {errors.bio && <p className="text-red-500 text-xs mt-1">{errors.bio.message}</p>}
       </div>
+      <ProfilePhotoPicker
+        hero={hero}
+        socialLinks={socialLinks}
+        onPhotoChange={(profilePhoto) =>
+          onChange({
+            name: values.name ?? hero.name,
+            title: values.title ?? hero.title,
+            bio: values.bio ?? hero.bio,
+            profilePhoto,
+            gender: hero.gender ?? 'unknown',
+          })
+        }
+      />
     </div>
   )
 }

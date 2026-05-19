@@ -22,15 +22,14 @@ describe('ExperienceEditor', () => {
     expect(screen.getByText('Experience 1')).toBeInTheDocument()
   })
 
-  it('renders Remove button for existing entries', () => {
+  it('renders a delete icon for each entry', () => {
     render(<ExperienceEditor experience={sampleExperience} onChange={vi.fn()} />)
-    expect(screen.getByText('Remove')).toBeInTheDocument()
+    expect(screen.getByLabelText('Delete experience 1')).toBeInTheDocument()
   })
 
-  it('Remove button removes entry', async () => {
+  it('delete icon removes the entry', async () => {
     render(<ExperienceEditor experience={sampleExperience} onChange={vi.fn()} />)
-    const removeBtn = screen.getByText('Remove')
-    fireEvent.click(removeBtn)
+    fireEvent.click(screen.getByLabelText('Delete experience 1'))
     await waitFor(() => {
       expect(screen.queryByText('Experience 1')).not.toBeInTheDocument()
     })
@@ -97,5 +96,62 @@ describe('ExperienceEditor', () => {
     await waitFor(() => {
       expect(screen.getByText('Role is required')).toBeInTheDocument()
     })
+  })
+
+  it('flags overlapping date ranges across entries', async () => {
+    render(
+      <ExperienceEditor
+        experience={[
+          {
+            company: 'A',
+            role: 'Eng',
+            startDate: 'January 2020',
+            endDate: 'January 2023',
+            description: '',
+          },
+          {
+            company: 'B',
+            role: 'Eng',
+            startDate: 'January 2022',
+            endDate: 'January 2024',
+            description: '',
+          },
+        ]}
+        onChange={vi.fn()}
+      />,
+    )
+    await waitFor(() => {
+      expect(screen.getByText(/overlaps with Experience 2/)).toBeInTheDocument()
+      expect(screen.getByText(/overlaps with Experience 1/)).toBeInTheDocument()
+    })
+  })
+
+  it('does NOT flag back-to-back entries (one ends the same month the next starts)', async () => {
+    render(
+      <ExperienceEditor
+        experience={[
+          {
+            company: 'A',
+            role: 'Eng',
+            startDate: 'January 2020',
+            endDate: 'January 2022',
+            description: '',
+          },
+          {
+            company: 'B',
+            role: 'Eng',
+            startDate: 'January 2022',
+            endDate: 'January 2024',
+            description: '',
+          },
+        ]}
+        onChange={vi.fn()}
+      />,
+    )
+    // Wait a tick for live validation to settle, then assert no overlap message.
+    await waitFor(() => {
+      expect(screen.getAllByText(/Experience \d/)).toBeTruthy()
+    })
+    expect(screen.queryByText(/overlaps with Experience/)).not.toBeInTheDocument()
   })
 })

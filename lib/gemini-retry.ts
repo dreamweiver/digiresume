@@ -40,9 +40,11 @@ export async function generateWithRetry(
     } catch (e) {
       lastError = e
       if (!isRetryableGeminiError(e) || attempt === maxAttempts) throw e
-      // Exponential backoff: 1s, 2s, 4s ...
-      const delay = baseDelayMs * 2 ** (attempt - 1)
-      await new Promise((res) => setTimeout(res, delay))
+      // Exponential backoff with jitter so concurrent callers don't retry in
+      // lockstep against the same overload window: 1s±25%, 2s±25%, 4s±25%.
+      const expDelay = baseDelayMs * 2 ** (attempt - 1)
+      const jitter = expDelay * 0.25 * (Math.random() * 2 - 1)
+      await new Promise((res) => setTimeout(res, expDelay + jitter))
     }
   }
   throw lastError

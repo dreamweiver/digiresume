@@ -41,7 +41,7 @@ export function AboutEditor({ about, onChange }: Props) {
   }, [aboutValue])
 
   return (
-    <div>
+    <div className="border border-white/20 rounded-lg p-4 space-y-3 bg-white/10">
       <Label>About Me</Label>
       <Textarea rows={5} {...register('about')} />
       {errors.about && <p className="text-red-500 text-xs mt-1">{errors.about.message}</p>}

@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { parseMonthYear, rangesOverlap } from './date-utils'
 
 export const heroSchema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -13,6 +14,39 @@ export const experienceEntrySchema = z.object({
   startDate: z.string(),
   endDate: z.string(),
   description: z.string(),
+})
+
+// Cross-entry validation: flag every index that participates in a date-range
+// overlap. We attach the issue to `startDate` so the visible cell takes the
+// red border, and the message names the conflicting row so the user can find
+// it without counting cards.
+export const experienceArraySchema = z.array(experienceEntrySchema).superRefine((entries, ctx) => {
+  const ranges = entries.map((e) => {
+    const start = parseMonthYear(e.startDate)
+    const end = parseMonthYear(e.endDate)
+    return start && end ? { start, end } : null
+  })
+
+  for (let i = 0; i < ranges.length; i++) {
+    const a = ranges[i]
+    if (!a) continue
+    for (let j = i + 1; j < ranges.length; j++) {
+      const b = ranges[j]
+      if (!b) continue
+      if (rangesOverlap(a, b)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: [i, 'startDate'],
+          message: `Date range overlaps with Experience ${j + 1}`,
+        })
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: [j, 'startDate'],
+          message: `Date range overlaps with Experience ${i + 1}`,
+        })
+      }
+    }
+  }
 })
 
 const urlOrEmpty = z

@@ -18,11 +18,11 @@ export function EditorActionBar({
   isDisabled = false,
 }: Props) {
   return (
-    <div className="flex items-center justify-end gap-2">
+    <div className="flex items-center justify-end gap-3">
       <button
         onClick={onToggleMode}
         disabled={isDisabled}
-        className="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-[#a1a1aa] border border-[#1f1f1f] rounded-lg bg-[#0a0a0a]/80 hover:border-[#00e599] hover:text-[#00e599] transition-colors duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
+        className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-[#a1a1aa] border border-[#1f1f1f] rounded-lg bg-[#0a0a0a]/80 hover:border-[#00e599] hover:text-[#00e599] hover:scale-105 hover:shadow-[0_0_12px_rgba(0,229,153,0.3)] transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100"
       >
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           {mode === 'edit' ? (
@@ -55,7 +55,7 @@ export function EditorActionBar({
       <button
         onClick={onPublish}
         disabled={isPublishing || isDisabled}
-        className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-semibold bg-[#00e599] text-black rounded-lg hover:bg-[#00cc88] transition-colors duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
+        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-[#00e599] text-black rounded-lg hover:bg-[#00cc88] hover:scale-105 hover:shadow-[0_0_16px_rgba(0,229,153,0.4)] transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100"
       >
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path
@@ -72,7 +72,7 @@ export function EditorActionBar({
         <button
           onClick={onReupload}
           disabled={isDisabled}
-          className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-semibold bg-[#00e599] text-black rounded-lg hover:bg-[#00cc88] hover:scale-105 hover:shadow-[0_0_16px_rgba(0,229,153,0.4)] transition-all duration-200 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-[#00e599] text-black rounded-lg hover:bg-[#00cc88] hover:scale-105 hover:shadow-[0_0_16px_rgba(0,229,153,0.4)] transition-all duration-200 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"

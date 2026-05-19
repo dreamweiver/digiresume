@@ -27,15 +27,14 @@ describe('ProjectsEditor', () => {
     expect(screen.getByText('TypeScript')).toBeInTheDocument()
   })
 
-  it('renders Remove button for existing projects', () => {
+  it('renders a delete icon for each project', () => {
     render(<ProjectsEditor projects={sampleProjects} onChange={vi.fn()} />)
-    expect(screen.getByText('Remove')).toBeInTheDocument()
+    expect(screen.getByLabelText('Delete project 1')).toBeInTheDocument()
   })
 
-  it('Remove button removes the project entry', async () => {
+  it('delete icon removes the project entry', async () => {
     render(<ProjectsEditor projects={sampleProjects} onChange={vi.fn()} />)
-    const removeBtn = screen.getByText('Remove')
-    fireEvent.click(removeBtn)
+    fireEvent.click(screen.getByLabelText('Delete project 1'))
     await waitFor(() => {
       expect(screen.queryByText('Project 1')).not.toBeInTheDocument()
     })

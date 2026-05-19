@@ -28,10 +28,30 @@ describe('HeroSection - profile photo priority', () => {
     expect(img).toHaveAttribute('src', 'https://example.com/photo.jpg')
   })
 
-  it('falls back to GitHub avatar when no profilePhoto but github link exists', () => {
+  it('falls back to viking, NOT GitHub, when profilePhoto is null even if a github link is set', () => {
+    // The editor is now responsible for opting into a GitHub avatar; the
+    // public page never auto-derives one. With no profilePhoto stored, we
+    // always render the local Viking image.
     render(
       <HeroSection
         hero={{ name: 'John', title: 'Dev', bio: '', profilePhoto: null, gender: 'male' }}
+        socialLinks={{ ...baseSocialLinks, github: 'https://github.com/johndoe' }}
+      />,
+    )
+    const img = screen.getByAltText('John')
+    expect(img).toHaveAttribute('src', '/viking_man.jpeg')
+  })
+
+  it('renders the stored github avatar URL when the editor wrote one to profilePhoto', () => {
+    render(
+      <HeroSection
+        hero={{
+          name: 'John',
+          title: 'Dev',
+          bio: '',
+          profilePhoto: 'https://github.com/johndoe.png',
+          gender: 'male',
+        }}
         socialLinks={{ ...baseSocialLinks, github: 'https://github.com/johndoe' }}
       />,
     )
@@ -59,17 +79,6 @@ describe('HeroSection - profile photo priority', () => {
     )
     const img = screen.getByAltText('Alex')
     expect(img).toHaveAttribute('src', '/viking_women.jpeg')
-  })
-
-  it('strips trailing slash from github URL before deriving avatar', () => {
-    render(
-      <HeroSection
-        hero={{ name: 'Pat', title: 'Dev', bio: '', profilePhoto: null, gender: 'unknown' }}
-        socialLinks={{ ...baseSocialLinks, github: 'https://github.com/patuser/' }}
-      />,
-    )
-    const img = screen.getByAltText('Pat')
-    expect(img).toHaveAttribute('src', 'https://github.com/patuser.png')
   })
 })
 

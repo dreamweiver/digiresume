@@ -65,11 +65,11 @@ export function ProjectsSection({ projects }: Props) {
                       </p>
 
                       {project.techStack.length > 0 && (
-                        <div className="flex flex-wrap gap-1.5 sm:gap-2 pt-2">
+                        <div className="flex flex-wrap gap-3 pt-2">
                           {project.techStack.map((tech) => (
                             <span
                               key={tech}
-                              className="px-2.5 sm:px-3 py-1 sm:py-1.5 bg-[#1f1f1f] text-[#a1a1aa] rounded-md sm:rounded-lg text-xs sm:text-sm font-medium"
+                              className="px-3 sm:px-4 py-1.5 sm:py-2 bg-[#2a2a2a] text-white rounded-full text-sm sm:text-base md:text-lg font-medium hover:bg-[#00e599] hover:text-black transition-colors duration-200"
                             >
                               {tech}
                             </span>

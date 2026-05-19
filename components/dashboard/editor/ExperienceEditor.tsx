@@ -3,14 +3,15 @@ import { useEffect } from 'react'
 import { useForm, useFieldArray } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import { Trash2 } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
-import { experienceEntrySchema } from '@/lib/portfolio-schemas'
+import { experienceArraySchema } from '@/lib/portfolio-schemas'
 import type { ExperienceEntry } from '@/lib/portfolio-types'
 
-const formSchema = z.object({ experience: z.array(experienceEntrySchema) })
+const formSchema = z.object({ experience: experienceArraySchema })
 type FormData = z.infer<typeof formSchema>
 
 interface Props {
@@ -32,10 +33,11 @@ export function ExperienceEditor({ experience, onChange }: Props) {
     control,
     watch,
     reset,
+    trigger,
     formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(formSchema),
-    mode: 'onBlur',
+    mode: 'onChange',
     defaultValues: { experience },
   })
 
@@ -49,6 +51,8 @@ export function ExperienceEditor({ experience, onChange }: Props) {
 
   useEffect(() => {
     onChange(values.experience ?? [])
+    // Re-run cross-entry validation as dates change so overlap errors update live.
+    trigger('experience')
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [JSON.stringify(values)])
 
@@ -60,12 +64,13 @@ export function ExperienceEditor({ experience, onChange }: Props) {
             <h4 className="font-medium text-gray-700 text-sm">Experience {i + 1}</h4>
             <Button
               variant="ghost"
-              size="sm"
+              size="icon"
               type="button"
+              aria-label={`Delete experience ${i + 1}`}
               onClick={() => remove(i)}
-              className="text-[#52525b] hover:text-red-400"
+              className="text-[#52525b] hover:text-red-500 hover:bg-red-500/10"
             >
-              Remove
+              <Trash2 className="h-4 w-4" />
             </Button>
           </div>
           <div className="grid grid-cols-2 gap-3">
@@ -85,11 +90,16 @@ export function ExperienceEditor({ experience, onChange }: Props) {
             </div>
             <div>
               <Label>Start Date</Label>
-              <Input placeholder="2022-01" {...register(`experience.${i}.startDate`)} />
+              <Input placeholder="January 2020" {...register(`experience.${i}.startDate`)} />
+              {errors.experience?.[i]?.startDate && (
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.experience[i].startDate?.message}
+                </p>
+              )}
             </div>
             <div>
               <Label>End Date</Label>
-              <Input placeholder="present" {...register(`experience.${i}.endDate`)} />
+              <Input placeholder="Present" {...register(`experience.${i}.endDate`)} />
             </div>
           </div>
           <div>
