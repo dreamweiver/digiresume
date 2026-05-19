@@ -51,14 +51,11 @@ export function EducationEditor({ education, onChange }: Props) {
   }, [JSON.stringify(values)])
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-3">
       {fields.map((field, i) => (
-        <div
-          key={field.id}
-          className="border border-[#1f1f1f] rounded-lg p-4 space-y-3 bg-[#161616]"
-        >
+        <div key={field.id} className="border border-white/20 rounded-lg p-4 space-y-3 bg-white/10">
           <div className="flex justify-between items-center">
-            <h4 className="font-medium text-[#a1a1aa] text-sm">Education {i + 1}</h4>
+            <h4 className="font-medium text-gray-700 text-sm">Education {i + 1}</h4>
             <Button
               variant="ghost"
               size="sm"

@@ -85,16 +85,16 @@ export function ProjectsEditor({ projects, onChange }: Props) {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-3">
       {fields.map((field, i) => {
         const techStack = values.projects?.[i]?.techStack ?? []
         return (
           <div
             key={field.id}
-            className="border border-[#1f1f1f] rounded-lg p-4 space-y-3 bg-[#161616]"
+            className="border border-white/20 rounded-lg p-4 space-y-3 bg-white/10"
           >
             <div className="flex justify-between items-center">
-              <h4 className="font-medium text-[#a1a1aa] text-sm">Project {i + 1}</h4>
+              <h4 className="font-medium text-gray-700 text-sm">Project {i + 1}</h4>
               <Button
                 variant="ghost"
                 size="sm"
@@ -148,13 +148,13 @@ export function ProjectsEditor({ projects, onChange }: Props) {
                 {techStack.map((tech) => (
                   <span
                     key={tech}
-                    className="bg-[#161616] border border-[#00e599] text-[#00e599] px-2 py-1 rounded text-sm flex items-center gap-1"
+                    className="bg-white/30 border border-[#00cc88] text-[#00cc88] px-2 py-1 rounded text-sm flex items-center gap-1"
                   >
                     {tech}
                     <button
                       type="button"
                       onClick={() => removeTech(i, tech)}
-                      className="text-[#00e599] opacity-60 hover:opacity-100 hover:text-red-400"
+                      className="text-[#00cc88] opacity-60 hover:opacity-100 hover:text-red-500"
                     >
                       ×
                     </button>

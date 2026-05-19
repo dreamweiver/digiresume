@@ -41,13 +41,19 @@ vi.mock('@/components/portfolio/PortfolioPDF', () => ({
 // ---- fixtures ----
 
 const mockPortfolioData: PortfolioData = {
-  hero: { name: 'Jane Doe', title: 'Engineer', bio: 'Bio text', profilePhoto: null },
+  hero: {
+    name: 'Jane Doe',
+    title: 'Engineer',
+    bio: 'Bio text',
+    profilePhoto: null,
+    gender: 'female' as const,
+  },
   about: 'About me',
   skills: ['TypeScript'],
   experience: [],
   projects: [],
   education: [],
-  socialLinks: { github: '', linkedin: '', twitter: '', website: '' },
+  socialLinks: { github: '', linkedin: '', twitter: '', website: '', email: '', phone: '' },
 }
 
 const mockPortfolio: Portfolio = {

@@ -10,6 +10,8 @@ import { users, portfolios } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
 import { generateSlug } from '@/lib/slug'
 import type { PortfolioData } from '@/lib/portfolio-types'
+import { generateWithRetry, isRetryableGeminiError } from '@/lib/gemini-retry'
+import { sanitizePortfolio } from '@/lib/sanitize-portfolio'
 
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENERATIVE_AI_API_KEY!)
 
@@ -38,28 +40,44 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Could not extract text from PDF' }, { status: 422 })
   }
 
-  // Parse with Gemini Flash
+  // Parse with Gemini Flash (with retry on transient errors)
   const prompt = buildResumeParsePrompt(resumeText)
   const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' })
   let text: string
   try {
-    const result = await model.generateContent(prompt)
-    text = result.response.text()
+    text = await generateWithRetry(model, prompt, { maxAttempts: 3 })
   } catch (e) {
     const message = e instanceof Error ? e.message : 'AI generation failed'
-    return NextResponse.json({ error: message }, { status: 502 })
+    const status = isRetryableGeminiError(e) ? 503 : 502
+    return NextResponse.json({ error: message }, { status })
   }
 
-  let portfolioData: PortfolioData
+  let rawParsed: unknown
   try {
     // Strip markdown code fences if Gemini wraps JSON in them
     const cleaned = text
       .trim()
       .replace(/^```(?:json)?\r?\n?/, '')
       .replace(/\r?\n?```$/, '')
-    portfolioData = JSON.parse(cleaned)
+    rawParsed = JSON.parse(cleaned)
   } catch {
     return NextResponse.json({ error: 'Failed to parse AI response' }, { status: 500 })
+  }
+
+  // Defensively sanitize: drop malformed sections instead of failing the whole request
+  const { data: sanitized, warnings } = sanitizePortfolio(rawParsed)
+  const portfolioData: PortfolioData = sanitized
+
+  // Post-process bio/about:
+  // - Hero bio = first sentence only (concise headline under name)
+  // - About = full bio text when no dedicated About/Summary section was found
+  const fullBio = portfolioData.hero.bio.trim()
+  if (fullBio) {
+    if (!portfolioData.about.trim()) {
+      portfolioData.about = fullBio
+    }
+    const firstSentenceMatch = fullBio.match(/^[^.!?]+[.!?]/)
+    portfolioData.hero.bio = firstSentenceMatch ? firstSentenceMatch[0].trim() : fullBio
   }
 
   // Encrypt and upsert portfolio
@@ -102,7 +120,7 @@ export async function POST(req: NextRequest) {
       })
     }
 
-    return NextResponse.json({ portfolioData, usernameSlug: userRow.usernameSlug })
+    return NextResponse.json({ portfolioData, usernameSlug: userRow.usernameSlug, warnings })
   } catch {
     return NextResponse.json({ error: 'Failed to save portfolio' }, { status: 500 })
   }

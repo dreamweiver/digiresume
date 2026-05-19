@@ -67,6 +67,7 @@ describe('POST /api/parse', () => {
       title: 'Software Engineer',
       bio: 'A developer',
       profilePhoto: null,
+      gender: 'unknown',
     },
     about: 'About text',
     skills: ['React', 'TypeScript'],
@@ -83,7 +84,7 @@ describe('POST /api/parse', () => {
       { name: 'App', description: 'An app', techStack: ['React'], liveUrl: '', githubUrl: '' },
     ],
     education: [{ institution: 'University', degree: 'CS', startDate: '2016', endDate: '2020' }],
-    socialLinks: { github: '', linkedin: '', twitter: '', website: '' },
+    socialLinks: { github: '', linkedin: '', twitter: '', website: '', email: '', phone: '' },
   }
 
   beforeEach(() => {

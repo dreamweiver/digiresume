@@ -9,6 +9,8 @@ const emptySocialLinks: SocialLinks = {
   linkedin: '',
   twitter: '',
   website: '',
+  email: '',
+  phone: '',
 }
 
 const filledSocialLinks: SocialLinks = {
@@ -16,6 +18,8 @@ const filledSocialLinks: SocialLinks = {
   linkedin: 'https://linkedin.com/in/testuser',
   twitter: 'https://twitter.com/testuser',
   website: 'https://testuser.com',
+  email: 'test@example.com',
+  phone: '+1 234 567 8900',
 }
 
 describe('SocialEditor', () => {
