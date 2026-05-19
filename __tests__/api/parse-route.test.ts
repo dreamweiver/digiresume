@@ -119,13 +119,15 @@ describe('POST /api/parse', () => {
     expect(json.error).toBe('Only PDF files are supported')
   })
 
-  it('returns 502 if Gemini API fails', async () => {
+  it('returns 502 with a friendly message if Gemini API fails (technical detail not leaked)', async () => {
     mockGenerateContent.mockRejectedValueOnce(new Error('Model not found'))
     const file = new File([samplePdf], 'resume.pdf', { type: 'application/pdf' })
     const res = await callRoute(file)
     expect(res.status).toBe(502)
     const json = await res.json()
-    expect(json.error).toBe('Model not found')
+    expect(json.error).toBe("We couldn't process your resume. Please try again.")
+    // The raw model error must not appear in the user-facing payload.
+    expect(json.error).not.toContain('Model not found')
   })
 
   it('returns 500 if AI response is not valid JSON', async () => {

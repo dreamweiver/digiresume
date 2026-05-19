@@ -2,6 +2,15 @@ import { describe, it, expect, vi } from 'vitest'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import '@testing-library/jest-dom'
 import { ResumeUploader } from '@/components/dashboard/ResumeUploader'
+import { toast } from 'sonner'
+
+vi.mock('sonner', () => ({
+  toast: {
+    error: vi.fn(),
+    warning: vi.fn(),
+    success: vi.fn(),
+  },
+}))
 
 describe('ResumeUploader', () => {
   it('renders drag-and-drop area with initial text', () => {
@@ -121,7 +130,7 @@ describe('ResumeUploader', () => {
     vi.unstubAllGlobals()
   })
 
-  it('shows error when API returns error', async () => {
+  it('shows error toast when API returns error', async () => {
     const fetchMock = vi
       .fn()
       .mockResolvedValue(new Response(JSON.stringify({ error: 'Parse failed' }), { status: 500 }))
@@ -139,7 +148,7 @@ describe('ResumeUploader', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Generate Portfolio' }))
 
     await waitFor(() => {
-      expect(screen.getByText('Parse failed')).toBeInTheDocument()
+      expect(toast.error).toHaveBeenCalledWith('Parse failed', expect.objectContaining({}))
     })
 
     vi.unstubAllGlobals()

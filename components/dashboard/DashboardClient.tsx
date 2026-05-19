@@ -15,6 +15,7 @@ import { Spinner } from '@/components/ui/spinner'
 import { PortfolioEditor } from '@/components/dashboard/PortfolioEditor'
 import { PortfolioTemplate } from '@/components/portfolio/PortfolioTemplate'
 import { PortfolioPDF } from '@/components/portfolio/PortfolioPDF'
+import { experienceArraySchema } from '@/lib/portfolio-schemas'
 
 interface Props {
   initialPortfolio: Portfolio | null
@@ -61,7 +62,17 @@ export function DashboardClient({ initialPortfolio, initialData, usernameSlug, u
     if (newSlug) setSlug(newSlug)
   }, [])
 
+  function validateExperienceOrToast(): boolean {
+    const result = experienceArraySchema.safeParse(portfolioData.experience)
+    if (!result.success) {
+      toast.error('Fix overlapping experience dates before continuing')
+      return false
+    }
+    return true
+  }
+
   async function handleSave() {
+    if (!validateExperienceOrToast()) return
     setIsSaving(true)
     try {
       const res = await fetch('/api/portfolio', {
@@ -82,6 +93,7 @@ export function DashboardClient({ initialPortfolio, initialData, usernameSlug, u
   }
 
   async function handlePublish() {
+    if (!validateExperienceOrToast()) return
     setIsPublishing(true)
     try {
       // auto-save first so published content is always current

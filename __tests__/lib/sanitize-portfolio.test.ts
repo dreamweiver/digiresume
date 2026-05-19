@@ -192,4 +192,238 @@ describe('sanitizePortfolio', () => {
     const { data } = sanitizePortfolio(input)
     expect(data.hero.gender).toBe('unknown')
   })
+
+  // The remaining tests cover patterns observed in 30 real referral resumes —
+  // categorised skill blocks, separate company/location, "Present" variants,
+  // grade strings, glued contact info, and partial / minimal resumes. These
+  // are sanitizer-level guards: the model still does the heavy lifting, but
+  // the sanitizer must not strip valid data that comes through these shapes.
+  describe('real-resume patterns', () => {
+    it('keeps location separate from company on experience entries', () => {
+      const input = {
+        hero: { name: 'X', title: '', bio: '' },
+        experience: [
+          {
+            company: 'Cvent India Private Limited',
+            role: 'Senior Software Engineer',
+            location: 'Gurgaon',
+            startDate: 'January 2020',
+            endDate: 'Present',
+            description: 'Built things.',
+          },
+        ],
+      }
+      const { data } = sanitizePortfolio(input)
+      expect(data.experience[0]).toMatchObject({
+        company: 'Cvent India Private Limited',
+        location: 'Gurgaon',
+        endDate: 'Present',
+      })
+    })
+
+    it('preserves bullet highlights and technologies arrays per role', () => {
+      const input = {
+        hero: { name: 'X', title: '', bio: '' },
+        experience: [
+          {
+            company: 'QBurst Technologies',
+            role: 'Engineer',
+            startDate: 'April 2011',
+            endDate: 'July 2013',
+            description: '',
+            highlights: [
+              'Designed and developed REST APIs',
+              'Mentored 3 junior engineers',
+              'Migrated legacy code to TypeScript',
+            ],
+            technologies: ['Node.js', 'TypeScript', 'PostgreSQL'],
+          },
+        ],
+      }
+      const { data } = sanitizePortfolio(input)
+      expect(data.experience[0].highlights).toHaveLength(3)
+      expect(data.experience[0].technologies).toEqual(['Node.js', 'TypeScript', 'PostgreSQL'])
+    })
+
+    it('drops non-string entries inside highlights / technologies but keeps the role', () => {
+      const input = {
+        hero: { name: 'X', title: '', bio: '' },
+        experience: [
+          {
+            company: 'Acme',
+            role: 'Eng',
+            startDate: '',
+            endDate: '',
+            description: '',
+            highlights: ['shipped', 42, null, 'fixed bug'],
+            technologies: ['ts', { foo: 'bar' }, 'react'],
+          },
+        ],
+      }
+      const { data } = sanitizePortfolio(input)
+      expect(data.experience).toHaveLength(1)
+      expect(data.experience[0].highlights).toEqual(['shipped', 'fixed bug'])
+      expect(data.experience[0].technologies).toEqual(['ts', 'react'])
+    })
+
+    it('keeps the grade string when education uses CGPA / percentage / class', () => {
+      const input = {
+        hero: { name: 'X', title: '', bio: '' },
+        education: [
+          {
+            institution: 'IIT',
+            degree: 'B.Tech',
+            startDate: '2009',
+            endDate: '2013',
+            grade: '8.42 CGPA',
+          },
+          {
+            institution: 'BITS',
+            degree: 'M.Tech',
+            startDate: '2013',
+            endDate: '2015',
+            grade: '85%',
+          },
+          {
+            institution: 'St. Xavier',
+            degree: '12th',
+            startDate: '2008',
+            endDate: '2009',
+            grade: 'First Class with Distinction',
+          },
+        ],
+      }
+      const { data } = sanitizePortfolio(input)
+      expect(data.education.map((e) => e.grade)).toEqual([
+        '8.42 CGPA',
+        '85%',
+        'First Class with Distinction',
+      ])
+    })
+
+    it('survives a minimal resume that has no projects, no socials, no about', () => {
+      const input = {
+        hero: { name: 'Wasim', title: 'Engineer', bio: '' },
+        skills: ['React', 'Node.js'],
+        experience: [
+          {
+            company: 'Tiny Co',
+            role: 'Eng',
+            startDate: '2022',
+            endDate: 'Present',
+            description: '',
+          },
+        ],
+        education: [
+          { institution: 'State University', degree: 'B.Sc', startDate: '2018', endDate: '2022' },
+        ],
+      }
+      const { data, warnings } = sanitizePortfolio(input)
+      expect(warnings).toEqual([])
+      expect(data.about).toBe('')
+      expect(data.projects).toEqual([])
+      expect(data.socialLinks).toEqual({
+        github: '',
+        linkedin: '',
+        twitter: '',
+        website: '',
+        email: '',
+        phone: '',
+      })
+      expect(data.experience).toHaveLength(1)
+      expect(data.education).toHaveLength(1)
+    })
+
+    it('keeps email-only socials when no LinkedIn / GitHub URL is present', () => {
+      const input = {
+        hero: { name: 'X', title: '', bio: '' },
+        socialLinks: {
+          github: '',
+          linkedin: '',
+          twitter: '',
+          website: '',
+          email: 'wasim@example.com',
+          phone: '+91 9847059251',
+        },
+      }
+      const { data } = sanitizePortfolio(input)
+      expect(data.socialLinks.email).toBe('wasim@example.com')
+      expect(data.socialLinks.phone).toBe('+91 9847059251')
+      expect(data.socialLinks.github).toBe('')
+      expect(data.socialLinks.linkedin).toBe('')
+    })
+
+    it('preserves description text containing newlines and bullet markers', () => {
+      // The model is asked to keep description as paragraphs separated by \n.
+      // The sanitizer must not collapse / strip these.
+      const description =
+        'Led the platform team.\n\n- Designed APIs\n- Mentored juniors\n- Owned migrations'
+      const input = {
+        hero: { name: 'X', title: '', bio: '' },
+        experience: [
+          {
+            company: 'Acme',
+            role: 'Lead',
+            startDate: 'January 2020',
+            endDate: 'Present',
+            description,
+          },
+        ],
+      }
+      const { data } = sanitizePortfolio(input)
+      expect(data.experience[0].description).toBe(description)
+    })
+
+    it('treats categorised skill output from the model as a flat array', () => {
+      // Even if the model partially fails to flatten and emits "Frontend: React, ..."
+      // as a single string, the sanitizer should still keep it as a string entry —
+      // we never silently drop it.
+      const input = {
+        hero: { name: 'X', title: '', bio: '' },
+        skills: ['Frontend: React, Vue', 'TypeScript', 'Backend: Node.js, Python'],
+      }
+      const { data } = sanitizePortfolio(input)
+      expect(data.skills).toEqual([
+        'Frontend: React, Vue',
+        'TypeScript',
+        'Backend: Node.js, Python',
+      ])
+    })
+
+    it('drops entries where company is a non-empty string but role is missing', () => {
+      // sanitizeExperienceEntry requires both company and role to be strings.
+      const input = {
+        hero: { name: 'X', title: '', bio: '' },
+        experience: [
+          { company: 'Acme', startDate: '', endDate: '', description: '' },
+          { company: 'Beta', role: 'Dev', startDate: '', endDate: '', description: '' },
+        ],
+      }
+      const { data } = sanitizePortfolio(input)
+      expect(data.experience).toHaveLength(1)
+      expect(data.experience[0].company).toBe('Beta')
+    })
+
+    it('coerces non-string startDate / endDate to empty strings without rejecting the entry', () => {
+      const input = {
+        hero: { name: 'X', title: '', bio: '' },
+        experience: [
+          {
+            company: 'Acme',
+            role: 'Eng',
+            startDate: 2020,
+            endDate: null,
+            description: '',
+          },
+        ],
+      }
+      const { data } = sanitizePortfolio(input)
+      expect(data.experience[0]).toMatchObject({
+        company: 'Acme',
+        role: 'Eng',
+        startDate: '',
+        endDate: '',
+      })
+    })
+  })
 })

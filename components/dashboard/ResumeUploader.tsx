@@ -48,7 +48,9 @@ export function ResumeUploader({ onGenerated, onParsingChange }: Props) {
         )
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Something went wrong')
+      const message = err instanceof Error ? err.message : 'Something went wrong'
+      toast.error(message, { duration: 6000 })
+      setError(null)
     } finally {
       setIsLoading(false)
       onParsingChange?.(false)

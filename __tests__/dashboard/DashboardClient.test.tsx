@@ -104,7 +104,7 @@ describe('DashboardClient', () => {
 
   it('renders PortfolioEditor when portfolio exists', () => {
     renderClient(mockPortfolio, mockPortfolioData)
-    expect(screen.getByText('hero')).toBeInTheDocument()
+    expect(screen.getByRole('tab', { name: /Hero/ })).toBeInTheDocument()
     expect(screen.getByText('Save')).toBeInTheDocument()
     expect(screen.queryByText(/Upload your resume to get started/i)).not.toBeInTheDocument()
   })
@@ -126,7 +126,7 @@ describe('DashboardClient', () => {
     })
     fireEvent.click(screen.getByText('Edit'))
     await waitFor(() => {
-      expect(screen.getByText('hero')).toBeInTheDocument()
+      expect(screen.getByRole('tab', { name: /Hero/ })).toBeInTheDocument()
       expect(screen.queryByTestId('portfolio-template')).not.toBeInTheDocument()
     })
   })
@@ -153,7 +153,7 @@ describe('DashboardClient', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Generate Portfolio' }))
 
     await waitFor(() => {
-      expect(screen.getByText('hero')).toBeInTheDocument()
+      expect(screen.getByRole('tab', { name: /Hero/ })).toBeInTheDocument()
     })
 
     vi.unstubAllGlobals()
@@ -394,7 +394,7 @@ describe('DashboardClient', () => {
 
     await waitFor(() => {
       expect(screen.queryByText('Upload a new resume')).not.toBeInTheDocument()
-      expect(screen.getByText('hero')).toBeInTheDocument()
+      expect(screen.getByRole('tab', { name: /Hero/ })).toBeInTheDocument()
     })
   })
 })

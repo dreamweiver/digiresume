@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { useForm, useFieldArray } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import { Trash2 } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
@@ -97,15 +98,16 @@ export function ProjectsEditor({ projects, onChange }: Props) {
               <h4 className="font-medium text-gray-700 text-sm">Project {i + 1}</h4>
               <Button
                 variant="ghost"
-                size="sm"
+                size="icon"
                 type="button"
+                aria-label={`Delete project ${i + 1}`}
                 onClick={() => {
                   remove(i)
                   setTechInputs((prev) => prev.filter((_, idx) => idx !== i))
                 }}
-                className="text-[#52525b] hover:text-red-400"
+                className="text-[#52525b] hover:text-red-500 hover:bg-red-500/10"
               >
-                Remove
+                <Trash2 className="h-4 w-4" />
               </Button>
             </div>
             <div>

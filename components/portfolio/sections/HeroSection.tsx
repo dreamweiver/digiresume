@@ -8,16 +8,11 @@ interface Props {
 
 export function HeroSection({ hero, socialLinks }: Props) {
   const gender = hero.gender ?? 'unknown'
-
-  let photoSrc: string
-  if (hero.profilePhoto) {
-    photoSrc = hero.profilePhoto
-  } else if (socialLinks.github) {
-    const username = socialLinks.github.replace(/\/$/, '').split('/').pop()
-    photoSrc = `https://github.com/${username}.png`
-  } else {
-    photoSrc = gender === 'female' ? '/viking_women.jpeg' : '/viking_man.jpeg'
-  }
+  const vikingSrc = gender === 'female' ? '/viking_women.jpeg' : '/viking_man.jpeg'
+  // The editor decides whether to use a GitHub avatar; the public page just
+  // renders whatever URL got persisted (or falls back to the local Viking).
+  const photoSrc = hero.profilePhoto ?? vikingSrc
+  const isExternalPhoto = Boolean(hero.profilePhoto)
 
   return (
     <section id="hero" className="relative isolate overflow-hidden bg-[#0a0a0a] min-h-screen">
@@ -93,6 +88,7 @@ export function HeroSection({ hero, socialLinks }: Props) {
               alt={hero.name}
               width={180}
               height={180}
+              unoptimized={isExternalPhoto}
               className="rounded-full border-2 border-[#00e599] object-cover w-36 h-36 md:w-44 md:h-44"
             />
           </div>

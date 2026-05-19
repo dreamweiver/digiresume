@@ -47,9 +47,19 @@ export async function POST(req: NextRequest) {
   try {
     text = await generateWithRetry(model, prompt, { maxAttempts: 3 })
   } catch (e) {
-    const message = e instanceof Error ? e.message : 'AI generation failed'
-    const status = isRetryableGeminiError(e) ? 503 : 502
-    return NextResponse.json({ error: message }, { status })
+    // Keep the technical detail in server logs but never surface it to the
+    // browser — users see a friendly message via toast instead.
+    console.error('[parse] Gemini generation failed:', e)
+    if (isRetryableGeminiError(e)) {
+      return NextResponse.json(
+        { error: 'Our AI service is busy right now. Please try again in a moment.' },
+        { status: 503 },
+      )
+    }
+    return NextResponse.json(
+      { error: "We couldn't process your resume. Please try again." },
+      { status: 502 },
+    )
   }
 
   let rawParsed: unknown
