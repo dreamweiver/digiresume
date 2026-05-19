@@ -35,7 +35,7 @@ export function SkillsEditor({ skills, onChange }: Props) {
   }
 
   return (
-    <div className="space-y-3">
+    <div className="border border-white/20 rounded-lg p-4 space-y-3 bg-white/10">
       <Label>Skills</Label>
       <form onSubmit={handleSubmit(handleAddSkill)}>
         <div className="flex gap-2">

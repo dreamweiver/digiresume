@@ -12,7 +12,12 @@ import { ActionBar } from '@/components/dashboard/ActionBar'
 import { EditorActionBar } from '@/components/dashboard/EditorActionBar'
 import { ResumeUploader } from '@/components/dashboard/ResumeUploader'
 import { Spinner } from '@/components/ui/spinner'
-import { PortfolioEditor } from '@/components/dashboard/PortfolioEditor'
+import {
+  PortfolioEditor,
+  EditorTabsList,
+  EDITOR_DEFAULT_TAB,
+} from '@/components/dashboard/PortfolioEditor'
+import { Tabs } from '@/components/ui/tabs'
 import { PortfolioTemplate } from '@/components/portfolio/PortfolioTemplate'
 import { PortfolioPDF } from '@/components/portfolio/PortfolioPDF'
 import { experienceArraySchema } from '@/lib/portfolio-schemas'
@@ -194,17 +199,22 @@ export function DashboardClient({ initialPortfolio, initialData, usernameSlug, u
           </div>
         ) : mode === 'edit' ? (
           <div className="relative z-10 w-[75vw] mx-auto p-4 rounded-2xl bg-white/20 backdrop-blur-[12px] border border-white/20 shadow-2xl flex flex-col gap-3 h-[75vh]">
-            <EditorActionBar
-              mode={mode}
-              onToggleMode={handleToggleMode}
-              onPublish={handlePublish}
-              onReupload={() => setIsReuploading(true)}
-              isPublishing={isPublishing}
-              isDisabled={isParsing}
-            />
-            <div className="flex-1 overflow-y-auto">
-              <PortfolioEditor data={portfolioData} onChange={setPortfolioData} />
-            </div>
+            <Tabs defaultValue={EDITOR_DEFAULT_TAB} className="flex flex-col gap-3 flex-1 min-h-0">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <EditorTabsList />
+                <EditorActionBar
+                  mode={mode}
+                  onToggleMode={handleToggleMode}
+                  onPublish={handlePublish}
+                  onReupload={() => setIsReuploading(true)}
+                  isPublishing={isPublishing}
+                  isDisabled={isParsing}
+                />
+              </div>
+              <div className="flex-1 overflow-y-auto">
+                <PortfolioEditor data={portfolioData} onChange={setPortfolioData} />
+              </div>
+            </Tabs>
           </div>
         ) : (
           <div className="relative z-10 flex items-center gap-4 w-full max-w-6xl mx-auto">

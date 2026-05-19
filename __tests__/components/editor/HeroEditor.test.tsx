@@ -92,4 +92,47 @@ describe('HeroEditor', () => {
       expect(onChange).toHaveBeenCalled()
     })
   })
+
+  it('propagates a photo selection through onChange with the picked URL', async () => {
+    const onChange = vi.fn()
+    const githubSocials = { ...noSocials, github: 'https://github.com/octocat' }
+    // Stub window.Image so the picker probe resolves synchronously.
+    type Probe = { onload: (() => void) | null; onerror: (() => void) | null; src: string }
+    const probes: Probe[] = []
+    class StubImage implements Probe {
+      public src = ''
+      public onload: (() => void) | null = null
+      public onerror: (() => void) | null = null
+      constructor() {
+        probes.push(this)
+      }
+    }
+    // @ts-expect-error stubbing constructor for jsdom
+    window.Image = StubImage
+
+    render(<HeroEditor hero={filledHero} socialLinks={githubSocials} onChange={onChange} />)
+    // Resolve probe so the GitHub option appears.
+    probes[0]?.onload?.()
+    const githubRadio = await screen.findByLabelText(/GitHub avatar/)
+    onChange.mockClear()
+    fireEvent.click(githubRadio)
+    await waitFor(() => {
+      const lastCall = onChange.mock.calls.at(-1)?.[0]
+      expect(lastCall?.profilePhoto).toBe('https://github.com/octocat.png')
+      expect(lastCall?.name).toBe('Jane Doe')
+    })
+  })
+
+  it('falls back to hero values when the form has not yet propagated edits', async () => {
+    // Hero with a profile photo set; the picker's auto-revert effect calls
+    // onPhotoChange(null) on mount because no GitHub URL is configured.
+    // That exercises the `values.name ?? hero.name` fallback branch.
+    const onChange = vi.fn()
+    const heroWithPhoto = { ...filledHero, profilePhoto: 'https://github.com/octocat.png' }
+    render(<HeroEditor hero={heroWithPhoto} socialLinks={noSocials} onChange={onChange} />)
+    await waitFor(() => {
+      const calls = onChange.mock.calls.map((c) => c[0])
+      expect(calls.some((c) => c?.profilePhoto === null && c?.name === 'Jane Doe')).toBe(true)
+    })
+  })
 })

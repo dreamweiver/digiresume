@@ -65,6 +65,28 @@ describe('SocialEditor', () => {
     expect(screen.getByPlaceholderText('https://linkedin.com/username')).toBeInTheDocument()
     expect(screen.getByPlaceholderText('https://twitter.com/username')).toBeInTheDocument()
     expect(screen.getByPlaceholderText('https://yourwebsite.com')).toBeInTheDocument()
+    // The placeholder ternary has dedicated branches for email and phone.
+    expect(screen.getByPlaceholderText('you@example.com')).toBeInTheDocument()
+    expect(screen.getByPlaceholderText('+1 234 567 8900')).toBeInTheDocument()
+  })
+
+  it('shows validation error when an invalid email is entered and blurred', async () => {
+    render(<SocialEditor socialLinks={emptySocialLinks} onChange={vi.fn()} />)
+    const emailInput = screen.getByPlaceholderText('you@example.com')
+    fireEvent.change(emailInput, { target: { value: 'not-an-email' } })
+    fireEvent.blur(emailInput)
+    await waitFor(() => {
+      // The schema's email validator surfaces an error message.
+      expect(screen.getAllByText(/email|valid/i).length).toBeGreaterThan(0)
+    })
+  })
+
+  it('re-syncs form state when socialLinks prop changes', async () => {
+    const { rerender } = render(<SocialEditor socialLinks={emptySocialLinks} onChange={vi.fn()} />)
+    rerender(<SocialEditor socialLinks={filledSocialLinks} onChange={vi.fn()} />)
+    await waitFor(() => {
+      expect(screen.getByDisplayValue('https://github.com/testuser')).toBeInTheDocument()
+    })
   })
 
   it('shows validation error when an invalid URL is entered and blurred', async () => {

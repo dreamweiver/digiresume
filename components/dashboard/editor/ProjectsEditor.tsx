@@ -150,13 +150,13 @@ export function ProjectsEditor({ projects, onChange }: Props) {
                 {techStack.map((tech) => (
                   <span
                     key={tech}
-                    className="bg-white/30 border border-[#00cc88] text-[#00cc88] px-2 py-1 rounded text-sm flex items-center gap-1"
+                    className="bg-[#161616] border border-[#00e599] text-[#00e599] px-3 py-1 rounded-full text-sm flex items-center gap-1"
                   >
                     {tech}
                     <button
                       type="button"
                       onClick={() => removeTech(i, tech)}
-                      className="text-[#00cc88] opacity-60 hover:opacity-100 hover:text-red-500"
+                      className="text-[#00e599] opacity-60 hover:opacity-100 hover:text-red-400 ml-1"
                     >
                       ×
                     </button>

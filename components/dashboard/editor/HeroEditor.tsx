@@ -61,7 +61,7 @@ export function HeroEditor({ hero, socialLinks, onChange }: Props) {
   }, [JSON.stringify({ name: values.name, title: values.title, bio: values.bio })])
 
   return (
-    <div className="space-y-4">
+    <div className="border border-white/20 rounded-lg p-4 space-y-4 bg-white/10">
       <div>
         <Label>Full Name</Label>
         <Input {...register('name')} />
