@@ -2,15 +2,19 @@
 export function buildResumeParsePrompt(resumeText: string): string {
   return `You are a resume parser. Extract information from the following resume text and return ONLY valid JSON matching this exact structure. Do not include any explanation or markdown — raw JSON only.
 
+Extraction rules:
+- "bio": Extract ONLY from sections explicitly titled "Intro", "Bio", or "Objective" in the resume. If none of these sections exist, leave it as an empty string. Do NOT invent or summarize.
+- "about": Extract from sections titled "About", "About Me", "Profile", or "Summary". If no such section exists, leave it as an empty string. Do NOT fall back to bio here — that is handled downstream.
+
 {
   "hero": {
     "name": "string — full name",
     "title": "string — job title or professional headline",
-    "bio": "string — 2-3 sentence professional summary",
+    "bio": "string — content from 'Intro', 'Bio', or 'Objective' section ONLY; empty string if none of these sections exist",
     "profilePhoto": null,
     "gender": "string — infer gender from the person's name: 'male', 'female', or 'unknown' if ambiguous"
   },
-  "about": "string — 1-2 paragraph about section",
+  "about": "string — content from 'About', 'About Me', 'Profile', or 'Summary' section ONLY; empty string if none of these exist",
   "skills": ["array of skill strings"],
   "experience": [
     {
@@ -19,7 +23,7 @@ export function buildResumeParsePrompt(resumeText: string): string {
       "location": "string or empty — city/state/country if mentioned",
       "startDate": "string — full month name and year, e.g. January 2020, or 'Present' for current",
       "endDate": "string — full month name and year, e.g. March 2023, or 'Present' for current",
-      "description": "string — a brief summary paragraph of the role. Use \\n to separate multiple paragraphs if the resume has distinct paragraphs.",
+      "description": "string — a brief summary of the role covering key responsibilities, day-to-day activities, and achievements. Include all relevant details from the resume. Use \\n to separate distinct paragraphs if needed.",
       "highlights": ["array of strings — individual bullet points from the resume for this role, preserving original wording. Each array item is one bullet point."],
       "technologies": ["array of strings — specific tools, frameworks, languages, or technologies used in this role"]
     }
@@ -46,7 +50,9 @@ export function buildResumeParsePrompt(resumeText: string): string {
     "github": "",
     "linkedin": "",
     "twitter": "",
-    "website": ""
+    "website": "",
+    "email": "string or empty — email address if mentioned",
+    "phone": "string or empty — phone/mobile number if mentioned, include country code if available"
   }
 }
 

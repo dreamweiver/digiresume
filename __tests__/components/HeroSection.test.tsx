@@ -8,7 +8,7 @@ vi.mock('next/image', () => ({
   default: (props: Record<string, unknown>) => <img {...props} />,
 }))
 
-const baseSocialLinks = { github: '', linkedin: '', twitter: '', website: '' }
+const baseSocialLinks = { github: '', linkedin: '', twitter: '', website: '', email: '', phone: '' }
 
 describe('HeroSection - profile photo priority', () => {
   it('uses profilePhoto when provided', () => {
@@ -70,5 +70,51 @@ describe('HeroSection - profile photo priority', () => {
     )
     const img = screen.getByAltText('Pat')
     expect(img).toHaveAttribute('src', 'https://github.com/patuser.png')
+  })
+})
+
+describe('HeroSection - email and phone', () => {
+  it('renders email with mailto link below bio when present', () => {
+    render(
+      <HeroSection
+        hero={{ name: 'Jane', title: 'Dev', bio: 'My bio', profilePhoto: null, gender: 'female' }}
+        socialLinks={{ ...baseSocialLinks, email: 'jane@example.com' }}
+      />,
+    )
+    const link = screen.getByText('jane@example.com').closest('a')
+    expect(link).toHaveAttribute('href', 'mailto:jane@example.com')
+  })
+
+  it('renders phone with tel link below bio when present', () => {
+    render(
+      <HeroSection
+        hero={{ name: 'Jane', title: 'Dev', bio: 'My bio', profilePhoto: null, gender: 'female' }}
+        socialLinks={{ ...baseSocialLinks, phone: '+1 234 567 8900' }}
+      />,
+    )
+    const link = screen.getByText('+1 234 567 8900').closest('a')
+    expect(link).toHaveAttribute('href', 'tel:+1 234 567 8900')
+  })
+
+  it('renders both email and phone when both are present', () => {
+    render(
+      <HeroSection
+        hero={{ name: 'Jane', title: 'Dev', bio: 'My bio', profilePhoto: null, gender: 'female' }}
+        socialLinks={{ ...baseSocialLinks, email: 'a@b.com', phone: '+44 20 1234 5678' }}
+      />,
+    )
+    expect(screen.getByText('a@b.com')).toBeInTheDocument()
+    expect(screen.getByText('+44 20 1234 5678')).toBeInTheDocument()
+  })
+
+  it('does not render email/phone block when both are empty', () => {
+    render(
+      <HeroSection
+        hero={{ name: 'Jane', title: 'Dev', bio: 'My bio', profilePhoto: null, gender: 'female' }}
+        socialLinks={baseSocialLinks}
+      />,
+    )
+    expect(screen.queryByText(/mailto:/)).not.toBeInTheDocument()
+    expect(screen.queryByText(/tel:/)).not.toBeInTheDocument()
   })
 })

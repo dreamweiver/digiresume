@@ -37,18 +37,26 @@ export function SocialEditor({ socialLinks, onChange }: Props) {
       linkedin: values.linkedin ?? '',
       twitter: values.twitter ?? '',
       website: values.website ?? '',
+      email: values.email ?? '',
+      phone: values.phone ?? '',
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [JSON.stringify(values)])
 
   return (
     <div className="space-y-4">
-      {(['github', 'linkedin', 'twitter', 'website'] as const).map((key) => (
+      {(['email', 'phone', 'github', 'linkedin', 'twitter', 'website'] as const).map((key) => (
         <div key={key}>
           <Label className="capitalize">{key}</Label>
           <Input
             {...register(key)}
-            placeholder={`https://${key === 'website' ? 'yourwebsite.com' : `${key}.com/username`}`}
+            placeholder={
+              key === 'email'
+                ? 'you@example.com'
+                : key === 'phone'
+                  ? '+1 234 567 8900'
+                  : `https://${key === 'website' ? 'yourwebsite.com' : `${key}.com/username`}`
+            }
           />
           {errors[key] && <p className="text-red-500 text-xs mt-1">{errors[key]?.message}</p>}
         </div>

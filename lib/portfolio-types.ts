@@ -39,6 +39,8 @@ export interface SocialLinks {
   linkedin: string
   twitter: string
   website: string
+  email: string
+  phone: string
 }
 
 export interface PortfolioData {
@@ -58,5 +60,5 @@ export const EMPTY_PORTFOLIO: PortfolioData = {
   experience: [],
   projects: [],
   education: [],
-  socialLinks: { github: '', linkedin: '', twitter: '', website: '' },
+  socialLinks: { github: '', linkedin: '', twitter: '', website: '', email: '', phone: '' },
 }

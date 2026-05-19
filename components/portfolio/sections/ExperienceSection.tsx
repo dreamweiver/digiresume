@@ -38,7 +38,7 @@ function ExperienceDescription({ entry }: { entry: ExperienceEntry }) {
             {entry.technologies.map((tech) => (
               <span
                 key={tech}
-                className="px-2 py-0.5 bg-[#1f1f1f] text-[#a1a1aa] rounded-md text-xs font-medium hover:text-[#00e599] hover:border-[#00e599]/30 border border-transparent transition-colors duration-200"
+                className="px-2 py-0.5 bg-[#1f1f1f] text-white rounded-md text-xs font-medium hover:border-[#00e599]/30 border border-transparent transition-colors duration-200"
               >
                 {tech}
               </span>
@@ -117,7 +117,7 @@ export function ExperienceSection({ experience }: Props) {
                       <p className="text-base sm:text-lg text-[#00e599]">
                         {entry.company}
                         {entry.location && (
-                          <span className="text-[#52525b] text-sm ml-2">
+                          <span className="text-[#a1a1aa] text-sm ml-2">
                             &middot; {entry.location}
                           </span>
                         )}

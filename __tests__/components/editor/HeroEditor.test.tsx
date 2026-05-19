@@ -4,12 +4,13 @@ import '@testing-library/jest-dom'
 import { HeroEditor } from '@/components/dashboard/editor/HeroEditor'
 import type { HeroData } from '@/lib/portfolio-types'
 
-const emptyHero: HeroData = { name: '', title: '', bio: '', profilePhoto: null }
+const emptyHero: HeroData = { name: '', title: '', bio: '', profilePhoto: null, gender: 'unknown' }
 const filledHero: HeroData = {
   name: 'Jane Doe',
   title: 'Engineer',
   bio: 'My bio',
   profilePhoto: null,
+  gender: 'female',
 }
 
 describe('HeroEditor', () => {

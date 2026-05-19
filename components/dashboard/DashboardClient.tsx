@@ -9,6 +9,7 @@ import { EMPTY_PORTFOLIO } from '@/lib/portfolio-types'
 import { PARSING_MESSAGES } from '@/lib/parsing-messages'
 import { DashboardHeader } from '@/components/dashboard/DashboardHeader'
 import { ActionBar } from '@/components/dashboard/ActionBar'
+import { EditorActionBar } from '@/components/dashboard/EditorActionBar'
 import { ResumeUploader } from '@/components/dashboard/ResumeUploader'
 import { Spinner } from '@/components/ui/spinner'
 import { PortfolioEditor } from '@/components/dashboard/PortfolioEditor'
@@ -142,7 +143,7 @@ export function DashboardClient({ initialPortfolio, initialData, usernameSlug, u
         {isParsing && (
           <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-[#0a0a0a]/80 backdrop-blur-sm">
             <Spinner size="lg" />
-            <p className="mt-4 text-sm text-[#00e599] text-center max-w-md px-4 transition-opacity duration-500">
+            <p className="mt-4 text-base sm:text-lg md:text-xl font-medium text-[#00e599] text-center max-w-2xl px-4 transition-opacity duration-500">
               {parsingMessage}
             </p>
           </div>
@@ -180,22 +181,38 @@ export function DashboardClient({ initialPortfolio, initialData, usernameSlug, u
             <ResumeUploader onGenerated={handleGenerated} onParsingChange={setIsParsing} />
           </div>
         ) : mode === 'edit' ? (
-          <div className="relative z-10 w-[75vw] mx-auto p-4 rounded-2xl bg-white/20 backdrop-blur-[12px] border border-white/20 shadow-2xl flex flex-col gap-3 overflow-y-auto max-h-[calc(100vh-12rem)]">
-            <PortfolioEditor
-              data={portfolioData}
-              onChange={setPortfolioData}
+          <div className="relative z-10 w-[75vw] mx-auto p-4 rounded-2xl bg-white/20 backdrop-blur-[12px] border border-white/20 shadow-2xl flex flex-col gap-3 h-[75vh]">
+            <EditorActionBar
+              mode={mode}
+              onToggleMode={handleToggleMode}
+              onPublish={handlePublish}
               onReupload={() => setIsReuploading(true)}
+              isPublishing={isPublishing}
+              isDisabled={isParsing}
             />
+            <div className="flex-1 overflow-y-auto">
+              <PortfolioEditor data={portfolioData} onChange={setPortfolioData} />
+            </div>
           </div>
         ) : (
           <div className="relative z-10 flex items-center gap-4 w-full max-w-6xl mx-auto">
-            <div className="flex-1 p-4 rounded-2xl bg-white/20 backdrop-blur-[12px] border border-white/20 shadow-2xl flex flex-col gap-3 overflow-y-auto max-h-[calc(100vh-12rem)]">
-              <PortfolioTemplate data={portfolioData} />
+            <div className="flex-1 p-4 rounded-2xl bg-white/20 backdrop-blur-[12px] border border-white/20 shadow-2xl flex flex-col gap-3 h-[75vh]">
+              <EditorActionBar
+                mode={mode}
+                onToggleMode={handleToggleMode}
+                onPublish={handlePublish}
+                isPublishing={isPublishing}
+                isDisabled={isParsing}
+              />
+              <div className="flex-1 overflow-y-auto">
+                <PortfolioTemplate data={portfolioData} />
+              </div>
             </div>
             <button
               onClick={() => setMode('edit')}
               className="shrink-0 p-3 rounded-full cursor-pointer text-[#52525b] border border-[#1f1f1f] bg-[#0a0a0a]/80 hover:text-[#00e599] hover:border-[#00e599] hover:bg-[#00e599]/10 hover:scale-110 transition-all duration-200"
               title="Close preview"
+              aria-label="Close preview"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -218,14 +235,11 @@ export function DashboardClient({ initialPortfolio, initialData, usernameSlug, u
 
       {hasPortfolio && (
         <ActionBar
-          mode={mode}
-          onToggleMode={handleToggleMode}
           onSaveDraft={handleSave}
-          onPublish={handlePublish}
           onDownloadPDF={handleDownload}
           isSaving={isSaving}
-          isPublishing={isPublishing}
           isDownloading={isDownloading}
+          isDisabled={isParsing}
         />
       )}
     </div>

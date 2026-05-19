@@ -39,6 +39,8 @@ export const socialLinksSchema = z.object({
   linkedin: urlOrEmpty,
   twitter: urlOrEmpty,
   website: urlOrEmpty,
+  email: z.string().email().or(z.literal('')),
+  phone: z.string(),
 })
 
 export type HeroFormData = z.infer<typeof heroSchema>

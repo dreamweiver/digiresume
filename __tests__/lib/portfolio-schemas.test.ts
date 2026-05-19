@@ -54,6 +54,8 @@ describe('socialLinksSchema', () => {
       linkedin: '',
       twitter: '',
       website: '',
+      email: '',
+      phone: '',
     })
     expect(result.github).toBe('')
     expect(result.website).toBe('')
@@ -65,6 +67,8 @@ describe('socialLinksSchema', () => {
       linkedin: 'https://linkedin.com/in/user',
       twitter: 'https://twitter.com/user',
       website: 'https://example.com',
+      email: 'user@example.com',
+      phone: '+1 234 567 8900',
     })
     expect(result.github).toBe('https://github.com/user')
   })
@@ -76,6 +80,8 @@ describe('socialLinksSchema', () => {
         linkedin: '',
         twitter: '',
         website: '',
+        email: '',
+        phone: '',
       }),
     ).toThrow()
   })
@@ -87,6 +93,8 @@ describe('socialLinksSchema', () => {
         linkedin: '',
         twitter: '',
         website: 'not-a-url',
+        email: '',
+        phone: '',
       }),
     ).toThrow()
   })
@@ -98,6 +106,8 @@ describe('socialLinksSchema', () => {
         linkedin: 'linkedin.com/in/user',
         twitter: '',
         website: '',
+        email: '',
+        phone: '',
       }),
     ).toThrow()
   })

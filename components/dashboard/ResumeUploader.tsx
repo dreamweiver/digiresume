@@ -1,5 +1,6 @@
 'use client'
 import { useState, useRef } from 'react'
+import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import type { PortfolioData } from '@/lib/portfolio-types'
 
@@ -39,6 +40,13 @@ export function ResumeUploader({ onGenerated, onParsingChange }: Props) {
       const json = await res.json()
       if (!res.ok) throw new Error(json.error || 'Parse failed')
       onGenerated(json.portfolioData, json.usernameSlug)
+      const warnings = Array.isArray(json.warnings) ? (json.warnings as string[]) : []
+      if (warnings.length > 0) {
+        toast.warning(
+          `Couldn't parse: ${warnings.join(', ')}. Please fill in these sections manually.`,
+          { duration: 8000 },
+        )
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong')
     } finally {

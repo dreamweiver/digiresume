@@ -9,13 +9,19 @@ describe('portfolio data encryption round-trip', () => {
   })
 
   const mockPortfolio: PortfolioData = {
-    hero: { name: 'Jane Doe', title: 'Engineer', bio: 'Bio here', profilePhoto: null },
+    hero: {
+      name: 'Jane Doe',
+      title: 'Engineer',
+      bio: 'Bio here',
+      profilePhoto: null,
+      gender: 'female' as const,
+    },
     about: 'About text',
     skills: ['TypeScript', 'React'],
     experience: [],
     projects: [],
     education: [],
-    socialLinks: { github: '', linkedin: '', twitter: '', website: '' },
+    socialLinks: { github: '', linkedin: '', twitter: '', website: '', email: '', phone: '' },
   }
 
   it('encrypts and decrypts portfolio data without loss', () => {

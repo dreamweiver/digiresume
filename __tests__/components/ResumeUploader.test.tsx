@@ -95,7 +95,7 @@ describe('ResumeUploader', () => {
       experience: [],
       projects: [],
       education: [],
-      socialLinks: { github: '', linkedin: '', twitter: '', website: '' },
+      socialLinks: { github: '', linkedin: '', twitter: '', website: '', email: '', phone: '' },
     }
     const fetchMock = vi
       .fn()
