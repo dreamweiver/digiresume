@@ -62,6 +62,9 @@ vi.mock('@google/generative-ai', () => ({
 
 describe('POST /api/parse', () => {
   const samplePdf = readFileSync(resolve(__dirname, '../mock/sample-resume.pdf'))
+  const sampleDocx = readFileSync(resolve(__dirname, '../fixtures/sample-resume-plain.docx'))
+  const DOCX_MIME =
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
 
   const mockPortfolioData = {
     hero: {
@@ -129,12 +132,12 @@ describe('POST /api/parse', () => {
     expect(json.error).toBe('No file uploaded')
   })
 
-  it('returns 400 if file is not a PDF', async () => {
+  it('returns 400 if file is not a PDF or DOCX', async () => {
     const file = new File(['hello'], 'resume.txt', { type: 'text/plain' })
     const res = await callRoute(file)
     expect(res.status).toBe(400)
     const json = await res.json()
-    expect(json.error).toBe('Only PDF files are supported')
+    expect(json.error).toBe('Only PDF or DOCX files are supported')
   })
 
   it('returns 502 with a friendly message if Gemini API fails (technical detail not leaked)', async () => {
@@ -248,5 +251,124 @@ describe('POST /api/parse', () => {
     const file = new File([samplePdf], 'resume.pdf', { type: 'application/pdf' })
     const res = await callRoute(file)
     expect(res.status).toBe(200)
+  })
+
+  describe('DOCX support', () => {
+    it('parses a DOCX resume and returns portfolio data', async () => {
+      const file = new File([sampleDocx], 'resume.docx', { type: DOCX_MIME })
+      const res = await callRoute(file)
+      expect(res.status).toBe(200)
+      const json = await res.json()
+      expect(json.portfolioData).toEqual(mockPortfolioData)
+      expect(json.usernameSlug).toBe('test-user-abc123')
+      // Sanity: Gemini received a non-empty prompt derived from the DOCX text.
+      expect(mockGenerateContent).toHaveBeenCalled()
+      const promptArg = mockGenerateContent.mock.calls[0][0] as string
+      expect(promptArg).toContain('JANE DOE')
+    })
+
+    it('returns 422 when DOCX is empty (no extractable text)', async () => {
+      // Minimal valid-looking DOCX (zip) that mammoth will treat as empty/invalid.
+      // Easier to assert: pass a corrupt buffer so extractRawText throws → 422.
+      const file = new File([Buffer.from('totally not a docx')], 'resume.docx', {
+        type: DOCX_MIME,
+      })
+      const res = await callRoute(file)
+      expect(res.status).toBe(422)
+      const json = await res.json()
+      expect(json.error).toBe('Failed to read resume file')
+    })
+
+    it('updates existing portfolio when uploading a DOCX', async () => {
+      dbLimit.mockReset()
+      dbLimit
+        .mockResolvedValueOnce([{ id: 'user_test123', usernameSlug: 'test-user-abc123' }])
+        .mockResolvedValueOnce([{ userId: 'user_test123', portfolioData: 'old' }])
+      const file = new File([sampleDocx], 'resume.docx', { type: DOCX_MIME })
+      const res = await callRoute(file)
+      expect(res.status).toBe(200)
+      expect(dbSet).toHaveBeenCalledWith(
+        expect.objectContaining({ status: 'draft', portfolioData: expect.any(String) }),
+      )
+    })
+
+    it('rejects legacy .doc (application/msword) MIME', async () => {
+      const file = new File([Buffer.from('legacy doc bytes')], 'resume.doc', {
+        type: 'application/msword',
+      })
+      const res = await callRoute(file)
+      expect(res.status).toBe(400)
+      expect((await res.json()).error).toBe('Only PDF or DOCX files are supported')
+    })
+  })
+
+  describe('bio/about post-processing', () => {
+    it('derives hero.bio from first sentence of about when bio is empty', async () => {
+      mockGenerateContent.mockResolvedValueOnce({
+        response: {
+          text: () =>
+            JSON.stringify({
+              ...mockPortfolioData,
+              hero: { ...mockPortfolioData.hero, bio: '' },
+              about: 'Lead engineer with 10 years of experience. Loves distributed systems.',
+            }),
+        },
+      })
+      const file = new File([samplePdf], 'resume.pdf', { type: 'application/pdf' })
+      const res = await callRoute(file)
+      expect(res.status).toBe(200)
+      const json = await res.json()
+      expect(json.portfolioData.hero.bio).toBe('Lead engineer with 10 years of experience.')
+      // about should remain untouched.
+      expect(json.portfolioData.about).toBe(
+        'Lead engineer with 10 years of experience. Loves distributed systems.',
+      )
+    })
+
+    it('fills about from bio when about is empty', async () => {
+      mockGenerateContent.mockResolvedValueOnce({
+        response: {
+          text: () =>
+            JSON.stringify({
+              ...mockPortfolioData,
+              hero: {
+                ...mockPortfolioData.hero,
+                bio: 'Frontend specialist. Shipped design systems used by millions.',
+              },
+              about: '',
+            }),
+        },
+      })
+      const file = new File([samplePdf], 'resume.pdf', { type: 'application/pdf' })
+      const res = await callRoute(file)
+      expect(res.status).toBe(200)
+      const json = await res.json()
+      expect(json.portfolioData.hero.bio).toBe('Frontend specialist.')
+      expect(json.portfolioData.about).toBe(
+        'Frontend specialist. Shipped design systems used by millions.',
+      )
+    })
+
+    it('trims bio to first sentence when both bio and about are present', async () => {
+      mockGenerateContent.mockResolvedValueOnce({
+        response: {
+          text: () =>
+            JSON.stringify({
+              ...mockPortfolioData,
+              hero: {
+                ...mockPortfolioData.hero,
+                bio: 'Senior dev. Many years experience. Likes Go.',
+              },
+              about: 'Pre-existing about section copy.',
+            }),
+        },
+      })
+      const file = new File([samplePdf], 'resume.pdf', { type: 'application/pdf' })
+      const res = await callRoute(file)
+      expect(res.status).toBe(200)
+      const json = await res.json()
+      expect(json.portfolioData.hero.bio).toBe('Senior dev.')
+      expect(json.portfolioData.about).toBe('Pre-existing about section copy.')
+    })
   })
 })

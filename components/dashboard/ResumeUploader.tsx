@@ -4,6 +4,16 @@ import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import type { PortfolioData } from '@/lib/portfolio-types'
 
+const DOCX_MIME = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+
+function isAcceptedResume(file: File | undefined | null): boolean {
+  if (!file) return false
+  if (file.type === 'application/pdf' || file.type === DOCX_MIME) return true
+  // Some browsers don't set MIME on drop — fall back to extension sniffing.
+  const name = file.name.toLowerCase()
+  return name.endsWith('.pdf') || name.endsWith('.docx')
+}
+
 interface Props {
   onGenerated: (data: PortfolioData, usernameSlug?: string) => void
   onParsingChange?: (isParsing: boolean) => void
@@ -20,11 +30,11 @@ export function ResumeUploader({ onGenerated, onParsingChange }: Props) {
     e.preventDefault()
     setIsDragging(false)
     const dropped = e.dataTransfer.files[0]
-    if (dropped?.type === 'application/pdf') {
+    if (isAcceptedResume(dropped)) {
       setFile(dropped)
       setError(null)
     } else {
-      setError('Only PDF files are supported')
+      setError('Only PDF or DOCX files are supported')
     }
   }
 
@@ -77,7 +87,7 @@ export function ResumeUploader({ onGenerated, onParsingChange }: Props) {
         <input
           ref={inputRef}
           type="file"
-          accept=".pdf"
+          accept=".pdf,.docx"
           className="hidden"
           onChange={(e) => {
             const f = e.target.files?.[0]
@@ -129,7 +139,7 @@ export function ResumeUploader({ onGenerated, onParsingChange }: Props) {
               <div>
                 <p className="text-white font-medium text-base">Drop your resume here</p>
                 <p className="text-[#52525b] text-sm mt-1">
-                  or <span className="text-[#00e599]">click to browse</span> · PDF only
+                  or <span className="text-[#00e599]">click to browse</span> · PDF or DOCX
                 </p>
               </div>
             </div>
