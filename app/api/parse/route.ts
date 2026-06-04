@@ -3,6 +3,7 @@ import { auth, currentUser } from '@clerk/nextjs/server'
 import { NextRequest, NextResponse } from 'next/server'
 import { GoogleGenerativeAI } from '@google/generative-ai'
 import pdf from 'pdf-parse'
+import mammoth from 'mammoth'
 import { buildResumeParsePrompt } from '@/lib/gemini-prompt'
 import { encrypt } from '@/lib/crypto'
 import { db } from '@/lib/db'
@@ -15,6 +16,8 @@ import { sanitizePortfolio } from '@/lib/sanitize-portfolio'
 
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENERATIVE_AI_API_KEY!)
 
+const DOCX_MIME = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+
 export async function POST(req: NextRequest) {
   const { userId } = await auth()
   if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -23,21 +26,29 @@ export async function POST(req: NextRequest) {
   const file = formData.get('resume') as File | null
   if (!file) return NextResponse.json({ error: 'No file uploaded' }, { status: 400 })
 
-  if (file.type !== 'application/pdf') {
-    return NextResponse.json({ error: 'Only PDF files are supported' }, { status: 400 })
+  if (file.type !== 'application/pdf' && file.type !== DOCX_MIME) {
+    return NextResponse.json(
+      { error: 'Only PDF or DOCX files are supported' },
+      { status: 400 },
+    )
   }
 
-  // Extract text from PDF (in memory, never saved to disk)
+  // Extract text in memory (file is never saved to disk)
   let resumeText: string
   try {
     const buffer = Buffer.from(await file.arrayBuffer())
-    const pdfData = await pdf(buffer)
-    resumeText = pdfData.text.trim()
+    if (file.type === 'application/pdf') {
+      const pdfData = await pdf(buffer)
+      resumeText = pdfData.text.trim()
+    } else {
+      const { value } = await mammoth.extractRawText({ buffer })
+      resumeText = value.trim()
+    }
   } catch {
-    return NextResponse.json({ error: 'Failed to read PDF file' }, { status: 422 })
+    return NextResponse.json({ error: 'Failed to read resume file' }, { status: 422 })
   }
   if (!resumeText) {
-    return NextResponse.json({ error: 'Could not extract text from PDF' }, { status: 422 })
+    return NextResponse.json({ error: 'Could not extract text from file' }, { status: 422 })
   }
 
   // Parse with Gemini Flash (with retry on transient errors)
@@ -78,16 +89,27 @@ export async function POST(req: NextRequest) {
   const { data: sanitized, warnings } = sanitizePortfolio(rawParsed)
   const portfolioData: PortfolioData = sanitized
 
-  // Post-process bio/about:
-  // - Hero bio = first sentence only (concise headline under name)
-  // - About = full bio text when no dedicated About/Summary section was found
+  // Post-process bio/about so the hero card always has a headline and the
+  // About section always has prose, regardless of which field Gemini populated.
+  //
+  //   bio present, about empty → fill about from full bio
+  //   about present, bio empty → fill bio from first sentence of about
+  //   both present              → trim bio to first sentence (concise headline)
+  const firstSentence = (text: string) => {
+    const match = text.match(/^[^.!?]+[.!?]/)
+    return match ? match[0].trim() : text
+  }
+
   const fullBio = portfolioData.hero.bio.trim()
-  if (fullBio) {
-    if (!portfolioData.about.trim()) {
-      portfolioData.about = fullBio
-    }
-    const firstSentenceMatch = fullBio.match(/^[^.!?]+[.!?]/)
-    portfolioData.hero.bio = firstSentenceMatch ? firstSentenceMatch[0].trim() : fullBio
+  const fullAbout = portfolioData.about.trim()
+
+  if (fullBio && !fullAbout) {
+    portfolioData.about = fullBio
+  }
+  if (!fullBio && fullAbout) {
+    portfolioData.hero.bio = firstSentence(fullAbout)
+  } else if (fullBio) {
+    portfolioData.hero.bio = firstSentence(fullBio)
   }
 
   // Encrypt and upsert portfolio

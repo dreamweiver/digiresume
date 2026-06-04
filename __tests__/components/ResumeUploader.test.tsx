@@ -47,17 +47,29 @@ describe('ResumeUploader', () => {
     })
   })
 
-  it('shows error when non-PDF file is dropped', async () => {
+  it('shows error when an unsupported file type is dropped', async () => {
     render(<ResumeUploader onGenerated={vi.fn()} />)
     const dropZone = screen.getByText('Drop your resume here').closest('div')!
-    const file = new File(['content'], 'resume.docx', {
+    const file = new File(['content'], 'resume.txt', { type: 'text/plain' })
+    fireEvent.drop(dropZone, {
+      dataTransfer: { files: [file] },
+    })
+    await waitFor(() => {
+      expect(screen.getByText('Only PDF or DOCX files are supported')).toBeInTheDocument()
+    })
+  })
+
+  it('accepts DOCX file via drop', async () => {
+    render(<ResumeUploader onGenerated={vi.fn()} />)
+    const dropZone = screen.getByText('Drop your resume here').closest('div')!
+    const file = new File(['docx'], 'cv.docx', {
       type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
     })
     fireEvent.drop(dropZone, {
       dataTransfer: { files: [file] },
     })
     await waitFor(() => {
-      expect(screen.getByText('Only PDF files are supported')).toBeInTheDocument()
+      expect(screen.getByText('cv.docx')).toBeInTheDocument()
     })
   })
 
@@ -190,7 +202,6 @@ describe('ResumeUploader', () => {
     fireEvent.drop(dropZone, {
       dataTransfer: { files: [] },
     })
-    // The dropped?.type check returns undefined !== 'application/pdf' => shows error
-    expect(screen.getByText('Only PDF files are supported')).toBeInTheDocument()
+    expect(screen.getByText('Only PDF or DOCX files are supported')).toBeInTheDocument()
   })
 })
