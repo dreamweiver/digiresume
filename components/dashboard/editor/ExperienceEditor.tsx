@@ -59,21 +59,24 @@ export function ExperienceEditor({ experience, onChange }: Props) {
   return (
     <div className="space-y-3">
       {fields.map((field, i) => (
-        <div key={field.id} className="border border-white/20 rounded-lg p-4 space-y-3 bg-white/10">
+        <div
+          key={field.id}
+          className="border border-white/10 rounded-xl p-4 space-y-3 bg-white/[0.04] backdrop-blur-sm"
+        >
           <div className="flex justify-between items-center">
-            <h4 className="font-medium text-gray-700 text-sm">Experience {i + 1}</h4>
+            <h4 className="font-medium text-white text-sm">Experience {i + 1}</h4>
             <Button
               variant="ghost"
               size="icon"
               type="button"
               aria-label={`Delete experience ${i + 1}`}
               onClick={() => remove(i)}
-              className="text-[#52525b] hover:text-red-500 hover:bg-red-500/10"
+              className="text-[#6b7d72] hover:text-red-500 hover:bg-red-500/10"
             >
               <Trash2 className="h-4 w-4" />
             </Button>
           </div>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <Label>Company</Label>
               <Input {...register(`experience.${i}.company`)} />
@@ -112,7 +115,7 @@ export function ExperienceEditor({ experience, onChange }: Props) {
         type="button"
         variant="outline"
         onClick={() => append(emptyEntry())}
-        className="border-[#1f1f1f] text-[#00e599] hover:border-[#00e599] hover:text-[#00e599] transition-colors duration-200 bg-transparent"
+        className="rounded-full border border-[#00e599]/30 text-[#00e599] hover:border-[#00e599] hover:bg-[#00e599]/10 transition-all duration-200 bg-transparent"
       >
         + Add Experience
       </Button>

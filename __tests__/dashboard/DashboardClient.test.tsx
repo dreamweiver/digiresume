@@ -195,7 +195,7 @@ describe('DashboardClient', () => {
     vi.stubGlobal('fetch', fetchMock)
 
     renderClient(mockPortfolio, mockPortfolioData)
-    fireEvent.click(screen.getByText('Publish'))
+    fireEvent.click(screen.getAllByText('Publish')[0])
 
     await waitFor(() => {
       const calls = fetchMock.mock.calls.map((c) => c[0])
@@ -212,7 +212,7 @@ describe('DashboardClient', () => {
     const openSpy = vi.spyOn(window, 'open').mockImplementation(() => null)
 
     renderClient(mockPortfolio, mockPortfolioData)
-    fireEvent.click(screen.getByText('Publish'))
+    fireEvent.click(screen.getAllByText('Publish')[0])
 
     await waitFor(() => {
       expect(openSpy).toHaveBeenCalledWith('/u/jane-doe-ab1234', '_blank')
@@ -228,7 +228,7 @@ describe('DashboardClient', () => {
     vi.spyOn(window, 'open').mockImplementation(() => null)
 
     renderClient(mockPortfolio, mockPortfolioData)
-    fireEvent.click(screen.getByText('Publish'))
+    fireEvent.click(screen.getAllByText('Publish')[0])
 
     await waitFor(() => {
       expect(screen.getByText('Published')).toBeInTheDocument()
@@ -262,7 +262,7 @@ describe('DashboardClient', () => {
     vi.stubGlobal('fetch', fetchMock)
 
     renderClient(mockPortfolio, mockPortfolioData)
-    fireEvent.click(screen.getByText('Publish'))
+    fireEvent.click(screen.getAllByText('Publish')[0])
 
     await waitFor(() => {
       expect(toast.error).toHaveBeenCalledWith('Failed to publish portfolio')
@@ -280,7 +280,7 @@ describe('DashboardClient', () => {
     vi.stubGlobal('fetch', fetchMock)
 
     renderClient(mockPortfolio, mockPortfolioData)
-    fireEvent.click(screen.getByText('Publish'))
+    fireEvent.click(screen.getAllByText('Publish')[0])
 
     await waitFor(() => {
       expect(toast.error).toHaveBeenCalledWith('Failed to publish portfolio')

@@ -35,7 +35,7 @@ export function SkillsEditor({ skills, onChange }: Props) {
   }
 
   return (
-    <div className="border border-white/20 rounded-lg p-4 space-y-3 bg-white/10">
+    <div className="border border-white/10 rounded-xl p-4 space-y-3 bg-white/[0.04] backdrop-blur-sm">
       <Label>Skills</Label>
       <form onSubmit={handleSubmit(handleAddSkill)}>
         <div className="flex gap-2">
@@ -55,7 +55,7 @@ export function SkillsEditor({ skills, onChange }: Props) {
           <Button
             type="submit"
             variant="outline"
-            className="border-[#1f1f1f] text-[#00e599] hover:border-[#00e599] hover:text-[#00e599] transition-colors duration-200 bg-transparent"
+            className="rounded-full border border-[#00e599]/30 text-[#00e599] hover:border-[#00e599] hover:bg-[#00e599]/10 transition-all duration-200 bg-transparent"
           >
             Add
           </Button>
@@ -65,7 +65,7 @@ export function SkillsEditor({ skills, onChange }: Props) {
         {skills.map((skill) => (
           <span
             key={skill}
-            className="bg-[#161616] border border-[#00e599] text-[#00e599] px-3 py-1 rounded-full text-sm flex items-center gap-1"
+            className="bg-[#102a1f] border border-[#00e599] text-[#00e599] px-3 py-1 rounded-full text-sm flex items-center gap-1"
           >
             {skill}
             <button

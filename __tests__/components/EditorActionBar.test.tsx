@@ -76,8 +76,8 @@ describe('EditorActionBar', () => {
 
   it('disables all buttons when isDisabled', () => {
     setup({ isDisabled: true })
-    expect(screen.getByText('Preview')).toBeDisabled()
-    expect(screen.getByText('Publish')).toBeDisabled()
-    expect(screen.getByText('Re-upload Resume')).toBeDisabled()
+    expect(screen.getByText('Preview').closest('button')).toBeDisabled()
+    expect(screen.getByText('Publish').closest('button')).toBeDisabled()
+    expect(screen.getByLabelText('Re-upload resume')).toBeDisabled()
   })
 })

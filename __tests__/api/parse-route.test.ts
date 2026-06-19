@@ -63,8 +63,7 @@ vi.mock('@google/generative-ai', () => ({
 describe('POST /api/parse', () => {
   const samplePdf = readFileSync(resolve(__dirname, '../mock/sample-resume.pdf'))
   const sampleDocx = readFileSync(resolve(__dirname, '../fixtures/sample-resume-plain.docx'))
-  const DOCX_MIME =
-    'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+  const DOCX_MIME = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
 
   const mockPortfolioData = {
     hero: {

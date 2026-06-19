@@ -19,7 +19,7 @@ export function SkillsSection({ skills }: Props) {
             {skills.map((skill) => (
               <span
                 key={skill}
-                className="px-3 sm:px-4 py-1.5 sm:py-2 bg-[#1f1f1f] text-white rounded-full text-sm sm:text-base md:text-lg font-medium hover:bg-[#00e599] hover:text-black transition-colors duration-200"
+                className="px-3 sm:px-4 py-1.5 sm:py-2 bg-[#1a3a2c] text-white rounded-full text-sm sm:text-base md:text-lg font-medium hover:bg-[#00e599] hover:text-black transition-colors duration-200"
               >
                 {skill}
               </span>

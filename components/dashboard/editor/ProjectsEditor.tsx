@@ -92,10 +92,10 @@ export function ProjectsEditor({ projects, onChange }: Props) {
         return (
           <div
             key={field.id}
-            className="border border-white/20 rounded-lg p-4 space-y-3 bg-white/10"
+            className="border border-white/10 rounded-xl p-4 space-y-3 bg-white/[0.04] backdrop-blur-sm"
           >
             <div className="flex justify-between items-center">
-              <h4 className="font-medium text-gray-700 text-sm">Project {i + 1}</h4>
+              <h4 className="font-medium text-white text-sm">Project {i + 1}</h4>
               <Button
                 variant="ghost"
                 size="icon"
@@ -105,7 +105,7 @@ export function ProjectsEditor({ projects, onChange }: Props) {
                   remove(i)
                   setTechInputs((prev) => prev.filter((_, idx) => idx !== i))
                 }}
-                className="text-[#52525b] hover:text-red-500 hover:bg-red-500/10"
+                className="text-[#6b7d72] hover:text-red-500 hover:bg-red-500/10"
               >
                 <Trash2 className="h-4 w-4" />
               </Button>
@@ -141,7 +141,7 @@ export function ProjectsEditor({ projects, onChange }: Props) {
                   type="button"
                   variant="outline"
                   onClick={() => addTech(i)}
-                  className="border-[#1f1f1f] text-[#00e599] hover:border-[#00e599] hover:text-[#00e599] transition-colors duration-200 bg-transparent"
+                  className="rounded-full border border-[#00e599]/30 text-[#00e599] hover:border-[#00e599] hover:bg-[#00e599]/10 transition-all duration-200 bg-transparent"
                 >
                   Add
                 </Button>
@@ -150,7 +150,7 @@ export function ProjectsEditor({ projects, onChange }: Props) {
                 {techStack.map((tech) => (
                   <span
                     key={tech}
-                    className="bg-[#161616] border border-[#00e599] text-[#00e599] px-3 py-1 rounded-full text-sm flex items-center gap-1"
+                    className="bg-[#102a1f] border border-[#00e599] text-[#00e599] px-3 py-1 rounded-full text-sm flex items-center gap-1"
                   >
                     {tech}
                     <button
@@ -164,7 +164,7 @@ export function ProjectsEditor({ projects, onChange }: Props) {
                 ))}
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <Label>Live URL</Label>
                 <Input {...register(`projects.${i}.liveUrl`)} />
@@ -192,7 +192,7 @@ export function ProjectsEditor({ projects, onChange }: Props) {
           append(emptyProject())
           setTechInputs((prev) => [...prev, ''])
         }}
-        className="border-[#1f1f1f] text-[#00e599] hover:border-[#00e599] hover:text-[#00e599] transition-colors duration-200 bg-transparent"
+        className="rounded-full border border-[#00e599]/30 text-[#00e599] hover:border-[#00e599] hover:bg-[#00e599]/10 transition-all duration-200 bg-transparent"
       >
         + Add Project
       </Button>

@@ -102,4 +102,34 @@ describe('PortfolioEditor', () => {
       expect(onChange).toHaveBeenCalled()
     })
   })
+
+  it('each tab trigger has a stable data-tab-id matching its value', () => {
+    renderEditor()
+    expect(screen.getByRole('tab', { name: /Hero/ })).toHaveAttribute('data-tab-id', 'hero')
+    expect(screen.getByRole('tab', { name: /About/ })).toHaveAttribute('data-tab-id', 'about')
+    expect(screen.getByRole('tab', { name: /Skills/ })).toHaveAttribute('data-tab-id', 'skills')
+    expect(screen.getByRole('tab', { name: /Experience/ })).toHaveAttribute(
+      'data-tab-id',
+      'experience',
+    )
+    expect(screen.getByRole('tab', { name: /Projects/ })).toHaveAttribute('data-tab-id', 'projects')
+    expect(screen.getByRole('tab', { name: /Education/ })).toHaveAttribute(
+      'data-tab-id',
+      'education',
+    )
+    expect(screen.getByRole('tab', { name: /Social/ })).toHaveAttribute('data-tab-id', 'social')
+  })
+
+  it('scrolls the active tab into view when the selection changes', async () => {
+    const scrollSpy = vi.spyOn(Element.prototype, 'scrollIntoView')
+    renderEditor()
+    scrollSpy.mockClear()
+    fireEvent.click(screen.getByRole('tab', { name: /Projects/ }))
+    await waitFor(() => {
+      expect(scrollSpy).toHaveBeenCalledWith(
+        expect.objectContaining({ inline: 'center', block: 'nearest' }),
+      )
+    })
+    scrollSpy.mockRestore()
+  })
 })

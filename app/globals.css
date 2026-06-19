@@ -47,50 +47,51 @@
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
 
-  /* Neon design tokens — available as Tailwind utilities */
-  --color-neon-green: #00e599;
-  --color-neon-green-dark: #00cc88;
-  --color-bg-primary: #0a0a0a;
-  --color-bg-secondary: #111111;
-  --color-bg-card: #161616;
-  --color-border-subtle: #1f1f1f;
-  --color-text-secondary: #a1a1aa;
-  --color-text-muted: #52525b;
+  /* Emerald aurora design tokens — available as Tailwind utilities */
+  --color-accent-primary: #00e599;
+  --color-accent-primary-dark: #00cc88;
+  --color-accent-soft: #5fe3a1;
+  --color-bg-primary: #061a13;
+  --color-bg-secondary: #0a2218;
+  --color-bg-card: #102a1f;
+  --color-border-subtle: #1a3a2c;
+  --color-text-secondary: #a1b3a8;
+  --color-text-muted: #6b7d72;
 }
 
-/* ── Neon dark theme: override ALL shadcn CSS variables ─────────────────── */
+/* ── Emerald aurora dark theme ──────────────────────────────────────────── */
 :root {
-  --background: oklch(0.06 0 0); /* #0a0a0a */
-  --foreground: oklch(1 0 0); /* #ffffff */
-  --card: oklch(0.09 0 0); /* #161616 */
+  --background: oklch(0.16 0.03 160); /* deep emerald near-black */
+  --foreground: oklch(1 0 0);
+  --card: oklch(0.22 0.05 160);
   --card-foreground: oklch(1 0 0);
-  --popover: oklch(0.07 0 0); /* #111111 */
+  --popover: oklch(0.18 0.04 160);
   --popover-foreground: oklch(1 0 0);
-  --primary: oklch(0.84 0.18 163); /* #00e599 neon green */
-  --primary-foreground: oklch(0 0 0); /* black text on green buttons */
-  --secondary: oklch(0.07 0 0); /* #111111 */
+  --primary: oklch(0.84 0.18 163); /* #00e599 emerald */
+  --primary-foreground: oklch(0.13 0.02 160);
+  --secondary: oklch(0.18 0.04 160);
   --secondary-foreground: oklch(1 0 0);
-  --muted: oklch(0.07 0 0); /* #111111 */
-  --muted-foreground: oklch(0.63 0 0); /* #a1a1aa */
-  --accent: oklch(0.09 0 0); /* #161616 */
+  --muted: oklch(0.18 0.04 160);
+  --muted-foreground: oklch(0.71 0.02 160);
+  --accent: oklch(0.22 0.05 160);
   --accent-foreground: oklch(1 0 0);
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.12 0 0); /* #1f1f1f */
-  --input: oklch(0.07 0 0); /* #111111 */
-  --ring: oklch(0.84 0.18 163); /* neon green focus ring */
+  --border: oklch(0.27 0.04 160);
+  --input: oklch(0.18 0.04 160);
+  --ring: oklch(0.84 0.18 163);
   --chart-1: oklch(0.84 0.18 163);
-  --chart-2: oklch(0.63 0 0);
-  --chart-3: oklch(0.44 0 0);
-  --chart-4: oklch(0.37 0 0);
-  --chart-5: oklch(0.27 0 0);
-  --radius: 0.375rem;
-  --sidebar: oklch(0.07 0 0);
+  --chart-2: oklch(0.71 0.02 160);
+  --chart-3: oklch(0.5 0.04 160);
+  --chart-4: oklch(0.4 0.04 160);
+  --chart-5: oklch(0.3 0.04 160);
+  --radius: 0.5rem;
+  --sidebar: oklch(0.18 0.04 160);
   --sidebar-foreground: oklch(1 0 0);
   --sidebar-primary: oklch(0.84 0.18 163);
-  --sidebar-primary-foreground: oklch(0 0 0);
-  --sidebar-accent: oklch(0.09 0 0);
+  --sidebar-primary-foreground: oklch(0.13 0.02 160);
+  --sidebar-accent: oklch(0.22 0.05 160);
   --sidebar-accent-foreground: oklch(1 0 0);
-  --sidebar-border: oklch(0.12 0 0);
+  --sidebar-border: oklch(0.27 0.04 160);
   --sidebar-ring: oklch(0.84 0.18 163);
 }
 
@@ -102,7 +103,7 @@
   }
   body {
     @apply bg-background text-foreground;
-    background-color: #0a0a0a;
+    background-color: #061a13;
     color: #ffffff;
   }
   html {
@@ -120,7 +121,7 @@
   }
 
   .hero-grid-bg {
-    background-image: radial-gradient(circle, #1f1f1f 1px, transparent 1px);
+    background-image: radial-gradient(circle, #1a3a2c 1px, transparent 1px);
     background-size: 32px 32px;
   }
 
@@ -142,6 +143,35 @@
 
   .pulse-ring-delay {
     animation-delay: 0.6s;
+  }
+
+  /* Aurora gradient backdrop — Serenity-inspired emerald glow */
+  .aurora-bg {
+    background:
+      radial-gradient(ellipse 90% 60% at 50% 110%, rgba(0, 229, 153, 0.35) 0%, transparent 55%),
+      radial-gradient(ellipse 70% 50% at 15% 0%, rgba(0, 229, 153, 0.12) 0%, transparent 55%),
+      radial-gradient(ellipse 60% 70% at 100% 30%, rgba(0, 229, 153, 0.08) 0%, transparent 60%),
+      linear-gradient(180deg, #061a13 0%, #0a2218 100%);
+  }
+
+  /* Glass surface — used by cards on the aurora background */
+  .glass-surface {
+    background: rgba(10, 34, 24, 0.55);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(0, 229, 153, 0.12);
+    box-shadow:
+      0 8px 32px rgba(0, 0, 0, 0.4),
+      inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  }
+
+  /* Hide scrollbar but keep scroll on x-axis (used by horizontal tab strip) */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
 }
 

@@ -27,10 +27,7 @@ export async function POST(req: NextRequest) {
   if (!file) return NextResponse.json({ error: 'No file uploaded' }, { status: 400 })
 
   if (file.type !== 'application/pdf' && file.type !== DOCX_MIME) {
-    return NextResponse.json(
-      { error: 'Only PDF or DOCX files are supported' },
-      { status: 400 },
-    )
+    return NextResponse.json({ error: 'Only PDF or DOCX files are supported' }, { status: 400 })
   }
 
   // Extract text in memory (file is never saved to disk)
