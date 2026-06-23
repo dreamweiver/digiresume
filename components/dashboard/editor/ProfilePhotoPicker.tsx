@@ -55,9 +55,9 @@ export function ProfilePhotoPicker({ hero, socialLinks, onPhotoChange }: Props) 
     hero.profilePhoto && githubSrc && hero.profilePhoto === githubSrc ? 'github' : 'viking'
 
   return (
-    <div className="border border-white/20 rounded-lg p-4 space-y-3 bg-white/10">
+    <div className="border border-white/10 rounded-xl p-4 space-y-3 bg-white/[0.04] backdrop-blur-sm">
       <Label>Profile Photo</Label>
-      <p className="text-xs text-gray-600">
+      <p className="text-xs text-[#a1b3a8]">
         Defaults to a local Viking image. If your GitHub URL has a public avatar, you can pick that
         instead.
       </p>
@@ -99,8 +99,8 @@ function PhotoOption({ id, label, src, checked, onSelect, unoptimized }: OptionP
       htmlFor={id}
       className={`flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer border transition-colors ${
         checked
-          ? 'border-[#00cc88] bg-[#00cc88]/10'
-          : 'border-white/30 bg-white/20 hover:border-white/60'
+          ? 'border-[#00e599] bg-[#00e599]/10'
+          : 'border-[#1a3a2c] bg-[#0a2218]/40 hover:border-[#00e599]/60'
       }`}
     >
       <input
@@ -109,7 +109,7 @@ function PhotoOption({ id, label, src, checked, onSelect, unoptimized }: OptionP
         name="profilePhoto"
         checked={checked}
         onChange={onSelect}
-        className="accent-[#00cc88]"
+        className="accent-[#00e599]"
       />
       <Image
         src={src}
@@ -117,9 +117,9 @@ function PhotoOption({ id, label, src, checked, onSelect, unoptimized }: OptionP
         width={64}
         height={64}
         unoptimized={unoptimized}
-        className="h-16 w-16 rounded-full object-cover border border-white/30"
+        className="h-16 w-16 rounded-full object-cover border border-[#1a3a2c]"
       />
-      <span className="text-sm text-gray-700">{label}</span>
+      <span className="text-sm text-white">{label}</span>
     </label>
   )
 }

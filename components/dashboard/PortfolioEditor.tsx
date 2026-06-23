@@ -1,4 +1,5 @@
 'use client'
+import { useEffect, useRef, useState } from 'react'
 import {
   User,
   FileText,
@@ -37,16 +38,53 @@ const TABS: { id: string; label: string; icon: LucideIcon }[] = [
 export const EDITOR_DEFAULT_TAB = 'hero'
 
 export function EditorTabsList() {
+  const listRef = useRef<HTMLDivElement | null>(null)
+  const [activeId, setActiveId] = useState<string>(EDITOR_DEFAULT_TAB)
+
+  // Keep activeId in sync with whichever trigger has data-active set —
+  // works for clicks, keyboard, and programmatic value changes.
+  useEffect(() => {
+    const list = listRef.current
+    if (!list) return
+    const sync = () => {
+      const active = list.querySelector<HTMLElement>('[data-active]')
+      if (active?.dataset.tabId) setActiveId(active.dataset.tabId)
+    }
+    sync()
+    const obs = new MutationObserver(sync)
+    obs.observe(list, {
+      attributes: true,
+      attributeFilter: ['data-active'],
+      subtree: true,
+    })
+    return () => obs.disconnect()
+  }, [])
+
+  // When the active tab changes, scroll it into view.
+  // For the first/last items, scrollIntoView keeps them flush with the edge;
+  // middle items center themselves.
+  useEffect(() => {
+    const list = listRef.current
+    if (!list) return
+    const el = list.querySelector<HTMLElement>(`[data-tab-id="${activeId}"]`)
+    if (!el) return
+    el.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' })
+  }, [activeId])
+
   return (
-    <TabsList className="flex flex-wrap h-auto gap-1 bg-[#0a0a0a]/95 backdrop-blur-sm border border-[#1f1f1f] p-1 rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.4)]">
+    <TabsList
+      ref={listRef}
+      className="flex w-full md:w-auto flex-nowrap md:flex-wrap h-auto gap-1 overflow-x-auto md:overflow-visible no-scrollbar bg-[#0a2218]/60 backdrop-blur-md border border-[#1a3a2c] p-1 rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.35)] scroll-smooth"
+    >
       {TABS.map(({ id, label, icon: Icon }) => (
         <TabsTrigger
           key={id}
           value={id}
-          className="inline-flex items-center gap-1.5 text-[#a1a1aa] text-xs font-semibold px-3 py-1.5 rounded-xl transition-colors duration-200 hover:text-white hover:bg-white/5 data-active:bg-[#00e599] data-active:text-black data-active:shadow-[0_4px_14px_rgba(0,229,153,0.4)]"
+          data-tab-id={id}
+          className="shrink-0 relative inline-flex items-center justify-center gap-1.5 text-[#a1b3a8] text-xs font-semibold px-3 sm:px-3.5 py-1.5 rounded-xl transition-colors duration-200 hover:text-white hover:bg-white/5 data-active:text-[#00e599] data-active:bg-[#00e599]/10 after:absolute after:left-3 after:right-3 after:-bottom-0.5 after:h-0.5 after:rounded-full after:bg-[#00e599] after:opacity-0 after:transition-opacity after:duration-200 data-active:after:opacity-100 data-active:after:shadow-[0_0_8px_rgba(0,229,153,0.7)]"
         >
-          <Icon className="h-3.5 w-3.5" aria-hidden="true" />
-          {label}
+          <Icon className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+          <span className="whitespace-nowrap">{label}</span>
         </TabsTrigger>
       ))}
     </TabsList>

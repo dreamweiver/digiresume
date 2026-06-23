@@ -18,38 +18,45 @@ export function DashboardHeader({ status, publicUrl, userName }: Props) {
   }
 
   return (
-    <header className="border-b border-[#1f1f1f] bg-[#0a0a0a]/95 backdrop-blur-sm px-6 h-16 flex items-center justify-between sticky top-0 z-50">
-      <div className="flex items-center gap-3">
+    <header className="border-b border-[#1a3a2c] bg-[#061a13]/95 backdrop-blur-sm px-3 sm:px-6 h-14 sm:h-16 flex items-center justify-between gap-2 sticky top-0 z-50">
+      <div className="flex items-center gap-2 sm:gap-3 min-w-0">
         <Image
           src="/digiresume.png"
           alt="DigiResume"
           width={28}
           height={28}
-          className="rounded-md"
+          className="rounded-md shrink-0"
         />
-        <span className="text-white font-semibold text-2xl tracking-tight">DigiResume</span>
+        <span className="text-white font-semibold text-lg sm:text-2xl tracking-tight">
+          DigiResume
+        </span>
         <span
           className={
             status === 'published'
-              ? 'inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-sm font-medium bg-[#00e599]/10 text-[#00e599] border border-[#00e599]/20'
-              : 'inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-sm font-medium bg-[#1f1f1f] text-[#52525b] border border-[#2a2a2a]'
+              ? 'inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full text-xs sm:text-sm font-medium bg-[#00e599]/10 text-[#00e599] border border-[#00e599]/20 shrink-0'
+              : 'inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full text-xs sm:text-sm font-medium bg-[#1a3a2c] text-[#6b7d72] border border-[#234a3a] shrink-0'
           }
         >
           <span
-            className={`w-1.5 h-1.5 rounded-full ${status === 'published' ? 'bg-[#00e599]' : 'bg-[#52525b]'}`}
+            className={`w-1.5 h-1.5 rounded-full ${status === 'published' ? 'bg-[#00e599]' : 'bg-[#6b7d72]'}`}
           />
           {status === 'published' ? 'Published' : 'Draft'}
         </span>
         {publicUrl && (
-          <div className="inline-flex items-center gap-1.5">
+          <div className="inline-flex items-center gap-1.5 min-w-0">
             <a
               href={publicUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-sm text-[#00e599] hover:underline inline-flex items-center gap-1"
+              className="hidden md:inline-flex text-sm text-[#00e599] hover:underline items-center gap-1 truncate max-w-[40vw]"
             >
-              {publicUrl}
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <span className="truncate">{publicUrl}</span>
+              <svg
+                className="w-3.5 h-3.5 shrink-0"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -61,7 +68,8 @@ export function DashboardHeader({ status, publicUrl, userName }: Props) {
             <button
               onClick={copyUrl}
               title="Copy URL to clipboard"
-              className="p-1.5 rounded-md cursor-pointer text-[#52525b] hover:text-[#00e599] hover:bg-[#00e599]/10 hover:scale-110 transition-all duration-200"
+              aria-label="Copy public URL to clipboard"
+              className="p-2 sm:p-1.5 rounded-md cursor-pointer text-[#6b7d72] hover:text-[#00e599] hover:bg-[#00e599]/10 hover:scale-110 transition-all duration-200"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -82,8 +90,8 @@ export function DashboardHeader({ status, publicUrl, userName }: Props) {
         )}
       </div>
 
-      <div className="flex items-center gap-3">
-        <span className="text-base text-[#a1a1aa] hidden sm:block">{userName}</span>
+      <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+        <span className="text-base text-[#a1b3a8] hidden sm:block">{userName}</span>
         <UserButton />
       </div>
     </header>

@@ -15,18 +15,18 @@ export function HeroSection({ hero, socialLinks }: Props) {
   const isExternalPhoto = Boolean(hero.profilePhoto)
 
   return (
-    <section id="hero" className="relative isolate overflow-hidden bg-[#0a0a0a] min-h-screen">
+    <section id="hero" className="relative isolate overflow-hidden bg-[#061a13] min-h-screen">
       <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_800px_1200px_at_0%_0%,rgba(0,229,153,0.15)_0%,rgba(0,229,153,0.08)_20%,rgba(0,229,153,0.03)_40%,transparent_70%)]" />
       <div className="h-full min-h-screen flex items-center p-8 sm:p-12 md:p-24">
         <div className="flex flex-col md:flex-row items-start md:items-center gap-8 md:gap-16 w-full">
           <div className="flex-1">
-            <h2 className="text-xl sm:text-2xl md:text-5xl font-bold tracking-tight text-[#a1a1aa]">
+            <h2 className="text-xl sm:text-2xl md:text-5xl font-bold tracking-tight text-[#a1b3a8]">
               Hello! 👋
             </h2>
             <h1 className="mt-6 sm:mt-8 md:mt-10 text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-bold tracking-tight text-white">
               I&apos;m <span className="text-[#00e599]">{hero.name}</span>
             </h1>
-            <p className="mt-4 sm:mt-6 md:mt-8 text-lg sm:text-xl md:text-2xl font-medium text-[#a1a1aa]">
+            <p className="mt-4 sm:mt-6 md:mt-8 text-lg sm:text-xl md:text-2xl font-medium text-[#a1b3a8]">
               {hero.title}
             </p>
             {hero.bio && (
@@ -94,7 +94,7 @@ export function HeroSection({ hero, socialLinks }: Props) {
           </div>
         </div>
       </div>
-      <div className="absolute bottom-0 left-0 right-0 p-8 sm:p-12 md:p-24 flex gap-x-4 sm:gap-x-6 md:gap-x-8 text-[#a1a1aa]">
+      <div className="absolute bottom-0 left-0 right-0 p-8 sm:p-12 md:p-24 flex gap-x-4 sm:gap-x-6 md:gap-x-8 text-[#a1b3a8]">
         {socialLinks.linkedin && (
           <a
             href={socialLinks.linkedin}

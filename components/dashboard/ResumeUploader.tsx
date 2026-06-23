@@ -117,13 +117,13 @@ export function ResumeUploader({ onGenerated, onParsingChange }: Props) {
                 </svg>
               </div>
               <p className="text-[#00e599] font-semibold text-base">{file.name}</p>
-              <p className="text-[#52525b] text-sm">Click to change file</p>
+              <p className="text-[#6b7d72] text-sm">Click to change file</p>
             </div>
           ) : (
             <div className="space-y-3">
-              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-[#1f1f1f] border border-[#2a2a2a] mx-auto">
+              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-[#1a3a2c] border border-[#234a3a] mx-auto">
                 <svg
-                  className="w-6 h-6 text-[#a1a1aa]"
+                  className="w-6 h-6 text-[#a1b3a8]"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -138,7 +138,7 @@ export function ResumeUploader({ onGenerated, onParsingChange }: Props) {
               </div>
               <div>
                 <p className="text-white font-medium text-base">Drop your resume here</p>
-                <p className="text-[#52525b] text-sm mt-1">
+                <p className="text-[#6b7d72] text-sm mt-1">
                   or <span className="text-[#00e599]">click to browse</span> · PDF or DOCX
                 </p>
               </div>
@@ -164,7 +164,7 @@ export function ResumeUploader({ onGenerated, onParsingChange }: Props) {
       <Button
         onClick={handleGenerate}
         disabled={!file || isLoading}
-        className="w-full h-11 bg-[#00e599] text-black font-semibold hover:bg-[#00cc88] transition-colors duration-200 disabled:opacity-40 rounded-xl text-sm"
+        className="w-full h-11 text-[#061a13] font-semibold rounded-full bg-gradient-to-b from-[#5fe3a1] to-[#00b377] shadow-[0_6px_20px_rgba(0,229,153,0.4),inset_0_1px_0_rgba(255,255,255,0.4)] hover:shadow-[0_8px_28px_rgba(0,229,153,0.55),inset_0_1px_0_rgba(255,255,255,0.5)] hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 disabled:opacity-40 disabled:hover:translate-y-0 text-sm"
       >
         {isLoading ? (
           <span className="flex items-center gap-2">

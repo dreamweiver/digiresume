@@ -15,7 +15,7 @@ export function AboutSection({ about }: Props) {
         </div>
 
         <div className="lg:col-span-8">
-          <p className="text-lg sm:text-xl md:text-2xl leading-relaxed text-[#a1a1aa]">{about}</p>
+          <p className="text-lg sm:text-xl md:text-2xl leading-relaxed text-[#a1b3a8]">{about}</p>
         </div>
       </div>
     </section>

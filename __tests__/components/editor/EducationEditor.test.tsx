@@ -16,14 +16,14 @@ describe('EducationEditor', () => {
     expect(screen.getByText('Education 1')).toBeInTheDocument()
   })
 
-  it('renders Remove button for existing entries', () => {
+  it('renders delete (trash) button for existing entries', () => {
     render(<EducationEditor education={sampleEducation} onChange={vi.fn()} />)
-    expect(screen.getByText('Remove')).toBeInTheDocument()
+    expect(screen.getByLabelText('Delete education 1')).toBeInTheDocument()
   })
 
-  it('Remove button removes the entry', async () => {
+  it('Delete button removes the entry', async () => {
     render(<EducationEditor education={sampleEducation} onChange={vi.fn()} />)
-    const removeBtn = screen.getByText('Remove')
+    const removeBtn = screen.getByLabelText('Delete education 1')
     fireEvent.click(removeBtn)
     await waitFor(() => {
       expect(screen.queryByText('Education 1')).not.toBeInTheDocument()

@@ -8,7 +8,7 @@ interface Props {
 
 export function ContactSection({ socialLinks, name }: Props) {
   return (
-    <footer id="contact" className="p-8 sm:p-12 md:p-16 lg:p-24 border-t border-[#1f1f1f]">
+    <footer id="contact" className="p-8 sm:p-12 md:p-16 lg:p-24 border-t border-[#1a3a2c]">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
         <div>
           <p className="text-white font-bold text-lg">{name}</p>
@@ -17,7 +17,7 @@ export function ContactSection({ socialLinks, name }: Props) {
               {socialLinks.email && (
                 <a
                   href={`mailto:${socialLinks.email}`}
-                  className="text-[#a1a1aa] text-sm hover:text-[#00e599] transition-colors duration-200 inline-flex items-center gap-1.5"
+                  className="text-[#a1b3a8] text-sm hover:text-[#00e599] transition-colors duration-200 inline-flex items-center gap-1.5"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -39,7 +39,7 @@ export function ContactSection({ socialLinks, name }: Props) {
               {socialLinks.phone && (
                 <a
                   href={`tel:${socialLinks.phone}`}
-                  className="text-[#a1a1aa] text-sm hover:text-[#00e599] transition-colors duration-200 inline-flex items-center gap-1.5"
+                  className="text-[#a1b3a8] text-sm hover:text-[#00e599] transition-colors duration-200 inline-flex items-center gap-1.5"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -59,26 +59,26 @@ export function ContactSection({ socialLinks, name }: Props) {
               )}
             </div>
           )}
-          <p className="text-[#52525b] text-xs mt-1">
+          <p className="text-[#6b7d72] text-xs mt-1">
             &copy; {new Date().getFullYear()} Built with{' '}
             <Link href="/" className="text-[#00e599] hover:underline">
               DigiResume
             </Link>
             .
           </p>
-          <p className="text-[#52525b] text-xs mt-1">
+          <p className="text-[#6b7d72] text-xs mt-1">
             Created by{' '}
             <a
               href="https://github.com/dreamweiver"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[#a1a1aa] hover:text-[#00e599] hover:underline"
+              className="text-[#a1b3a8] hover:text-[#00e599] hover:underline"
             >
               @dreamweiver
             </a>
           </p>
         </div>
-        <div className="flex gap-x-4 sm:gap-x-6 text-[#a1a1aa]">
+        <div className="flex gap-x-4 sm:gap-x-6 text-[#a1b3a8]">
           {socialLinks.github && (
             <a
               href={socialLinks.github}

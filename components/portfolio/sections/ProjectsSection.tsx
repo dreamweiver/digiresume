@@ -24,7 +24,7 @@ export function ProjectsSection({ projects }: Props) {
 
               return (
                 <div key={index} className="group relative">
-                  <div className="block relative p-4 sm:p-6 md:p-8 bg-[#111111] rounded-xl sm:rounded-2xl border border-[#1f1f1f] transition-all duration-300 hover:border-[#00e599]/30 hover:-translate-y-1">
+                  <div className="block relative p-4 sm:p-6 md:p-8 bg-[#0a2218] rounded-xl sm:rounded-2xl border border-[#1a3a2c] transition-all duration-300 hover:border-[#00e599]/30 hover:-translate-y-1">
                     {hasLink && (
                       <a
                         href={linkUrl}
@@ -59,7 +59,7 @@ export function ProjectsSection({ projects }: Props) {
                       </div>
 
                       <p
-                        className={`text-base sm:text-lg text-[#a1a1aa] leading-relaxed ${hasLink ? 'pr-12 sm:pr-14 md:pr-16' : ''}`}
+                        className={`text-base sm:text-lg text-[#a1b3a8] leading-relaxed ${hasLink ? 'pr-12 sm:pr-14 md:pr-16' : ''}`}
                       >
                         {project.description}
                       </p>
@@ -69,7 +69,7 @@ export function ProjectsSection({ projects }: Props) {
                           {project.techStack.map((tech) => (
                             <span
                               key={tech}
-                              className="px-3 sm:px-4 py-1.5 sm:py-2 bg-[#2a2a2a] text-white rounded-full text-sm sm:text-base md:text-lg font-medium hover:bg-[#00e599] hover:text-black transition-colors duration-200"
+                              className="px-3 sm:px-4 py-1.5 sm:py-2 bg-[#234a3a] text-white rounded-full text-sm sm:text-base md:text-lg font-medium hover:bg-[#00e599] hover:text-black transition-colors duration-200"
                             >
                               {tech}
                             </span>

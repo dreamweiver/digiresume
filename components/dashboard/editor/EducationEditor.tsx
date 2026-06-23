@@ -3,6 +3,7 @@ import { useEffect } from 'react'
 import { useForm, useFieldArray } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import { Trash2 } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
@@ -53,17 +54,21 @@ export function EducationEditor({ education, onChange }: Props) {
   return (
     <div className="space-y-3">
       {fields.map((field, i) => (
-        <div key={field.id} className="border border-white/20 rounded-lg p-4 space-y-3 bg-white/10">
+        <div
+          key={field.id}
+          className="border border-white/10 rounded-xl p-4 space-y-3 bg-white/[0.04] backdrop-blur-sm"
+        >
           <div className="flex justify-between items-center">
-            <h4 className="font-medium text-gray-700 text-sm">Education {i + 1}</h4>
+            <h4 className="font-medium text-white text-sm">Education {i + 1}</h4>
             <Button
               variant="ghost"
-              size="sm"
+              size="icon"
               type="button"
+              aria-label={`Delete education ${i + 1}`}
               onClick={() => remove(i)}
-              className="text-[#52525b] hover:text-red-400"
+              className="text-[#6b7d72] hover:text-red-400 hover:bg-red-500/10"
             >
-              Remove
+              <Trash2 className="h-4 w-4" />
             </Button>
           </div>
           <div>
@@ -82,7 +87,7 @@ export function EducationEditor({ education, onChange }: Props) {
               <p className="text-red-500 text-xs mt-1">{errors.education[i].degree?.message}</p>
             )}
           </div>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <Label>Start Year</Label>
               <Input placeholder="2016" {...register(`education.${i}.startDate`)} />
@@ -98,7 +103,7 @@ export function EducationEditor({ education, onChange }: Props) {
         type="button"
         variant="outline"
         onClick={() => append(emptyEntry())}
-        className="border-[#1f1f1f] text-[#00e599] hover:border-[#00e599] hover:text-[#00e599] transition-colors duration-200 bg-transparent"
+        className="rounded-full border border-[#00e599]/30 text-[#00e599] hover:border-[#00e599] hover:bg-[#00e599]/10 transition-all duration-200 bg-transparent"
       >
         + Add Education
       </Button>

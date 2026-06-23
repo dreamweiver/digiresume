@@ -13,7 +13,7 @@ interface Props {
 
 export function PortfolioTemplate({ data }: Props) {
   return (
-    <div className="font-[var(--font-ibm-plex-mono)] bg-[#0a0a0a] text-white">
+    <div className="font-[var(--font-ibm-plex-mono)] bg-[#061a13] text-white">
       <HeroSection hero={data.hero} socialLinks={data.socialLinks} />
       <AboutSection about={data.about} />
       <SkillsSection skills={data.skills} />

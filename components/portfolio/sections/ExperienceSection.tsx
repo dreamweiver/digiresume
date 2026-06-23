@@ -18,7 +18,7 @@ function ExperienceDescription({ entry }: { entry: ExperienceEntry }) {
               .split('\n')
               .filter(Boolean)
               .map((para, i) => (
-                <p key={i} className="text-sm sm:text-base text-[#a1a1aa] leading-relaxed">
+                <p key={i} className="text-sm sm:text-base text-[#a1b3a8] leading-relaxed">
                   {para}
                 </p>
               ))}
@@ -26,7 +26,7 @@ function ExperienceDescription({ entry }: { entry: ExperienceEntry }) {
         )}
 
         {entry.highlights && entry.highlights.length > 0 && (
-          <ul className="list-disc list-outside ml-4 space-y-1.5 text-sm sm:text-base text-[#a1a1aa] leading-relaxed">
+          <ul className="list-disc list-outside ml-4 space-y-1.5 text-sm sm:text-base text-[#a1b3a8] leading-relaxed">
             {entry.highlights.map((item, i) => (
               <li key={i}>{item}</li>
             ))}
@@ -38,7 +38,7 @@ function ExperienceDescription({ entry }: { entry: ExperienceEntry }) {
             {entry.technologies.map((tech) => (
               <span
                 key={tech}
-                className="px-2 py-0.5 bg-[#1f1f1f] text-white rounded-md text-xs font-medium hover:border-[#00e599]/30 border border-transparent transition-colors duration-200"
+                className="px-2 py-0.5 bg-[#1a3a2c] text-white rounded-md text-xs font-medium hover:border-[#00e599]/30 border border-transparent transition-colors duration-200"
               >
                 {tech}
               </span>
@@ -55,7 +55,7 @@ function ExperienceDescription({ entry }: { entry: ExperienceEntry }) {
     return (
       <div className="space-y-2">
         {paragraphs.map((para, i) => (
-          <p key={i} className="text-sm sm:text-base text-[#a1a1aa] leading-relaxed">
+          <p key={i} className="text-sm sm:text-base text-[#a1b3a8] leading-relaxed">
             {para}
           </p>
         ))}
@@ -70,7 +70,7 @@ function ExperienceDescription({ entry }: { entry: ExperienceEntry }) {
 
   if (sentences.length <= 1) {
     return (
-      <p className="text-sm sm:text-base text-[#a1a1aa] leading-relaxed">{entry.description}</p>
+      <p className="text-sm sm:text-base text-[#a1b3a8] leading-relaxed">{entry.description}</p>
     )
   }
 
@@ -78,8 +78,8 @@ function ExperienceDescription({ entry }: { entry: ExperienceEntry }) {
 
   return (
     <div className="space-y-2">
-      <p className="text-sm sm:text-base text-[#a1a1aa] leading-relaxed">{first}.</p>
-      <ul className="list-disc list-outside ml-4 space-y-1.5 text-sm sm:text-base text-[#a1a1aa] leading-relaxed">
+      <p className="text-sm sm:text-base text-[#a1b3a8] leading-relaxed">{first}.</p>
+      <ul className="list-disc list-outside ml-4 space-y-1.5 text-sm sm:text-base text-[#a1b3a8] leading-relaxed">
         {rest.map((bullet, i) => (
           <li key={i}>{bullet}.</li>
         ))}
@@ -107,23 +107,23 @@ export function ExperienceSection({ experience }: Props) {
                 <div className="absolute left-1/2 -top-2 w-4 h-4 border-2 rounded-full -translate-x-1/2 z-20 border-[#00e599] bg-[#00e599]" />
 
                 {index < experience.length - 1 && (
-                  <div className="absolute left-1/2 bottom-0 w-0.5 h-12 bg-[#1f1f1f] -translate-x-1/2 translate-y-full z-10" />
+                  <div className="absolute left-1/2 bottom-0 w-0.5 h-12 bg-[#1a3a2c] -translate-x-1/2 translate-y-full z-10" />
                 )}
 
-                <div className="bg-[#111111] rounded-lg border border-[#1f1f1f] p-4 sm:p-5 md:p-6 hover:border-[#00e599]/30 transition-all duration-300">
+                <div className="bg-[#0a2218] rounded-lg border border-[#1a3a2c] p-4 sm:p-5 md:p-6 hover:border-[#00e599]/30 transition-all duration-300">
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
                     <div>
                       <h3 className="text-lg sm:text-xl font-semibold text-white">{entry.role}</h3>
                       <p className="text-base sm:text-lg text-[#00e599]">
                         {entry.company}
                         {entry.location && (
-                          <span className="text-[#a1a1aa] text-sm ml-2">
+                          <span className="text-[#a1b3a8] text-sm ml-2">
                             &middot; {entry.location}
                           </span>
                         )}
                       </p>
                     </div>
-                    <span className="text-xs sm:text-sm text-[#52525b] mt-2 sm:mt-0 font-mono">
+                    <span className="text-xs sm:text-sm text-[#6b7d72] mt-2 sm:mt-0 font-mono">
                       {entry.startDate} &ndash; {entry.endDate}
                     </span>
                   </div>
