@@ -23,7 +23,12 @@ function renderEditor(data: PortfolioData = testData, onChange = vi.fn()) {
   return render(
     <Tabs defaultValue="hero">
       <EditorTabsList />
-      <PortfolioEditor data={data} onChange={onChange} />
+      <PortfolioEditor
+        data={data}
+        onChange={onChange}
+        slug="test-user-ab1234"
+        onSlugChange={vi.fn()}
+      />
     </Tabs>,
   )
 }

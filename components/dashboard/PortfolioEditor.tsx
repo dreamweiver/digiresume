@@ -18,11 +18,14 @@ import { ExperienceEditor } from './editor/ExperienceEditor'
 import { ProjectsEditor } from './editor/ProjectsEditor'
 import { EducationEditor } from './editor/EducationEditor'
 import { SocialEditor } from './editor/SocialEditor'
+import { SlugEditor } from './editor/SlugEditor'
 import type { PortfolioData } from '@/lib/portfolio-types'
 
 interface Props {
   data: PortfolioData
   onChange: (data: PortfolioData) => void
+  slug: string
+  onSlugChange: (slug: string) => void
 }
 
 const TABS: { id: string; label: string; icon: LucideIcon }[] = [
@@ -91,15 +94,18 @@ export function EditorTabsList() {
   )
 }
 
-export function PortfolioEditor({ data, onChange }: Props) {
+export function PortfolioEditor({ data, onChange, slug, onSlugChange }: Props) {
   return (
     <div>
       <TabsContent value="hero">
-        <HeroEditor
-          hero={data.hero}
-          socialLinks={data.socialLinks}
-          onChange={(hero) => onChange({ ...data, hero })}
-        />
+        <div className="space-y-4">
+          <SlugEditor slug={slug} onSlugChange={onSlugChange} />
+          <HeroEditor
+            hero={data.hero}
+            socialLinks={data.socialLinks}
+            onChange={(hero) => onChange({ ...data, hero })}
+          />
+        </div>
       </TabsContent>
       <TabsContent value="about">
         <AboutEditor about={data.about} onChange={(about) => onChange({ ...data, about })} />

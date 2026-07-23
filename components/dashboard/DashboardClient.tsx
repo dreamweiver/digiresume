@@ -213,7 +213,12 @@ export function DashboardClient({ initialPortfolio, initialData, usernameSlug, u
                 </div>
               </div>
               <div className="flex-1 overflow-y-auto -mx-1 px-1">
-                <PortfolioEditor data={portfolioData} onChange={setPortfolioData} />
+                <PortfolioEditor
+                  data={portfolioData}
+                  onChange={setPortfolioData}
+                  slug={slug}
+                  onSlugChange={setSlug}
+                />
               </div>
             </Tabs>
           </div>
