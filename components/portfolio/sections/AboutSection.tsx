@@ -4,6 +4,10 @@ interface Props {
 
 export function AboutSection({ about }: Props) {
   if (!about.trim()) return null
+  const paragraphs = about
+    .split(/\n\s*\n/)
+    .map((p) => p.trim())
+    .filter(Boolean)
   return (
     <section id="about" className="p-8 sm:p-12 md:p-16 lg:p-24">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-start">
@@ -14,8 +18,15 @@ export function AboutSection({ about }: Props) {
           <div className="w-[75px] h-[5px] mt-2 rounded-full bg-[#00e599]" />
         </div>
 
-        <div className="lg:col-span-8">
-          <p className="text-lg sm:text-xl md:text-2xl leading-relaxed text-[#a1b3a8]">{about}</p>
+        <div className="lg:col-span-8 space-y-6">
+          {paragraphs.map((paragraph, index) => (
+            <p
+              key={index}
+              className="text-lg sm:text-xl md:text-2xl leading-relaxed text-[#a1b3a8]"
+            >
+              {paragraph}
+            </p>
+          ))}
         </div>
       </div>
     </section>

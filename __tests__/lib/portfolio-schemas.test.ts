@@ -99,17 +99,40 @@ describe('socialLinksSchema', () => {
     ).toThrow()
   })
 
-  it('rejects http-less domain on linkedin', () => {
-    expect(() =>
-      socialLinksSchema.parse({
-        github: '',
-        linkedin: 'linkedin.com/in/user',
-        twitter: '',
-        website: '',
-        email: '',
-        phone: '',
-      }),
-    ).toThrow()
+  it('normalizes an http-less domain on linkedin to https', () => {
+    const result = socialLinksSchema.parse({
+      github: '',
+      linkedin: 'linkedin.com/in/user',
+      twitter: '',
+      website: '',
+      email: '',
+      phone: '',
+    })
+    expect(result.linkedin).toBe('https://linkedin.com/in/user')
+  })
+
+  it('normalizes a www-prefixed domain and trims whitespace', () => {
+    const result = socialLinksSchema.parse({
+      github: '  www.github.com/user  ',
+      linkedin: '',
+      twitter: '',
+      website: '',
+      email: '',
+      phone: '',
+    })
+    expect(result.github).toBe('https://www.github.com/user')
+  })
+
+  it('leaves an existing https URL untouched', () => {
+    const result = socialLinksSchema.parse({
+      github: 'http://github.com/user',
+      linkedin: '',
+      twitter: '',
+      website: '',
+      email: '',
+      phone: '',
+    })
+    expect(result.github).toBe('http://github.com/user')
   })
 })
 
@@ -186,16 +209,15 @@ describe('projectEntrySchema', () => {
     ).toThrow()
   })
 
-  it('rejects invalid githubUrl', () => {
-    expect(() =>
-      projectEntrySchema.parse({
-        name: 'My App',
-        description: '',
-        techStack: [],
-        liveUrl: '',
-        githubUrl: 'github.com/user/repo',
-      }),
-    ).toThrow()
+  it('normalizes a bare-domain githubUrl to https', () => {
+    const result = projectEntrySchema.parse({
+      name: 'My App',
+      description: '',
+      techStack: [],
+      liveUrl: '',
+      githubUrl: 'github.com/user/repo',
+    })
+    expect(result.githubUrl).toBe('https://github.com/user/repo')
   })
 
   it('rejects empty project name', () => {

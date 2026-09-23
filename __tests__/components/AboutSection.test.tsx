@@ -19,4 +19,10 @@ describe('AboutSection', () => {
     const { container } = render(<AboutSection about={'   \n\t  '} />)
     expect(container).toBeEmptyDOMElement()
   })
+
+  it('splits about text into separate paragraphs on blank lines', () => {
+    render(<AboutSection about={'First paragraph.\n\nSecond paragraph.'} />)
+    expect(screen.getByText('First paragraph.')).toBeInTheDocument()
+    expect(screen.getByText('Second paragraph.')).toBeInTheDocument()
+  })
 })
