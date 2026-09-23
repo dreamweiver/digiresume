@@ -9,15 +9,15 @@ interface Props {
 export function ContactSection({ socialLinks, name }: Props) {
   return (
     <footer id="contact" className="p-8 sm:p-12 md:p-16 lg:p-24 border-t border-[#1a3a2c]">
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-        <div>
+      <div className="flex flex-col gap-6">
+        <div className="min-w-0">
           <p className="text-white font-bold text-lg">{name}</p>
           {(socialLinks.email || socialLinks.phone) && (
             <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2">
               {socialLinks.email && (
                 <a
                   href={`mailto:${socialLinks.email}`}
-                  className="text-[#a1b3a8] text-sm hover:text-[#00e599] transition-colors duration-200 inline-flex items-center gap-1.5"
+                  className="text-[#a1b3a8] text-sm hover:text-[#00e599] transition-colors duration-200 inline-flex items-center gap-1.5 max-w-full break-all"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -29,6 +29,7 @@ export function ContactSection({ socialLinks, name }: Props) {
                     strokeWidth="2"
                     strokeLinecap="round"
                     strokeLinejoin="round"
+                    className="shrink-0"
                   >
                     <rect width="20" height="16" x="2" y="4" rx="2" />
                     <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
@@ -59,24 +60,6 @@ export function ContactSection({ socialLinks, name }: Props) {
               )}
             </div>
           )}
-          <p className="text-[#6b7d72] text-xs mt-1">
-            &copy; {new Date().getFullYear()} Built with{' '}
-            <Link href="/" className="text-[#00e599] hover:underline">
-              DigiResume
-            </Link>
-            .
-          </p>
-          <p className="text-[#6b7d72] text-xs mt-1">
-            Created by{' '}
-            <a
-              href="https://github.com/dreamweiver"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-[#a1b3a8] hover:text-[#00e599] hover:underline"
-            >
-              @dreamweiver
-            </a>
-          </p>
         </div>
         <div className="flex gap-x-4 sm:gap-x-6 text-[#a1b3a8]">
           {socialLinks.github && (
@@ -178,6 +161,26 @@ export function ContactSection({ socialLinks, name }: Props) {
               </svg>
             </a>
           )}
+        </div>
+        <div className="text-[#6b7d72] text-xs space-y-1">
+          <p>
+            &copy; {new Date().getFullYear()} Built with{' '}
+            <Link href="/" className="text-[#00e599] hover:underline">
+              DigiResume
+            </Link>
+            .
+          </p>
+          <p>
+            Created by{' '}
+            <a
+              href="https://github.com/dreamweiver"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[#a1b3a8] hover:text-[#00e599] hover:underline"
+            >
+              @dreamweiver
+            </a>
+          </p>
         </div>
       </div>
     </footer>

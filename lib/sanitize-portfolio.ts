@@ -29,6 +29,19 @@ function asString(v: unknown, fallback = ''): string {
   return typeof v === 'string' ? v : fallback
 }
 
+// Resumes often list social links without a scheme (e.g. "linkedin.com/in/x"
+// or "www.github.com/x"). Gemini passes these through verbatim, so we normalize
+// them to a clickable https:// URL; otherwise the portfolio would render a
+// broken/relative link (or drop the icon entirely).
+function normalizeUrl(v: unknown): string {
+  const trimmed = asString(v).trim()
+  if (!trimmed) return ''
+  if (/^https?:\/\//i.test(trimmed)) return trimmed
+  // Looks like a domain (has a dot before the first slash) → assume https.
+  if (/^[\w-]+\.[\w.-]+/.test(trimmed)) return `https://${trimmed}`
+  return trimmed
+}
+
 function asStringArray(v: unknown): string[] {
   return Array.isArray(v) ? v.filter((x): x is string => typeof x === 'string') : []
 }
@@ -106,10 +119,10 @@ function sanitizeSocialLinks(raw: unknown): SocialLinks {
     return { github: '', linkedin: '', twitter: '', website: '', email: '', phone: '' }
   }
   return {
-    github: asString(raw.github),
-    linkedin: asString(raw.linkedin),
-    twitter: asString(raw.twitter),
-    website: asString(raw.website),
+    github: normalizeUrl(raw.github),
+    linkedin: normalizeUrl(raw.linkedin),
+    twitter: normalizeUrl(raw.twitter),
+    website: normalizeUrl(raw.website),
     email: asString(raw.email),
     phone: asString(raw.phone),
   }

@@ -51,6 +51,14 @@ export const experienceArraySchema = z.array(experienceEntrySchema).superRefine(
 
 const urlOrEmpty = z
   .string()
+  .transform((v) => {
+    const trimmed = v.trim()
+    if (!trimmed) return ''
+    if (/^https?:\/\//i.test(trimmed)) return trimmed
+    // Accept bare domains (e.g. "linkedin.com/in/x") by assuming https.
+    if (/^[\w-]+\.[\w.-]+/.test(trimmed)) return `https://${trimmed}`
+    return trimmed
+  })
   .refine((v) => v === '' || /^https?:\/\//i.test(v), { message: 'Must be a valid URL' })
 
 export const projectEntrySchema = z.object({

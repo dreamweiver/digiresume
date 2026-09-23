@@ -15,9 +15,12 @@ export function HeroSection({ hero, socialLinks }: Props) {
   const isExternalPhoto = Boolean(hero.profilePhoto)
 
   return (
-    <section id="hero" className="relative isolate overflow-hidden bg-[#061a13] min-h-screen">
+    <section
+      id="hero"
+      className="relative isolate overflow-hidden bg-[#061a13] min-h-screen flex flex-col justify-center"
+    >
       <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_800px_1200px_at_0%_0%,rgba(0,229,153,0.15)_0%,rgba(0,229,153,0.08)_20%,rgba(0,229,153,0.03)_40%,transparent_70%)]" />
-      <div className="h-full min-h-screen flex items-center p-8 sm:p-12 md:p-24">
+      <div className="flex items-center p-8 pb-4 sm:p-12 sm:pb-6 md:p-24 md:pb-10">
         <div className="flex flex-col md:flex-row items-start md:items-center gap-8 md:gap-16 w-full">
           <div className="flex-1">
             <h2 className="text-xl sm:text-2xl md:text-5xl font-bold tracking-tight text-[#a1b3a8]">
@@ -94,7 +97,7 @@ export function HeroSection({ hero, socialLinks }: Props) {
           </div>
         </div>
       </div>
-      <div className="absolute bottom-0 left-0 right-0 p-8 sm:p-12 md:p-24 flex gap-x-4 sm:gap-x-6 md:gap-x-8 text-[#a1b3a8]">
+      <div className="p-8 pt-0 sm:p-12 sm:pt-0 md:p-24 md:pt-0 flex gap-x-4 sm:gap-x-6 md:gap-x-8 text-[#a1b3a8]">
         {socialLinks.linkedin && (
           <a
             href={socialLinks.linkedin}

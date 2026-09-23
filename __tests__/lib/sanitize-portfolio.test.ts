@@ -426,4 +426,44 @@ describe('sanitizePortfolio', () => {
       })
     })
   })
+
+  describe('social URL normalization', () => {
+    it('prepends https:// to http-less social URLs from the resume', () => {
+      const input = {
+        hero: { name: 'X', title: '', bio: '' },
+        socialLinks: {
+          github: 'github.com/manoj',
+          linkedin: 'linkedin.com/in/manoj',
+          twitter: 'www.twitter.com/manoj',
+          website: 'manoj.dev',
+          email: 'manoj@example.com',
+          phone: '+91 9449358429',
+        },
+      }
+      const { data } = sanitizePortfolio(input)
+      expect(data.socialLinks.github).toBe('https://github.com/manoj')
+      expect(data.socialLinks.linkedin).toBe('https://linkedin.com/in/manoj')
+      expect(data.socialLinks.twitter).toBe('https://www.twitter.com/manoj')
+      expect(data.socialLinks.website).toBe('https://manoj.dev')
+    })
+
+    it('leaves already-qualified URLs and non-URL fields untouched', () => {
+      const input = {
+        hero: { name: 'X', title: '', bio: '' },
+        socialLinks: {
+          github: 'https://github.com/manoj',
+          linkedin: '',
+          twitter: '',
+          website: '',
+          email: 'manoj@example.com',
+          phone: '+91 9449358429',
+        },
+      }
+      const { data } = sanitizePortfolio(input)
+      expect(data.socialLinks.github).toBe('https://github.com/manoj')
+      expect(data.socialLinks.linkedin).toBe('')
+      expect(data.socialLinks.email).toBe('manoj@example.com')
+      expect(data.socialLinks.phone).toBe('+91 9449358429')
+    })
+  })
 })
